@@ -1,1295 +1,730 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Churn & Retention - Turbo Dashboard</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0a0a1a, #1a1a3e, #0d0d2b);
-            color: #e0e0e0; min-height: 100vh;
-        }
-        .header {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            padding: 28px 40px; text-align: center;
-            box-shadow: 0 4px 30px rgba(102,126,234,0.3);
-        }
-        .header h1 { font-size: 2rem; color: #fff; margin-bottom: 6px; }
-        .header p { color: rgba(255,255,255,0.85); font-size: 0.95rem; }
-        .header-badge {
-            display: inline-block; background: rgba(255,255,255,0.15);
-            padding: 4px 16px; border-radius: 20px; font-size: 0.78rem;
-            color: #fff; margin-top: 8px;
-        }
-
-        /* Status Bar */
-        .status-bar {
-            margin: 16px 30px; padding: 12px 20px; border-radius: 10px;
-            font-size: 0.85rem; display: flex; align-items: center; gap: 10px;
-            flex-wrap: wrap;
-        }
-        .status-bar.loading { background: rgba(255,210,0,0.1); border: 1px solid rgba(255,210,0,0.25); color: #ffd200; }
-        .status-bar.success { background: rgba(56,239,125,0.1); border: 1px solid rgba(56,239,125,0.25); color: #38ef7d; }
-        .status-bar.error { background: rgba(244,92,67,0.1); border: 1px solid rgba(244,92,67,0.25); color: #f45c43; }
-        .status-bar.info { background: rgba(102,126,234,0.1); border: 1px solid rgba(102,126,234,0.25); color: #667eea; }
-        .status-spinner {
-            width: 16px; height: 16px; border: 2px solid rgba(255,210,0,0.3);
-            border-top-color: #ffd200; border-radius: 50%; animation: spin 0.8s linear infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* Global Search Bar */
-        .global-search-container {
-            margin: 16px 30px; background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(102,126,234,0.4); border-radius: 12px;
-            padding: 12px 20px; display: flex; align-items: center; gap: 12px;
-        }
-        .global-search-container input {
-            flex: 1; background: transparent; border: none; outline: none;
-            color: #fff; font-size: 0.95rem;
-        }
-        .global-search-btn {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border: none; color: #fff; padding: 8px 20px; border-radius: 8px;
-            cursor: pointer; font-weight: 600; transition: all 0.3s;
-        }
-        .global-search-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(102,126,234,0.4); }
-
-        /* Upload Section */
-        .upload-section {
-            background: rgba(255,255,255,0.04); border: 2px dashed rgba(255,255,255,0.15);
-            border-radius: 14px; margin: 16px 30px; padding: 20px; text-align: center;
-        }
-        .upload-section:hover { border-color: #667eea; }
-        .upload-text { color: #aaa; font-size: 0.88rem; line-height: 1.6; }
-        .upload-text code {
-            background: rgba(102,126,234,0.15); padding: 2px 8px; border-radius: 4px;
-            color: #667eea; font-size: 0.82rem;
-        }
-        .file-inputs { display: flex; gap: 16px; justify-content: center; margin-top: 14px; flex-wrap: wrap; }
-        .file-input-wrapper input[type="file"] { display: none; }
-        .file-btn {
-            border: none; color: #fff; padding: 9px 22px; border-radius: 8px;
-            cursor: pointer; font-size: 0.85rem; transition: all 0.3s; font-weight: 500;
-        }
-        .file-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
-        .file-btn.expired-btn { background: linear-gradient(135deg, #eb3349, #f45c43); }
-        .file-btn.active-btn { background: linear-gradient(135deg, #11998e, #38ef7d); }
-        .file-btn.repo-btn { background: linear-gradient(135deg, #667eea, #764ba2); }
-        .file-name { font-size: 0.75rem; color: #38ef7d; margin-top: 5px; min-height: 16px; }
-        .file-name.error { color: #f45c43; }
-
-        /* Controls */
-        .controls-panel {
-            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 12px; margin: 16px 30px; padding: 16px 24px;
-            display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end;
-        }
-        .control-group { display: flex; flex-direction: column; gap: 4px; }
-        .control-group label { font-size: 0.7rem; color: #888; text-transform: uppercase; letter-spacing: 1px; }
-        .control-group input {
-            background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
-            color: #fff; padding: 7px 12px; border-radius: 7px; font-size: 0.85rem; outline: none;
-        }
-        .control-group input:focus { border-color: #667eea; }
-        .btn-generate {
-            background: linear-gradient(135deg, #667eea, #764ba2); border: none;
-            color: #fff; padding: 10px 24px; border-radius: 8px; font-size: 0.9rem;
-            cursor: pointer; font-weight: 600; transition: all 0.3s;
-        }
-        .btn-generate:hover { transform: translateY(-2px); }
-
-        /* KPI Strip */
-        .kpi-strip {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-            gap: 14px; margin: 18px 30px;
-        }
-        .kpi-card {
-            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 14px; padding: 18px 16px; text-align: center;
-            transition: all 0.3s; position: relative; overflow: hidden;
-            cursor: pointer;
-        }
-        .kpi-card::before { content:''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
-        .kpi-card.blue::before { background: linear-gradient(90deg, #667eea, #764ba2); }
-        .kpi-card.green::before { background: linear-gradient(90deg, #11998e, #38ef7d); }
-        .kpi-card.red::before { background: linear-gradient(90deg, #eb3349, #f45c43); }
-        .kpi-card.orange::before { background: linear-gradient(90deg, #f7971e, #ffd200); }
-        .kpi-card.purple::before { background: linear-gradient(90deg, #a855f7, #ec4899); }
-        .kpi-card.cyan::before { background: linear-gradient(90deg, #06b6d4, #22d3ee); }
-        .kpi-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.2); }
-        .kpi-card:active { transform: translateY(-2px); }
-        .kpi-value { font-size: 2rem; font-weight: 700; margin: 6px 0; }
-        .kpi-card.blue .kpi-value { color: #667eea; }
-        .kpi-card.green .kpi-value { color: #38ef7d; }
-        .kpi-card.red .kpi-value { color: #f45c43; }
-        .kpi-card.orange .kpi-value { color: #ffd200; }
-        .kpi-card.purple .kpi-value { color: #a855f7; }
-        .kpi-card.cyan .kpi-value { color: #22d3ee; }
-        .kpi-label { font-size: 0.75rem; color: #999; text-transform: uppercase; letter-spacing: 1px; }
-        .kpi-sublabel { font-size: 0.7rem; color: #666; margin-top: 3px; }
-        .kpi-click-hint {
-            font-size: 0.65rem; color: #555; margin-top: 6px;
-            border-top: 1px solid rgba(255,255,255,0.06); padding-top: 5px;
-        }
-
-        /* Section Headers */
-        .section-header { margin: 28px 30px 6px; display: flex; align-items: center; gap: 10px; }
-        .section-header h2 { font-size: 1.2rem; color: #ddd; }
-        .section-header .section-info {
-            font-size: 0.78rem; color: #777; background: rgba(255,255,255,0.04);
-            padding: 3px 12px; border-radius: 14px;
-        }
-        .section-divider {
-            height: 1px; background: linear-gradient(90deg, transparent, rgba(102,126,234,0.2), transparent);
-            margin: 6px 30px 16px;
-        }
-
-        /* Dashboard Grid */
-        .dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 0 30px 16px; }
-        .chart-card {
-            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 14px; padding: 20px; transition: all 0.3s;
-        }
-        .chart-card:hover { border-color: rgba(102,126,234,0.2); }
-        .chart-card.full-width { grid-column: 1 / -1; }
-        .chart-title {
-            font-size: 1rem; font-weight: 600; margin-bottom: 5px; color: #ddd;
-            display: flex; align-items: center; gap: 8px;
-        }
-        .chart-description {
-            font-size: 0.75rem; color: #666; margin-bottom: 12px; line-height: 1.5;
-            background: rgba(255,255,255,0.02); padding: 7px 10px; border-radius: 6px;
-            border-left: 3px solid rgba(102,126,234,0.2);
-        }
-        .chart-container { position: relative; width: 100%; height: 300px; }
-        .chart-container.tall { height: 380px; }
-
-        /* Insight Box */
-        .insight-box {
-            background: rgba(102,126,234,0.08); border-left: 4px solid #667eea;
-            padding: 16px 20px; margin: 16px 30px; border-radius: 0 10px 10px 0;
-            font-size: 0.85rem; line-height: 1.7;
-        }
-        .insight-box h4 { color: #667eea; margin-bottom: 8px; }
-        .insight-item { padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
-        .insight-item:last-child { border-bottom: none; }
-
-        /* Flow Diagram */
-        .flow-container { padding: 16px; }
-        .flow-row {
-            display: flex; align-items: center; gap: 10px; margin: 8px 0;
-            padding: 10px 14px; border-radius: 8px; transition: all 0.3s;
-            cursor: pointer;
-        }
-        .flow-row:hover { background: rgba(255,255,255,0.04); transform: translateX(4px); }
-        .flow-icon { font-size: 1.3rem; min-width: 32px; text-align: center; }
-        .flow-bar-container { flex: 1; }
-        .flow-bar {
-            height: 26px; border-radius: 5px; display: flex; align-items: center;
-            padding-left: 10px; font-size: 0.78rem; font-weight: 600;
-        }
-        .flow-bar.healthy { background: linear-gradient(90deg, rgba(56,239,125,0.25), rgba(56,239,125,0.55)); }
-        .flow-bar.partial { background: linear-gradient(90deg, rgba(168,85,247,0.25), rgba(168,85,247,0.55)); }
-        .flow-bar.churned { background: linear-gradient(90deg, rgba(244,92,67,0.25), rgba(244,92,67,0.55)); }
-        .flow-bar.atrisk { background: linear-gradient(90deg, rgba(255,210,0,0.25), rgba(255,210,0,0.55)); }
-        .flow-label { font-size: 0.75rem; color: #999; min-width: 110px; }
-        .flow-value { font-size: 0.85rem; font-weight: 700; min-width: 55px; text-align: right; }
-
-        /* Correlation Bars */
-        .correlation-container { padding: 8px; }
-        .corr-row {
-            display: flex; align-items: center; gap: 10px; padding: 8px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.03); cursor: pointer;
-        }
-        .corr-row:hover { background: rgba(255,255,255,0.02); }
-        .corr-label { font-size: 0.78rem; color: #aaa; min-width: 160px; }
-        .corr-bar-bg { flex: 1; background: rgba(255,255,255,0.05); border-radius: 5px; height: 20px; overflow: hidden; }
-        .corr-bar-fill {
-            height: 100%; border-radius: 5px; display: flex; align-items: center;
-            padding-left: 7px; font-size: 0.72rem; font-weight: 600;
-        }
-        .corr-strength {
-            min-width: 60px; text-align: center; padding: 2px 8px;
-            border-radius: 10px; font-size: 0.68rem; font-weight: 600;
-        }
-        .strength-high { background: rgba(56,239,125,0.12); color: #38ef7d; }
-        .strength-medium { background: rgba(255,210,0,0.12); color: #ffd200; }
-        .strength-low { background: rgba(244,92,67,0.12); color: #f45c43; }
-
-        /* Venn */
-        .venn-container { display: flex; justify-content: center; align-items: center; height: 300px; position: relative; }
-        .venn-circle {
-            width: 190px; height: 190px; border-radius: 50%; position: absolute;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 700; cursor: pointer; transition: all 0.3s;
-        }
-        .venn-circle:hover { transform: scale(1.08); }
-        .venn-active { background: rgba(56,239,125,0.18); border: 2px solid rgba(56,239,125,0.45); left: calc(50% - 165px); }
-        .venn-expired { background: rgba(244,92,67,0.18); border: 2px solid rgba(244,92,67,0.45); left: calc(50% - 25px); }
-        .venn-overlap-zone {
-            position: absolute; background: rgba(168,85,247,0.28);
-            border: 2px solid rgba(168,85,247,0.55); border-radius: 50%;
-            width: 90px; height: 190px; left: calc(50% - 95px);
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 700; color: #a855f7; clip-path: ellipse(50% 50%);
-            cursor: pointer; transition: all 0.3s;
-        }
-        .venn-overlap-zone:hover { background: rgba(168,85,247,0.4); }
-        .venn-labels { position: absolute; bottom: 6px; display: flex; gap: 20px; font-size: 0.78rem; }
-        .venn-label { display: flex; align-items: center; gap: 5px; }
-        .venn-dot { width: 9px; height: 9px; border-radius: 50%; }
-
-        /* DRILL-DOWN MODAL */
-        .modal-overlay {
-            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(10,10,26,0.92); z-index: 2000;
-            justify-content: center; align-items: center; padding: 30px;
-        }
-        .modal-overlay.show { display: flex; }
-        .modal {
-            background: #1a1a3e; border: 1px solid rgba(255,255,255,0.12);
-            border-radius: 16px; width: 100%; max-width: 1200px; max-height: 90vh;
-            overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-            display: flex; flex-direction: column;
-        }
-        .modal-header {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            padding: 16px 24px; display: flex; justify-content: space-between; align-items: center;
-        }
-        .modal-header h3 { color: #fff; font-size: 1.1rem; }
-        .modal-close {
-            background: rgba(255,255,255,0.2); border: none; color: #fff;
-            width: 30px; height: 30px; border-radius: 50%; cursor: pointer;
-            font-size: 1.1rem; display: flex; align-items: center; justify-content: center;
-            transition: all 0.3s;
-        }
-        .modal-close:hover { background: rgba(255,255,255,0.3); }
-        .modal-stats {
-            display: flex; gap: 16px; padding: 12px 24px;
-            background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.06);
-            flex-wrap: wrap;
-        }
-        .modal-stat { text-align: center; min-width: 100px; }
-        .modal-stat-value { font-size: 1.4rem; font-weight: 700; }
-        .modal-stat-label { font-size: 0.65rem; color: #999; text-transform: uppercase; }
-        
-        .modal-search {
-            width: 100%; background: rgba(255,255,255,0.06); border: none;
-            color: #fff; padding: 12px 20px; font-size: 0.85rem; outline: none;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-        }
-        .modal-search:focus { border-bottom-color: #667eea; }
-        
-        .modal-body { padding: 0; overflow-y: auto; flex: 1; }
-        .modal-body::-webkit-scrollbar { width: 5px; }
-        .modal-body::-webkit-scrollbar-thumb { background: rgba(102,126,234,0.4); border-radius: 3px; }
-        
-        .modal-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
-        .modal-table thead th {
-            background: rgba(30,30,60,0.95); padding: 10px 14px; text-align: left;
-            color: #999; font-weight: 600; text-transform: uppercase; font-size: 0.68rem;
-            position: sticky; top: 0; z-index: 1; border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-        .modal-table tbody td { padding: 8px 14px; border-bottom: 1px solid rgba(255,255,255,0.03); vertical-align: middle; }
-        .modal-table tbody tr:hover { background: rgba(102,126,234,0.06); }
-        
-        .modal-footer {
-            padding: 12px 24px; background: rgba(255,255,255,0.03);
-            border-top: 1px solid rgba(255,255,255,0.06); display: flex; gap: 10px; align-items: center;
-        }
-        .modal-btn {
-            background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15);
-            color: #ccc; padding: 7px 16px; border-radius: 6px; cursor: pointer;
-            font-size: 0.8rem; transition: all 0.3s;
-        }
-        .modal-btn:hover { background: rgba(102,126,234,0.15); border-color: #667eea; }
-        .modal-btn.primary { background: linear-gradient(135deg, #667eea, #764ba2); border-color: transparent; color: #fff; }
-
-        .compguid-cell {
-            font-family: monospace; font-size: 0.72rem; color: #a855f7;
-            text-decoration: underline; cursor: pointer; transition: color 0.2s;
-            word-break: break-all; max-width: 280px; user-select: all;
-        }
-        .compguid-cell:hover { color: #fff; }
-        
-        .linked-subs { display: flex; flex-direction: column; gap: 3px; min-width: 180px; }
-        .linked-act { color: #38ef7d; background: rgba(56,239,125,0.08); padding: 3px 6px; border-radius: 4px; border: 1px solid rgba(56,239,125,0.2); font-size: 0.7rem; font-family: monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px; }
-        .linked-exp { color: #f45c43; background: rgba(244,92,67,0.08); padding: 3px 6px; border-radius: 4px; border: 1px solid rgba(244,92,67,0.2); font-size: 0.7rem; font-family: monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px; }
-
-        .status-badge { padding: 3px 8px; border-radius: 10px; font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-        .status-active { background: rgba(56,239,125,0.12); color: #38ef7d; }
-        .status-expired { background: rgba(244,92,67,0.12); color: #f45c43; }
-
-        /* Data Table */
-        .data-table-container {
-            margin: 16px 30px; background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; overflow: hidden;
-        }
-        .table-header {
-            padding: 16px 20px; display: flex; justify-content: space-between;
-            align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); flex-wrap: wrap; gap: 8px;
-        }
-        .table-tabs { display: flex; gap: 5px; flex-wrap: wrap; }
-        .table-tab {
-            padding: 4px 12px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.12);
-            background: transparent; color: #aaa; cursor: pointer; font-size: 0.78rem;
-        }
-        .table-tab.active { background: linear-gradient(135deg, #667eea, #764ba2); border-color: transparent; color: #fff; }
-        .table-tab:hover:not(.active) { border-color: #667eea; color: #667eea; }
-        .table-scroll { max-height: 400px; overflow-y: auto; }
-        .table-scroll::-webkit-scrollbar { width: 5px; }
-        .table-scroll::-webkit-scrollbar-thumb { background: rgba(102,126,234,0.4); border-radius: 3px; }
-
-        /* Downloads */
-        .download-section { margin: 16px 30px; display: flex; gap: 8px; flex-wrap: wrap; }
-        .btn-download {
-            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12);
-            color: #bbb; padding: 7px 16px; border-radius: 7px; cursor: pointer;
-            font-size: 0.8rem; transition: all 0.3s;
-        }
-        .btn-download:hover { background: rgba(102,126,234,0.12); border-color: #667eea; }
-
-        /* Debug Console */
-        .debug-console {
-            margin: 16px 30px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 10px; overflow: hidden; display: none;
-        }
-        .debug-console.show { display: block; }
-        .debug-header {
-            padding: 10px 16px; background: rgba(255,255,255,0.04);
-            display: flex; justify-content: space-between; align-items: center; cursor: pointer;
-        }
-        .debug-header h4 { font-size: 0.85rem; color: #888; }
-        .debug-body { padding: 12px 16px; max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 0.75rem; color: #aaa; }
-        .debug-line { padding: 2px 0; border-bottom: 1px solid rgba(255,255,255,0.02); }
-        .debug-line.success { color: #38ef7d; }
-        .debug-line.error { color: #f45c43; }
-        .debug-line.warn { color: #ffd200; }
-
-        /* Loading */
-        .loading-overlay {
-            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(10,10,26,0.92); z-index: 1000;
-            justify-content: center; align-items: center; flex-direction: column; gap: 16px;
-        }
-        .loading-overlay.show { display: flex; }
-        .big-spinner {
-            width: 44px; height: 44px; border: 4px solid rgba(102,126,234,0.2);
-            border-top-color: #667eea; border-radius: 50%; animation: spin 0.8s linear infinite;
-        }
-        .animate-in { animation: fadeInUp 0.5s ease forwards; opacity: 0; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
-        footer { text-align: center; padding: 24px; color: #444; font-size: 0.75rem; }
-        @media (max-width: 768px) { .dashboard { grid-template-columns: 1fr; } .kpi-strip { grid-template-columns: repeat(2, 1fr); } .controls-panel { flex-direction: column; } }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Customer Churn & Retention Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-gradient(135deg,#0a0a1a,#1a1a3e,#0d0d2b);color:#e0e0e0;min-height:100vh}
+.header{background:linear-gradient(135deg,#667eea,#764ba2);padding:24px 40px;text-align:center;box-shadow:0 4px 30px rgba(102,126,234,.3)}
+.header h1{font-size:1.8rem;color:#fff;margin-bottom:4px}
+.header p{color:rgba(255,255,255,.85);font-size:.9rem}
+.header-badge{display:inline-block;background:rgba(255,255,255,.15);padding:3px 14px;border-radius:20px;font-size:.75rem;color:#fff;margin-top:6px}
+.status-bar{margin:14px 30px;padding:10px 18px;border-radius:10px;font-size:.85rem;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.status-bar.loading{background:rgba(255,210,0,.1);border:1px solid rgba(255,210,0,.25);color:#ffd200}
+.status-bar.success{background:rgba(56,239,125,.1);border:1px solid rgba(56,239,125,.25);color:#38ef7d}
+.status-bar.error{background:rgba(244,92,67,.1);border:1px solid rgba(244,92,67,.25);color:#f45c43}
+.status-spinner{width:14px;height:14px;border:2px solid rgba(255,210,0,.3);border-top-color:#ffd200;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.global-search-container{margin:12px 30px;background:rgba(255,255,255,.05);border:1px solid rgba(102,126,234,.4);border-radius:12px;padding:10px 18px;display:flex;align-items:center;gap:12px}
+.global-search-container input{flex:1;background:transparent;border:none;outline:none;color:#fff;font-size:.92rem}
+.global-search-btn{background:linear-gradient(135deg,#667eea,#764ba2);border:none;color:#fff;padding:8px 18px;border-radius:8px;cursor:pointer;font-weight:600}
+.upload-mini{margin:8px 30px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.file-btn{border:none;color:#fff;padding:7px 16px;border-radius:8px;cursor:pointer;font-size:.8rem;font-weight:500}
+.expired-btn{background:linear-gradient(135deg,#eb3349,#f45c43)}
+.active-btn{background:linear-gradient(135deg,#11998e,#38ef7d)}
+.repo-btn{background:linear-gradient(135deg,#667eea,#764ba2)}
+.file-input-wrapper input[type=file]{display:none}
+.file-name{font-size:.72rem;color:#38ef7d}
+.kpi-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:14px 30px}
+.kpi-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:16px 12px;text-align:center;cursor:pointer;position:relative;overflow:hidden;transition:.2s}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.kpi-card.blue::before{background:linear-gradient(90deg,#667eea,#764ba2)}
+.kpi-card.green::before{background:linear-gradient(90deg,#11998e,#38ef7d)}
+.kpi-card.red::before{background:linear-gradient(90deg,#eb3349,#f45c43)}
+.kpi-card.orange::before{background:linear-gradient(90deg,#f7971e,#ffd200)}
+.kpi-card.purple::before{background:linear-gradient(90deg,#a855f7,#ec4899)}
+.kpi-card.cyan::before{background:linear-gradient(90deg,#06b6d4,#22d3ee)}
+.kpi-card:hover{transform:translateY(-3px);border-color:rgba(255,255,255,.2)}
+.kpi-value{font-size:1.7rem;font-weight:700;margin:4px 0}
+.kpi-card.blue .kpi-value{color:#667eea}.kpi-card.green .kpi-value{color:#38ef7d}.kpi-card.red .kpi-value{color:#f45c43}
+.kpi-card.orange .kpi-value{color:#ffd200}.kpi-card.purple .kpi-value{color:#a855f7}.kpi-card.cyan .kpi-value{color:#22d3ee}
+.kpi-label{font-size:.72rem;color:#999;text-transform:uppercase;letter-spacing:1px}
+.kpi-sublabel{font-size:.68rem;color:#666;margin-top:2px}
+.kpi-click-hint{font-size:.62rem;color:#555;margin-top:5px;border-top:1px solid rgba(255,255,255,.06);padding-top:4px}
+.section-header{margin:22px 30px 4px;display:flex;align-items:center;gap:10px}
+.section-header h2{font-size:1.15rem;color:#ddd}
+.section-info{font-size:.75rem;color:#777;background:rgba(255,255,255,.04);padding:3px 12px;border-radius:14px}
+.section-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(102,126,234,.2),transparent);margin:6px 30px 14px}
+.dashboard{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:0 30px 14px}
+.chart-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:18px}
+.chart-card.full-width{grid-column:1/-1}
+.chart-title{font-size:.95rem;font-weight:600;margin-bottom:4px;color:#ddd}
+.chart-description{font-size:.72rem;color:#666;margin-bottom:10px;line-height:1.4;background:rgba(255,255,255,.02);padding:6px 10px;border-radius:6px;border-left:3px solid rgba(102,126,234,.2)}
+.chart-container{position:relative;width:100%;height:280px}
+.chart-container.tall{height:360px}
+.insight-box{background:rgba(102,126,234,.08);border-left:4px solid #667eea;padding:14px 18px;margin:14px 30px;border-radius:0 10px 10px 0;font-size:.84rem;line-height:1.6}
+.insight-box h4{color:#667eea;margin-bottom:6px}
+.insight-item{padding:4px 0;border-bottom:1px solid rgba(255,255,255,.03)}
+.flow-container{padding:12px}
+.flow-row{display:flex;align-items:center;gap:8px;margin:6px 0;padding:8px 12px;border-radius:8px;cursor:pointer}
+.flow-row:hover{background:rgba(255,255,255,.04)}
+.flow-icon{font-size:1.2rem;min-width:28px;text-align:center}
+.flow-bar-container{flex:1}
+.flow-bar{height:24px;border-radius:5px;display:flex;align-items:center;padding-left:8px;font-size:.75rem;font-weight:600}
+.flow-bar.healthy{background:linear-gradient(90deg,rgba(56,239,125,.25),rgba(56,239,125,.55))}
+.flow-bar.partial{background:linear-gradient(90deg,rgba(168,85,247,.25),rgba(168,85,247,.55))}
+.flow-bar.churned{background:linear-gradient(90deg,rgba(244,92,67,.25),rgba(244,92,67,.55))}
+.flow-bar.atrisk{background:linear-gradient(90deg,rgba(255,210,0,.25),rgba(255,210,0,.55))}
+.flow-label{font-size:.72rem;color:#999;min-width:100px}
+.flow-value{font-size:.82rem;font-weight:700;min-width:50px;text-align:right}
+.correlation-container{padding:6px}
+.corr-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.03);cursor:pointer}
+.corr-label{font-size:.75rem;color:#aaa;min-width:140px}
+.corr-bar-bg{flex:1;background:rgba(255,255,255,.05);border-radius:5px;height:18px;overflow:hidden}
+.corr-bar-fill{height:100%;border-radius:5px;display:flex;align-items:center;padding-left:6px;font-size:.7rem;font-weight:600}
+.corr-strength{min-width:55px;text-align:center;padding:2px 6px;border-radius:10px;font-size:.65rem;font-weight:600}
+.strength-high{background:rgba(56,239,125,.12);color:#38ef7d}
+.strength-medium{background:rgba(255,210,0,.12);color:#ffd200}
+.strength-low{background:rgba(244,92,67,.12);color:#f45c43}
+.venn-container{display:flex;justify-content:center;align-items:center;height:280px;position:relative}
+.venn-circle{width:170px;height:170px;border-radius:50%;position:absolute;display:flex;align-items:center;justify-content:center;font-weight:700;cursor:pointer}
+.venn-active{background:rgba(56,239,125,.18);border:2px solid rgba(56,239,125,.45);left:calc(50% - 150px)}
+.venn-expired{background:rgba(244,92,67,.18);border:2px solid rgba(244,92,67,.45);left:calc(50% - 20px)}
+.venn-overlap-zone{position:absolute;background:rgba(168,85,247,.28);border:2px solid rgba(168,85,247,.55);border-radius:50%;width:80px;height:170px;left:calc(50% - 85px);display:flex;align-items:center;justify-content:center;font-weight:700;color:#a855f7;clip-path:ellipse(50% 50%);cursor:pointer}
+.venn-labels{position:absolute;bottom:4px;display:flex;gap:16px;font-size:.75rem}
+.venn-label{display:flex;align-items:center;gap:5px}
+.venn-dot{width:8px;height:8px;border-radius:50%}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(10,10,26,.93);z-index:2000;justify-content:center;align-items:center;padding:16px}
+.modal-overlay.show{display:flex}
+.modal{background:#1a1a3e;border:1px solid rgba(255,255,255,.12);border-radius:16px;width:100%;max-width:1280px;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.modal-header{background:linear-gradient(135deg,#667eea,#764ba2);padding:14px 20px;display:flex;justify-content:space-between;align-items:center}
+.modal-header h3{color:#fff;font-size:1.05rem}
+.modal-close{background:rgba(255,255,255,.2);border:none;color:#fff;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:1.1rem}
+.modal-stats{display:flex;gap:14px;padding:10px 20px;background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.06);flex-wrap:wrap}
+.modal-stat{text-align:center;min-width:90px}
+.modal-stat-value{font-size:1.3rem;font-weight:700}
+.modal-stat-label{font-size:.62rem;color:#999;text-transform:uppercase}
+.modal-search{width:100%;background:rgba(255,255,255,.06);border:none;color:#fff;padding:11px 18px;font-size:.85rem;outline:none;border-bottom:1px solid rgba(255,255,255,.06)}
+.modal-body{padding:0;overflow-y:auto;flex:1}
+.modal-table{width:100%;border-collapse:collapse;font-size:.76rem}
+.modal-table thead th{background:rgba(30,30,60,.97);padding:9px 12px;text-align:left;color:#999;font-weight:600;text-transform:uppercase;font-size:.65rem;position:sticky;top:0;z-index:1}
+.modal-table tbody td{padding:7px 12px;border-bottom:1px solid rgba(255,255,255,.03);vertical-align:top}
+.modal-table tbody tr:hover{background:rgba(102,126,234,.06)}
+.modal-footer{padding:10px 20px;background:rgba(255,255,255,.03);border-top:1px solid rgba(255,255,255,.06);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.modal-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:#ccc;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:.78rem}
+.modal-btn.primary{background:linear-gradient(135deg,#667eea,#764ba2);border-color:transparent;color:#fff}
+.compguid-cell{font-family:monospace;font-size:.7rem;color:#a855f7;text-decoration:underline;cursor:pointer;word-break:break-all;max-width:220px}
+.compguid-cell:hover{color:#fff}
+.chip-wrap{display:flex;flex-wrap:wrap;gap:4px;max-width:340px;max-height:90px;overflow-y:auto}
+.chip-act{color:#38ef7d;background:rgba(56,239,125,.1);border:1px solid rgba(56,239,125,.25);padding:2px 6px;border-radius:4px;font-size:.68rem;font-family:monospace;white-space:nowrap}
+.chip-exp{color:#f45c43;background:rgba(244,92,67,.1);border:1px solid rgba(244,92,67,.25);padding:2px 6px;border-radius:4px;font-size:.68rem;font-family:monospace;white-space:nowrap}
+.chip-label{font-size:.62rem;color:#888;width:100%;margin-top:2px}
+.status-badge{padding:2px 7px;border-radius:10px;font-size:.65rem;font-weight:600;text-transform:uppercase}
+.status-active{background:rgba(56,239,125,.12);color:#38ef7d}
+.status-expired{background:rgba(244,92,67,.12);color:#f45c43}
+.status-atrisk{background:rgba(255,210,0,.12);color:#ffd200}
+.status-overlap{background:rgba(168,85,247,.12);color:#a855f7}
+.data-table-container{margin:14px 30px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;overflow:hidden}
+.table-header{padding:14px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,.06);flex-wrap:wrap;gap:8px}
+.table-tabs{display:flex;gap:5px;flex-wrap:wrap}
+.table-tab{padding:4px 11px;border-radius:16px;border:1px solid rgba(255,255,255,.12);background:transparent;color:#aaa;cursor:pointer;font-size:.75rem}
+.table-tab.active{background:linear-gradient(135deg,#667eea,#764ba2);border-color:transparent;color:#fff}
+.table-scroll{max-height:380px;overflow-y:auto}
+.download-section{margin:12px 30px;display:flex;gap:8px;flex-wrap:wrap}
+.btn-download{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#bbb;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.78rem}
+.loading-overlay{display:none;position:fixed;inset:0;background:rgba(10,10,26,.92);z-index:1000;justify-content:center;align-items:center;flex-direction:column;gap:14px}
+.loading-overlay.show{display:flex}
+.big-spinner{width:42px;height:42px;border:4px solid rgba(102,126,234,.2);border-top-color:#667eea;border-radius:50%;animation:spin .8s linear infinite}
+footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
+@media(max-width:768px){.dashboard{grid-template-columns:1fr}.kpi-strip{grid-template-columns:repeat(2,1fr)}}
+</style>
 </head>
 <body>
 
-<!-- Loading Overlay -->
-<div class="loading-overlay" id="loadingOverlay">
-    <div class="big-spinner"></div>
-    <p style="color:#667eea;" id="loadingText">Loading...</p>
-</div>
+<div class="loading-overlay" id="loadingOverlay"><div class="big-spinner"></div><p style="color:#667eea" id="loadingText">Loading...</p></div>
 
-<!-- Drill-Down Modal -->
 <div class="modal-overlay" id="drillModal">
-    <div class="modal">
-        <div class="modal-header">
-            <h3 id="modalTitle">Drill-Down Analysis</h3>
-            <button class="modal-close" onclick="closeModal()">✕</button>
-        </div>
-        <div class="modal-stats" id="modalStats"></div>
-        <input type="text" class="modal-search" id="modalSearch" placeholder="🔍 Type CompGUID, Subscription ID, or GSTIN to filter..." oninput="filterModalTable()">
-        <div class="modal-body">
-            <table class="modal-table">
-                <thead id="modalTableHead"></thead>
-                <tbody id="modalTableBody"></tbody>
-            </table>
-        </div>
-        <div class="modal-footer">
-            <button class="modal-btn primary" onclick="downloadModalData()">📥 Download This Data</button>
-            <button class="modal-btn" onclick="document.getElementById('modalSearch').value=''; filterModalTable();">Clear Filter</button>
-            <button class="modal-btn" onclick="closeModal()">Close</button>
-            <span id="modalRecordCount" style="color:#888;font-size:0.78rem;margin-left:auto;"></span>
-        </div>
+  <div class="modal">
+    <div class="modal-header"><h3 id="modalTitle">Drill-Down</h3><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div class="modal-stats" id="modalStats"></div>
+    <input type="text" class="modal-search" id="modalSearch" placeholder="🔍 Search CompGUID / Subscription / GSTIN..." oninput="onModalSearchInput()">
+    <div class="modal-body"><table class="modal-table"><thead id="modalTableHead"></thead><tbody id="modalTableBody"></tbody></table></div>
+    <div class="modal-footer">
+      <button class="modal-btn primary" onclick="downloadModalData()">📥 Download</button>
+      <button class="modal-btn" onclick="document.getElementById('modalSearch').value='';filterModalTable()">Clear Filter</button>
+      <button class="modal-btn" onclick="closeModal()">Close</button>
+      <span id="modalRecordCount" style="color:#888;font-size:.75rem;margin-left:auto"></span>
     </div>
+  </div>
 </div>
 
 <div class="header">
-    <h1>📊 Customer Churn & Retention Dashboard</h1>
-    <p>Click any KPI, chart or number for drill-down analysis</p>
-    <div class="header-badge">v7.0 — High-Speed Ultra Performance Engine</div>
+  <h1>📊 Customer Churn & Retention Dashboard</h1>
+  <p>Click KPIs / charts for drill-down · All linked subscriptions by CompGUID & GSTIN</p>
+  <div class="header-badge">v8.0 — Stable · Full Linked Subs · No Freeze</div>
 </div>
 
-<!-- Status Bar -->
-<div class="status-bar loading" id="statusBar">
-    <div class="status-spinner"></div>
-    <span>Connecting to High-Speed Engine...</span>
-</div>
+<div class="status-bar loading" id="statusBar"><div class="status-spinner"></div><span>Loading data...</span></div>
 
-<!-- Global Search Bar -->
 <div class="global-search-container">
-    <span style="font-size:1.1rem;">🔍</span>
-    <input type="text" id="globalSearchInput" placeholder="Global Search: Type any CompGUID, Subscription Number, or GSTIN and press Enter..." onkeydown="if(event.key==='Enter') runGlobalSearch()">
-    <button class="global-search-btn" onclick="runGlobalSearch()">Search All Data</button>
+  <span>🔍</span>
+  <input type="text" id="globalSearchInput" placeholder="Global Search: CompGUID, Subscription Number, or GSTIN..." onkeydown="if(event.key==='Enter')runGlobalSearch()">
+  <button class="global-search-btn" onclick="runGlobalSearch()">Search All</button>
 </div>
 
-<!-- Debug Console -->
-<div class="debug-console" id="debugConsole">
-    <div class="debug-header" onclick="this.parentElement.querySelector('.debug-body').style.display=this.parentElement.querySelector('.debug-body').style.display==='none'?'block':'none'">
-        <h4>🔧 Debug Console (Click to toggle)</h4>
-    </div>
-    <div class="debug-body" id="debugBody"></div>
+<div class="upload-mini">
+  <div class="file-input-wrapper">
+    <input type="file" id="expiredFile" accept=".xlsx,.xls,.csv" onchange="handleFileUpload('expired',this)">
+    <button class="file-btn expired-btn" onclick="document.getElementById('expiredFile').click()">📤 Expired</button>
+    <span class="file-name" id="expiredFileName"></span>
+  </div>
+  <div class="file-input-wrapper">
+    <input type="file" id="activeFile" accept=".xlsx,.xls,.csv" onchange="handleFileUpload('active',this)">
+    <button class="file-btn active-btn" onclick="document.getElementById('activeFile').click()">📤 Active</button>
+    <span class="file-name" id="activeFileName"></span>
+  </div>
+  <button class="file-btn repo-btn" onclick="loadFromRepo()">🔄 Reload</button>
+  <label style="font-size:.75rem;color:#888;margin-left:8px">At-Risk Days <input type="number" id="riskDays" value="30" min="7" max="90" style="width:60px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#fff;padding:4px 8px;border-radius:6px"></label>
 </div>
 
-<!-- Upload -->
-<div class="upload-section">
-    <div class="upload-text">
-        <strong>📂 Auto-loads</strong> from <code>data/expired_customers.csv</code> & <code>data/active_customers.csv</code><br>
-        Columns: <code>Col 1: CompGUID</code> | <code>Col 2: subscription_number</code> | <code>Col 3: GSTIN</code> | <code>Col 4: current_bls_expiry</code>
-    </div>
-    <div class="file-inputs">
-        <div class="file-input-wrapper">
-            <input type="file" id="expiredFile" accept=".xlsx,.xls,.csv" onchange="handleFileUpload('expired',this)">
-            <button class="file-btn expired-btn" onclick="document.getElementById('expiredFile').click()">📤 Expired Data</button>
-            <div class="file-name" id="expiredFileName"></div>
-        </div>
-        <div class="file-input-wrapper">
-            <input type="file" id="activeFile" accept=".xlsx,.xls,.csv" onchange="handleFileUpload('active',this)">
-            <button class="file-btn active-btn" onclick="document.getElementById('activeFile').click()">📤 Active Data</button>
-            <div class="file-name" id="activeFileName"></div>
-        </div>
-        <button class="file-btn repo-btn" onclick="loadFromRepo()">🔄 Retry Auto-Load</button>
-    </div>
-</div>
-
-<!-- Controls -->
-<div class="controls-panel" id="simControls">
-    <div class="control-group"><label>Expired Count</label><input type="number" id="expiredCount" value="350" min="50" max="5000"></div>
-    <div class="control-group"><label>Active Count</label><input type="number" id="activeCount" value="500" min="50" max="5000"></div>
-    <div class="control-group"><label>Overlap %</label><input type="number" id="overlapPct" value="15" min="0" max="50"></div>
-    <div class="control-group"><label>At-Risk Days</label><input type="number" id="riskDays" value="30" min="7" max="90"></div>
-    <button class="btn-generate" onclick="generateSimulation()">🔄 Run Simulation</button>
-</div>
-
-<!-- KPIs -->
 <div class="kpi-strip" id="kpiStrip"></div>
-
-<!-- Insights -->
 <div class="insight-box" id="insightBox"></div>
-
-<!-- Downloads -->
 <div class="download-section">
-    <button class="btn-download" onclick="downloadCSV()">📥 Full Analysis CSV</button>
-    <button class="btn-download" onclick="downloadExcel()">📥 Full Analysis Excel</button>
-    <button class="btn-download" onclick="downloadOverlap()">📥 Overlap Data</button>
-    <button class="btn-download" onclick="downloadAtRisk()">📥 At-Risk Data</button>
+  <button class="btn-download" onclick="downloadCSV()">📥 Full CSV</button>
+  <button class="btn-download" onclick="downloadExcel()">📥 Full Excel</button>
+  <button class="btn-download" onclick="downloadOverlap()">📥 Overlap Data</button>
+  <button class="btn-download" onclick="downloadAtRisk()">📥 At-Risk Data</button>
 </div>
 
-<!-- Section 1 -->
-<div class="section-header"><h2>🔗 Overlap & Correlation</h2><span class="section-info">Click any element for drill-down</span></div>
+<div class="section-header"><h2>🔗 Overlap & Correlation</h2><span class="section-info">Click for drill-down</span></div>
 <div class="section-divider"></div>
 <div class="dashboard">
-    <div class="chart-card">
-        <div class="chart-title">⭕ CompGUID Overlap (Venn)</div>
-        <div class="chart-description"><strong>Click</strong> any circle to see those specific customers</div>
-        <div class="venn-container" id="vennDiagram"></div>
-    </div>
-    <div class="chart-card">
-        <div class="chart-title">📊 Customer Flow</div>
-        <div class="chart-description"><strong>Click</strong> any row to drill into that category</div>
-        <div class="flow-container" id="flowDiagram"></div>
-    </div>
-    <div class="chart-card">
-        <div class="chart-title">🍩 Status Distribution</div>
-        <div class="chart-description">Click on chart segments for details</div>
-        <div class="chart-container"><canvas id="churnDoughnut"></canvas></div>
-    </div>
-    <div class="chart-card">
-        <div class="chart-title">🔗 Correlation Strength</div>
-        <div class="chart-description"><strong>Click</strong> any bar to see related records</div>
-        <div class="correlation-container" id="correlationBars"></div>
-    </div>
+  <div class="chart-card"><div class="chart-title">⭕ CompGUID Overlap</div><div class="chart-description">Click circle for customers</div><div class="venn-container" id="vennDiagram"></div></div>
+  <div class="chart-card"><div class="chart-title">📊 Customer Flow</div><div class="chart-description">Click row for category</div><div class="flow-container" id="flowDiagram"></div></div>
+  <div class="chart-card"><div class="chart-title">🍩 Status Distribution</div><div class="chart-container"><canvas id="churnDoughnut"></canvas></div></div>
+  <div class="chart-card"><div class="chart-title">🔗 Correlation Strength</div><div class="correlation-container" id="correlationBars"></div></div>
 </div>
 
-<!-- Section 2 -->
 <div class="section-header"><h2>📅 Timeline & Trends</h2></div>
 <div class="section-divider"></div>
 <div class="dashboard">
-    <div class="chart-card full-width">
-        <div class="chart-title">📈 Monthly Expiry vs Active Trend</div>
-        <div class="chart-description">Click on any bar to see records for that month</div>
-        <div class="chart-container tall"><canvas id="timelineChart"></canvas></div>
-    </div>
-    <div class="chart-card">
-        <div class="chart-title">⚠️ At-Risk Customers</div>
-        <div class="chart-container"><canvas id="atRiskChart"></canvas></div>
-    </div>
-    <div class="chart-card">
-        <div class="chart-title">📉 Cumulative Churn Trend</div>
-        <div class="chart-container"><canvas id="cumulativeChart"></canvas></div>
-    </div>
+  <div class="chart-card full-width"><div class="chart-title">📈 Monthly Expiry vs Active</div><div class="chart-container tall"><canvas id="timelineChart"></canvas></div></div>
+  <div class="chart-card"><div class="chart-title">⚠️ At-Risk</div><div class="chart-container"><canvas id="atRiskChart"></canvas></div></div>
+  <div class="chart-card"><div class="chart-title">📉 Cumulative Churn</div><div class="chart-container"><canvas id="cumulativeChart"></canvas></div></div>
 </div>
 
-<!-- Section 3 -->
-<div class="section-header"><h2>🗺️ Geographic & GSTIN Analysis</h2></div>
+<div class="section-header"><h2>🗺️ Geographic Analysis</h2></div>
 <div class="section-divider"></div>
 <div class="dashboard">
-    <div class="chart-card full-width">
-        <div class="chart-title">🗺️ State-wise Churn</div>
-        <div class="chart-description">Click on any state bar to drill into that state's records</div>
-        <div class="chart-container tall"><canvas id="stateChart"></canvas></div>
-    </div>
-    <div class="chart-card">
-        <div class="chart-title">🎯 Risk Radar</div>
-        <div class="chart-container"><canvas id="radarChart"></canvas></div>
-    </div>
-    <div class="chart-card">
-        <div class="chart-title">📊 Subscriptions per Company</div>
-        <div class="chart-container"><canvas id="densityChart"></canvas></div>
-    </div>
+  <div class="chart-card full-width"><div class="chart-title">🗺️ State-wise Churn</div><div class="chart-container tall"><canvas id="stateChart"></canvas></div></div>
+  <div class="chart-card"><div class="chart-title">🎯 Risk Radar</div><div class="chart-container"><canvas id="radarChart"></canvas></div></div>
+  <div class="chart-card"><div class="chart-title">📊 Subs per Company</div><div class="chart-container"><canvas id="densityChart"></canvas></div></div>
 </div>
 
-<!-- Main Data Table -->
-<div class="section-header"><h2>📋 All Records</h2></div>
+<div class="section-header"><h2>📋 Records Preview</h2></div>
 <div class="section-divider"></div>
 <div class="data-table-container">
-    <div class="table-header">
-        <h3>Data <span id="tableCount" style="color:#888;font-size:0.78rem;"></span></h3>
-        <div class="table-tabs">
-            <button class="table-tab active" onclick="showTable('all',this)">All</button>
-            <button class="table-tab" onclick="showTable('overlap',this)">🟡 Overlap</button>
-            <button class="table-tab" onclick="showTable('churned',this)">🔴 Churned</button>
-            <button class="table-tab" onclick="showTable('atrisk',this)">⚠️ At Risk</button>
-            <button class="table-tab" onclick="showTable('healthy',this)">🟢 Healthy</button>
-        </div>
+  <div class="table-header">
+    <h3>Data <span id="tableCount" style="color:#888;font-size:.75rem"></span></h3>
+    <div class="table-tabs">
+      <button class="table-tab active" onclick="showTable('all',this)">All</button>
+      <button class="table-tab" onclick="showTable('overlap',this)">🟡 Overlap</button>
+      <button class="table-tab" onclick="showTable('churned',this)">🔴 Churned</button>
+      <button class="table-tab" onclick="showTable('atrisk',this)">⚠️ At Risk</button>
+      <button class="table-tab" onclick="showTable('healthy',this)">🟢 Healthy</button>
     </div>
-    <div class="table-scroll">
-        <table class="modal-table">
-            <thead><tr><th>CompGUID</th><th>Sub No</th><th>GSTIN</th><th>BLS Expiry</th><th>Status</th><th>Linked Co-Subscriptions (Same CompGUID)</th></tr></thead>
-            <tbody id="tableBody"></tbody>
-        </table>
-    </div>
+  </div>
+  <div class="table-scroll">
+    <table class="modal-table">
+      <thead><tr><th>CompGUID</th><th>Sub No</th><th>GSTIN</th><th>Expiry</th><th>Status</th><th>Linked by CompGUID</th><th>Linked by GSTIN</th></tr></thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
 </div>
-
-<footer>Customer Churn Dashboard v7.0 | High-Speed Turbo Engine | GitHub Pages</footer>
+<footer>Customer Churn Dashboard v8.0 · Full linked subscriptions · Stable UI</footer>
 
 <script>
-// ==================== STATE ====================
-let expiredData=[], activeData=[], analysisResults={}, charts={}, currentModalData=[];
-let dataSource='none';
-window.compNetwork = {}; 
-const stateGSTCodes={'01':'Jammu & Kashmir','02':'Himachal Pradesh','03':'Punjab','04':'Chandigarh','05':'Uttarakhand','06':'Haryana','07':'Delhi','08':'Rajasthan','09':'Uttar Pradesh','10':'Bihar','11':'Sikkim','12':'Arunachal Pradesh','13':'Nagaland','14':'Manipur','15':'Mizoram','16':'Tripura','17':'Meghalaya','18':'Assam','19':'West Bengal','20':'Jharkhand','21':'Odisha','22':'Chhattisgarh','23':'Madhya Pradesh','24':'Gujarat','26':'Dadra Nagar Haveli','27':'Maharashtra','29':'Karnataka','30':'Goa','32':'Kerala','33':'Tamil Nadu','34':'Puducherry','36':'Telangana','37':'Andhra Pradesh'};
+let expiredData=[],activeData=[],analysisResults={},charts={},currentModalData=[],currentModalAll=[];
+let modalSearchTimer=null;
+const ROW_CAP=150;
+window.compNet={}; window.gstNet={};
+const stateGST={'01':'J&K','02':'HP','03':'Punjab','04':'CHD','05':'UK','06':'Haryana','07':'Delhi','08':'Rajasthan','09':'UP','10':'Bihar','11':'Sikkim','18':'Assam','19':'WB','20':'JH','21':'Odisha','22':'CG','23':'MP','24':'Gujarat','27':'Maharashtra','29':'Karnataka','30':'Goa','32':'Kerala','33':'TN','36':'Telangana','37':'AP'};
 
-// ==================== DEBUG LOGGER ====================
-function debugLog(msg, type='info') {
-    const dc=document.getElementById('debugConsole');
-    dc.classList.add('show');
-    const db=document.getElementById('debugBody');
-    const time=new Date().toLocaleTimeString();
-    db.innerHTML+=`<div class="debug-line ${type}">[${time}] ${msg}</div>`;
-    db.scrollTop=db.scrollHeight;
+function setStatus(msg,type='info'){
+  const sb=document.getElementById('statusBar');
+  sb.className='status-bar '+type;
+  sb.innerHTML=type==='loading'?`<div class="status-spinner"></div><span>${msg}</span>`:`<span>${msg}</span>`;
 }
 
-function setStatus(msg, type='info') {
-    const sb=document.getElementById('statusBar');
-    sb.className=`status-bar ${type}`;
-    sb.innerHTML=type==='loading'?`<div class="status-spinner"></div><span>${msg}</span>`:`<span>${msg}</span>`;
+function fastParseDate(str){
+  if(!str)return new Date();
+  if(str instanceof Date)return str;
+  if(typeof str==='number')return new Date((str-25569)*86400000);
+  const s=String(str).trim(); if(!s)return new Date();
+  if(s.length>=10&&s[4]==='-'&&s[7]==='-')return new Date(+s.slice(0,4),+s.slice(5,7)-1,+s.slice(8,10));
+  const d=new Date(s); if(!isNaN(d))return d;
+  const p=s.split(/[\/\-\.]/); if(p.length===3){const a=+p[0],b=+p[1],c=+p[2],y=c<100?2000+c:c;return a>12?new Date(y,b-1,a):new Date(y,a-1,b);}
+  return new Date();
 }
 
-// ==================== FAST ULTRA-SPEED DATE PARSER ====================
-function fastParseDate(str) {
-    if (!str) return new Date();
-    if (str instanceof Date) return str;
-    if (typeof str === 'number') return new Date((str - 25569) * 86400000);
-    
-    const s = String(str).trim();
-    if (!s) return new Date();
-
-    // Fast ISO YYYY-MM-DD
-    if (s.length >= 10 && s.charAt(4) === '-' && s.charAt(7) === '-') {
-        const y = parseInt(s.substring(0,4), 10);
-        const m = parseInt(s.substring(5,7), 10) - 1;
-        const d = parseInt(s.substring(8,10), 10);
-        return new Date(y, m, d);
-    }
-
-    const d = new Date(s);
-    if (!isNaN(d.getTime())) return d;
-
-    const parts = s.split(/[\/\-\.]/);
-    if (parts.length === 3) {
-        const p0 = parseInt(parts[0], 10), p1 = parseInt(parts[1], 10), p2 = parseInt(parts[2], 10);
-        const yr = p2 < 100 ? 2000 + p2 : p2;
-        if (p0 > 12) return new Date(yr, p1 - 1, p0);
-        return new Date(yr, p0 - 1, p1);
-    }
-    return new Date();
+function parseCSVFast(text,source){
+  if(text.charCodeAt(0)===0xFEFF)text=text.slice(1);
+  const lines=text.split(/\r?\n/); if(lines.length<2)return[];
+  const fl=lines[0]; let del=',';
+  if((fl.match(/;/g)||[]).length>(fl.match(/,/g)||[]).length)del=';';
+  if((fl.match(/\t/g)||[]).length>(fl.match(/,/g)||[]).length)del='\t';
+  const parseRow=line=>{const r=[];let c='',q=false;for(let i=0;i<line.length;i++){const ch=line[i];if(ch==='"'){q=!q;continue;}if(ch===del&&!q){r.push(c.trim());c='';continue;}c+=ch;}r.push(c.trim());return r;};
+  const headers=parseRow(lines[0]);
+  let ci=0,si=1,gi=2,ei=3;
+  headers.forEach((h,i)=>{const l=h.toLowerCase().replace(/[^a-z0-9]/g,'');
+    if(l.includes('guid')||l.includes('comp'))ci=i;
+    else if(l.includes('sub')||l.includes('serial')||l.includes('number'))si=i;
+    else if(l.includes('gst'))gi=i;
+    else if(l.includes('expiry')||l.includes('bls')||l.includes('date'))ei=i;
+  });
+  const out=[];
+  for(let i=1;i<lines.length;i++){
+    if(!lines[i].trim())continue;
+    const cols=parseRow(lines[i]);
+    const comp=cols[ci]||'',sub=cols[si]||'',gst=cols[gi]||'';
+    if(!comp&&!sub)continue;
+    out.push({compGUID:comp,subscriptionId:sub,gstin:gst.length>=8?gst:null,currentBlsExpiry:fastParseDate(cols[ei]||''),source});
+  }
+  return out;
 }
 
-// ==================== FAST NATIVE CSV STREAMING PARSER ====================
-function parseCSVFast(text, source) {
-    if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
-    const lines = text.split(/\r?\n/);
-    if (lines.length < 2) return [];
-
-    const firstLine = lines[0];
-    let delimiter = ',';
-    if ((firstLine.match(/;/g)||[]).length > (firstLine.match(/,/g)||[]).length) delimiter = ';';
-    if ((firstLine.match(/\t/g)||[]).length > (firstLine.match(/,/g)||[]).length) delimiter = '\t';
-
-    const parseRow = (line) => {
-        const res = []; let cur = ''; let inQ = false;
-        for (let i = 0; i < line.length; i++) {
-            const c = line[i];
-            if (c === '"') { inQ = !inQ; continue; }
-            if (c === delimiter && !inQ) { res.push(cur.trim()); cur = ''; continue; }
-            cur += c;
-        }
-        res.push(cur.trim());
-        return res;
-    };
-
-    const headers = parseRow(lines[0]);
-    debugLog(`Fast CSV Headers (${source}): [${headers.join(', ')}]`);
-
-    // Column Index Mapping
-    let compIdx = 0, subIdx = 1, gstIdx = 2, expIdx = 3;
-    headers.forEach((h, idx) => {
-        const l = h.toLowerCase().replace(/[^a-z0-9]/g, '');
-        if (l.includes('guid') || l.includes('comp')) compIdx = idx;
-        else if (l.includes('sub') || l.includes('serial') || l.includes('number')) subIdx = idx;
-        else if (l.includes('gst')) gstIdx = idx;
-        else if (l.includes('expiry') || l.includes('bls') || l.includes('date')) expIdx = idx;
-    });
-
-    const parsed = [];
-    for (let i = 1; i < lines.length; i++) {
-        if (!lines[i].trim()) continue;
-        const cols = parseRow(lines[i]);
-        if (cols.length <= compIdx && cols.length <= subIdx) continue;
-
-        const compVal = cols[compIdx] || '';
-        const subVal = cols[subIdx] || '';
-        const gstVal = cols[gstIdx] || '';
-        const expVal = cols[expIdx] || '';
-
-        if (compVal || subVal) {
-            parsed.push({
-                compGUID: compVal,
-                subscriptionId: subVal,
-                gstin: gstVal.length >= 8 ? gstVal : null,
-                currentBlsExpiry: fastParseDate(expVal),
-                source: source
-            });
-        }
-    }
-    return parsed;
+function parseExcelBuffer(buf,source){
+  try{
+    const wb=XLSX.read(new Uint8Array(buf),{type:'array',cellDates:true});
+    const json=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''});
+    if(!json.length)return[];
+    const headers=Object.keys(json[0]);
+    let ck=headers[0],sk=headers[1],gk=headers[2],ek=headers[3];
+    headers.forEach(h=>{const l=h.toLowerCase().replace(/[^a-z0-9]/g,'');
+      if(l.includes('guid')||l.includes('comp'))ck=h; else if(l.includes('sub')||l.includes('number'))sk=h;
+      else if(l.includes('gst'))gk=h; else if(l.includes('expiry')||l.includes('bls'))ek=h;});
+    return json.map(row=>({
+      compGUID:String(row[ck]||'').trim(),subscriptionId:String(row[sk]||'').trim(),
+      gstin:String(row[gk]||'').trim().length>=8?String(row[gk]||'').trim():null,
+      currentBlsExpiry:fastParseDate(row[ek]),source
+    })).filter(d=>d.compGUID||d.subscriptionId);
+  }catch(e){return[];}
 }
 
-// ==================== FAST SHEETJS FALLBACK (FOR .XLSX) ====================
-function parseExcelBuffer(arrayBuffer, source) {
-    try {
-        const wb = XLSX.read(new Uint8Array(arrayBuffer), { type: 'array', cellDates: true });
-        const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: '' });
-        if (!json || json.length === 0) return [];
-        
-        const headers = Object.keys(json[0]);
-        let compKey = headers[0], subKey = headers[1], gstKey = headers[2], expKey = headers[3];
-        
-        headers.forEach(h => {
-            const l = h.toLowerCase().replace(/[^a-z0-9]/g, '');
-            if (l.includes('guid') || l.includes('comp')) compKey = h;
-            else if (l.includes('sub') || l.includes('number')) subKey = h;
-            else if (l.includes('gst')) gstKey = h;
-            else if (l.includes('expiry') || l.includes('bls')) expKey = h;
-        });
-
-        return json.map(row => ({
-            compGUID: String(row[compKey] || '').trim(),
-            subscriptionId: String(row[subKey] || '').trim(),
-            gstin: String(row[gstKey] || '').trim().length >= 8 ? String(row[gstKey] || '').trim() : null,
-            currentBlsExpiry: fastParseDate(row[expKey]),
-            source: source
-        })).filter(d => d.compGUID || d.subscriptionId);
-    } catch (e) {
-        debugLog(`SheetJS parse error: ${e.message}`, 'error');
-        return [];
-    }
+async function autoLoadFromRepo(){
+  setStatus('Loading data from GitHub...','loading');
+  let owner='sauravgupta412-oss',repo='customer-churn-analysis';
+  if(location.hostname.includes('github.io')){
+    owner=location.hostname.split('.')[0];
+    const pp=location.pathname.split('/').filter(Boolean); if(pp[0])repo=pp[0];
+  }
+  try{
+    const repoRes=await fetch(`https://api.github.com/repos/${owner}/${repo}`);
+    if(!repoRes.ok)throw new Error('Repo HTTP '+repoRes.status);
+    const branch=(await repoRes.json()).default_branch||'main';
+    const treeRes=await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`);
+    if(!treeRes.ok)throw new Error('Tree HTTP '+treeRes.status);
+    const files=(await treeRes.json()).tree||[];
+    const expF=files.find(f=>f.path.toLowerCase().includes('expired')&&(f.path.endsWith('.csv')||f.path.endsWith('.xlsx')));
+    const actF=files.find(f=>f.path.toLowerCase().includes('active')&&(f.path.endsWith('.csv')||f.path.endsWith('.xlsx')));
+    if(!expF||!actF)throw new Error('CSV files not found');
+    const expUrl=`https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${expF.path}`;
+    const actUrl=`https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${actF.path}`;
+    const expRes=await fetch(expUrl+'?t='+Date.now());
+    expiredData=expF.path.endsWith('.xlsx')?parseExcelBuffer(await expRes.arrayBuffer(),'expired'):parseCSVFast(await expRes.text(),'expired');
+    const actRes=await fetch(actUrl+'?t='+Date.now());
+    activeData=actF.path.endsWith('.xlsx')?parseExcelBuffer(await actRes.arrayBuffer(),'active'):parseCSVFast(await actRes.text(),'active');
+    if(!expiredData.length||!activeData.length)throw new Error('0 records parsed');
+    setStatus(`✅ Loaded: ${expiredData.length.toLocaleString()} expired + ${activeData.length.toLocaleString()} active`,'success');
+    runAnalysis();
+  }catch(err){
+    setStatus('⚠️ Auto-load failed: '+err.message+'. Upload CSVs manually.','error');
+  }
 }
 
-// ==================== FAST REPO AUTO-LOADER ====================
-async function autoLoadFromRepo() {
-    setStatus('Connecting to High-Speed Turbo Engine & GitHub API...', 'loading');
-    debugLog('🚀 High-Speed Turbo Engine Initialized...');
+async function handleFileUpload(type,input){
+  const file=input.files[0]; if(!file)return;
+  const fn=document.getElementById(type+'FileName');
+  fn.textContent='⏳ ...';
+  try{
+    const parsed=file.name.endsWith('.csv')?parseCSVFast(await file.text(),type):parseExcelBuffer(await file.arrayBuffer(),type);
+    if(type==='expired')expiredData=parsed; else activeData=parsed;
+    fn.textContent=`✅ ${parsed.length.toLocaleString()}`;
+    if(expiredData.length&&activeData.length){setStatus(`✅ Uploaded: ${expiredData.length.toLocaleString()} + ${activeData.length.toLocaleString()}`,'success');runAnalysis();}
+  }catch(e){fn.textContent='❌ '+e.message;}
+}
+function loadFromRepo(){autoLoadFromRepo();}
 
-    let owner = 'sauravgupta412-oss', repo = 'customer-churn-analysis';
-    if (window.location.hostname.includes('github.io')) {
-        owner = window.location.hostname.split('.')[0];
-        const pathParts = window.location.pathname.split('/').filter(p => p);
-        if (pathParts.length > 0) repo = pathParts[0];
-    }
+function analyzeData(){
+  const eG=new Set(),aG=new Set(),eGST=new Set(),aGST=new Set();
+  const mE={},mA={},sC={},sPC={};
+  let expiredNoGST=0,activeNoGST=0;
+  window.compNet={}; window.gstNet={};
 
-    try {
-        const repoRes = await fetch(`https://api.github.com/repos/${owner}/${repo}`);
-        if (!repoRes.ok) throw new Error(`Repo HTTP ${repoRes.status}`);
-        const repoData = await repoRes.json();
-        const branch = repoData.default_branch || 'main';
+  for(let i=0;i<expiredData.length;i++){
+    const d=expiredData[i];
+    eG.add(d.compGUID); sPC[d.compGUID]=(sPC[d.compGUID]||0)+1;
+    if(!window.compNet[d.compGUID])window.compNet[d.compGUID]={a:[],e:[]};
+    window.compNet[d.compGUID].e.push(d.subscriptionId);
+    if(d.gstin){
+      eGST.add(d.gstin);
+      if(!window.gstNet[d.gstin])window.gstNet[d.gstin]={a:[],e:[]};
+      window.gstNet[d.gstin].e.push(d.subscriptionId);
+      if(d.gstin.length>=2){const s=stateGST[d.gstin.slice(0,2)]||'Other';if(!sC[s])sC[s]={expired:0,active:0};sC[s].expired++;}
+    }else expiredNoGST++;
+    const m=d.currentBlsExpiry.toISOString().slice(0,7); mE[m]=(mE[m]||0)+1;
+  }
 
-        const treeRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`);
-        if (!treeRes.ok) throw new Error(`Tree HTTP ${treeRes.status}`);
-        const treeData = await treeRes.json();
-        const files = treeData.tree || [];
+  const rd=+document.getElementById('riskDays').value||30;
+  const today=new Date(), riskDate=new Date(today.getTime()+rd*86400000);
+  const atRiskData=[];
 
-        const expFile = files.find(f => f.path.toLowerCase().includes('expired') && (f.path.endsWith('.csv') || f.path.endsWith('.xlsx')));
-        const actFile = files.find(f => f.path.toLowerCase().includes('active') && (f.path.endsWith('.csv') || f.path.endsWith('.xlsx')));
+  for(let i=0;i<activeData.length;i++){
+    const d=activeData[i];
+    aG.add(d.compGUID); sPC[d.compGUID]=(sPC[d.compGUID]||0)+1;
+    if(!window.compNet[d.compGUID])window.compNet[d.compGUID]={a:[],e:[]};
+    window.compNet[d.compGUID].a.push(d.subscriptionId);
+    if(d.gstin){
+      aGST.add(d.gstin);
+      if(!window.gstNet[d.gstin])window.gstNet[d.gstin]={a:[],e:[]};
+      window.gstNet[d.gstin].a.push(d.subscriptionId);
+      if(d.gstin.length>=2){const s=stateGST[d.gstin.slice(0,2)]||'Other';if(!sC[s])sC[s]={expired:0,active:0};sC[s].active++;}
+    }else activeNoGST++;
+    if(d.currentBlsExpiry<=riskDate&&d.currentBlsExpiry>=today)atRiskData.push(d);
+    const m=d.currentBlsExpiry.toISOString().slice(0,7); mA[m]=(mA[m]||0)+1;
+  }
 
-        if (!expFile || !actFile) throw new Error('Matching files not found in Git tree.');
+  const oG=new Set(),fC=new Set(),hG=new Set();
+  eG.forEach(x=>{if(aG.has(x))oG.add(x);else fC.add(x);});
+  aG.forEach(x=>{if(!eG.has(x))hG.add(x);});
+  const oGST=new Set(); eGST.forEach(x=>{if(aGST.has(x))oGST.add(x);});
 
-        debugLog(`Matched Expired: "${expFile.path}"`, 'success');
-        debugLog(`Matched Active: "${actFile.path}"`, 'success');
+  const dd={}; Object.values(sPC).forEach(c=>{const b=c>5?'6+':String(c);dd[b]=(dd[b]||0)+1;});
+  const tot=fC.size+hG.size+oG.size;
 
-        const expUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${expFile.path}`;
-        const actUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${actFile.path}`;
-
-        // Download & Parse Expired
-        const t0 = performance.now();
-        const expRes = await fetch(expUrl + '?t=' + Date.now());
-        if (expFile.path.endsWith('.xlsx')) {
-            expiredData = parseExcelBuffer(await expRes.arrayBuffer(), 'expired');
-        } else {
-            expiredData = parseCSVFast(await expRes.text(), 'expired');
-        }
-        debugLog(`Parsed Expired Data (${expiredData.length.toLocaleString()} rows) in ${(performance.now() - t0).toFixed(0)}ms`, 'success');
-
-        // Download & Parse Active
-        const t1 = performance.now();
-        const actRes = await fetch(actUrl + '?t=' + Date.now());
-        if (actFile.path.endsWith('.xlsx')) {
-            activeData = parseExcelBuffer(await actRes.arrayBuffer(), 'active');
-        } else {
-            activeData = parseCSVFast(await actRes.text(), 'active');
-        }
-        debugLog(`Parsed Active Data (${activeData.length.toLocaleString()} rows) in ${(performance.now() - t1).toFixed(0)}ms`, 'success');
-
-        if (expiredData.length > 0 && activeData.length > 0) {
-            dataSource = 'repo';
-            setStatus(`✅ Real Data Auto-Loaded: ${expiredData.length.toLocaleString()} expired + ${activeData.length.toLocaleString()} active records`, 'success');
-            runAnalysis();
-        } else {
-            throw new Error('Parsed 0 records.');
-        }
-
-    } catch (err) {
-        debugLog(`❌ Engine Error: ${err.message}`, 'error');
-        setStatus(`⚠️ Auto-load failed: ${err.message}. Using simulation mode.`, 'error');
-        generateSimulation();
-    }
+  analysisResults={
+    totalExpired:expiredData.length,totalActive:activeData.length,
+    overlappingCompGUIDs:oG.size,overlappingGSTINs:oGST.size,
+    fullChurn:fC.size,healthy:hG.size,atRisk:atRiskData.length,atRiskData,
+    churnRate:tot?((fC.size/tot)*100).toFixed(1):'0.0',
+    retentionRate:tot?((hG.size/tot)*100).toFixed(1):'0.0',
+    partialChurnRate:tot?((oG.size/tot)*100).toFixed(1):'0.0',
+    monthlyExpired:mE,monthlyActive:mA,stateChurn:sC,densityDist:dd,
+    overlappingCompGUIDSet:oG,fullChurnSet:fC,healthySet:hG,
+    expiredGSTINCount:eGST.size,activeGSTINCount:aGST.size,gstinOverlap:oGST.size,
+    expiredNoGST,activeNoGST,totalCompanies:tot
+  };
 }
 
-// ==================== MANUAL FILE UPLOAD ====================
-async function handleFileUpload(type, input) {
-    const file = input.files[0]; if (!file) return;
-    const fn = document.getElementById(type + 'FileName');
-    fn.className = 'file-name'; fn.textContent = `⏳ Reading ${file.name}...`;
-    try {
-        let parsed = [];
-        if (file.name.endsWith('.csv')) {
-            parsed = parseCSVFast(await file.text(), type);
-        } else {
-            parsed = parseExcelBuffer(await file.arrayBuffer(), type);
-        }
-        if (type === 'expired') expiredData = parsed; else activeData = parsed;
-        fn.textContent = `✅ ${file.name} (${parsed.length.toLocaleString()} rows)`;
-        if (expiredData.length > 0 && activeData.length > 0) {
-            dataSource = 'uploaded';
-            setStatus(`✅ Uploaded Data: ${expiredData.length.toLocaleString()} expired + ${activeData.length.toLocaleString()} active`, 'success');
-            runAnalysis();
-        }
-    } catch (e) { fn.className = 'file-name error'; fn.textContent = `❌ ${e.message}`; }
+function chipsHTML(list,cls){
+  if(!list||!list.length)return'<span style="color:#555;font-size:.65rem">—</span>';
+  // unique
+  const seen=new Set(); const uniq=[];
+  for(let i=0;i<list.length;i++){const s=list[i];if(!seen.has(s)){seen.add(s);uniq.push(s);}}
+  return `<div class="chip-wrap">${uniq.map(s=>`<span class="${cls}">${s}</span>`).join('')}</div>`;
 }
 
-function loadFromRepo() { autoLoadFromRepo(); }
-
-// ==================== SIMULATION ====================
-function generateSimulation(){
-    const ec=parseInt(document.getElementById('expiredCount').value)||350,ac=parseInt(document.getElementById('activeCount').value)||500,op=parseInt(document.getElementById('overlapPct').value)||15;
-    const oc=Math.floor(Math.min(ec,ac)*op/100),sk=Object.keys(stateGSTCodes),sg=[],sgt=[];
-    for(let i=0;i<oc;i++){sg.push(genUUID());sgt.push(Math.random()>0.2?genGSTIN(sk[Math.floor(Math.random()*sk.length)]):null);}
-    expiredData=[];activeData=[];
-    for(let i=0;i<ec;i++){const o=i<oc,s=sk[Math.floor(Math.random()*sk.length)];expiredData.push({subscriptionId:genSubId(),compGUID:o?sg[i]:genUUID(),gstin:o?sgt[i]:(Math.random()>0.25?genGSTIN(s):null),currentBlsExpiry:rndDate(new Date('2023-01-01'),new Date('2024-12-31')),source:'expired'});}
-    for(let i=0;i<ac;i++){const o=i<oc,s=sk[Math.floor(Math.random()*sk.length)];activeData.push({subscriptionId:genSubId(),compGUID:o?sg[i]:genUUID(),gstin:o?sgt[i]:(Math.random()>0.2?genGSTIN(s):null),currentBlsExpiry:rndDate(new Date('2024-06-01'),new Date('2026-06-30')),source:'active'});}
-    dataSource='simulation'; runAnalysis();
+function linkedHTML(d){
+  const cn=window.compNet[d.compGUID]||{a:[],e:[]};
+  const gn=d.gstin?(window.gstNet[d.gstin]||{a:[],e:[]}):{a:[],e:[]};
+  const ca=cn.a.filter(s=>s!==d.subscriptionId);
+  const ce=cn.e.filter(s=>s!==d.subscriptionId);
+  const ga=gn.a.filter(s=>s!==d.subscriptionId);
+  const ge=gn.e.filter(s=>s!==d.subscriptionId);
+  return {
+    byComp:`${ca.length?`<div class="chip-label">🟢 Active (${ca.length})</div>`+chipsHTML(ca,'chip-act'):''}${ce.length?`<div class="chip-label">🔴 Expired (${ce.length})</div>`+chipsHTML(ce,'chip-exp'):''}${!ca.length&&!ce.length?'<span style="color:#555;font-size:.65rem">No other by CompGUID</span>':''}`,
+    byGst:d.gstin?(`${ga.length?`<div class="chip-label">🟢 Active (${ga.length})</div>`+chipsHTML(ga,'chip-act'):''}${ge.length?`<div class="chip-label">🔴 Expired (${ge.length})</div>`+chipsHTML(ge,'chip-exp'):''}${!ga.length&&!ge.length?'<span style="color:#555;font-size:.65rem">No other by GSTIN</span>':''}`):'<span style="color:#555;font-size:.65rem">No GSTIN</span>'
+  };
 }
 
-// ==================== SINGLE-PASS $O(N)$ ANALYSIS ENGINE ====================
-function analyzeData() {
-    const t0 = performance.now();
-    
-    const eG = new Set(), aG = new Set();
-    const eGST = new Set(), aGST = new Set();
-    const mE = {}, mA = {};
-    const sC = {};
-    const sPC = {};
-    let expiredNoGST = 0, activeNoGST = 0;
-
-    window.compNetwork = {};
-
-    // Single-pass Expired Loop
-    for (let i = 0; i < expiredData.length; i++) {
-        const d = expiredData[i];
-        eG.add(d.compGUID);
-        sPC[d.compGUID] = (sPC[d.compGUID] || 0) + 1;
-
-        if (!window.compNetwork[d.compGUID]) window.compNetwork[d.compGUID] = { active: new Set(), expired: new Set() };
-        window.compNetwork[d.compGUID].expired.add(d.subscriptionId);
-
-        const m = d.currentBlsExpiry.toISOString().slice(0, 7);
-        mE[m] = (mE[m] || 0) + 1;
-
-        if (d.gstin) {
-            eGST.add(d.gstin);
-            if (d.gstin.length >= 2) {
-                const s = stateGSTCodes[d.gstin.substring(0, 2)] || 'Other';
-                if (!sC[s]) sC[s] = { expired: 0, active: 0 };
-                sC[s].expired++;
-            }
-        } else {
-            expiredNoGST++;
-        }
-    }
-
-    // Single-pass Active Loop
-    const rd = parseInt(document.getElementById('riskDays').value) || 30;
-    const today = new Date(), riskDate = new Date(today.getTime() + rd * 86400000);
-    const atRiskData = [];
-
-    for (let i = 0; i < activeData.length; i++) {
-        const d = activeData[i];
-        aG.add(d.compGUID);
-        sPC[d.compGUID] = (sPC[d.compGUID] || 0) + 1;
-
-        if (!window.compNetwork[d.compGUID]) window.compNetwork[d.compGUID] = { active: new Set(), expired: new Set() };
-        window.compNetwork[d.compGUID].active.add(d.subscriptionId);
-
-        const m = d.currentBlsExpiry.toISOString().slice(0, 7);
-        mA[m] = (mA[m] || 0) + 1;
-
-        if (d.currentBlsExpiry <= riskDate && d.currentBlsExpiry >= today) {
-            atRiskData.push(d);
-        }
-
-        if (d.gstin) {
-            aGST.add(d.gstin);
-            if (d.gstin.length >= 2) {
-                const s = stateGSTCodes[d.gstin.substring(0, 2)] || 'Other';
-                if (!sC[s]) sC[s] = { expired: 0, active: 0 };
-                sC[s].active++;
-            }
-        } else {
-            activeNoGST++;
-        }
-    }
-
-    const oG = new Set([...eG].filter(x => aG.has(x)));
-    const oGST = new Set([...eGST].filter(x => aGST.has(x)));
-    const fC = new Set([...eG].filter(x => !aG.has(x)));
-    const hG = new Set([...aG].filter(x => !eG.has(x)));
-
-    const dd = {};
-    Object.values(sPC).forEach(c => { const b = c > 5 ? '6+' : String(c); dd[b] = (dd[b] || 0) + 1; });
-
-    const tot = fC.size + hG.size + oG.size;
-
-    analysisResults = {
-        totalExpired: expiredData.length, totalActive: activeData.length,
-        overlappingCompGUIDs: oG.size, overlappingGSTINs: oGST.size,
-        fullChurn: fC.size, healthy: hG.size, atRisk: atRiskData.length, atRiskData: atRiskData,
-        churnRate: tot > 0 ? ((fC.size / tot) * 100).toFixed(1) : '0.0',
-        retentionRate: tot > 0 ? ((hG.size / tot) * 100).toFixed(1) : '0.0',
-        partialChurnRate: tot > 0 ? ((oG.size / tot) * 100).toFixed(1) : '0.0',
-        monthlyExpired: mE, monthlyActive: mA, stateChurn: sC, densityDist: dd,
-        overlappingCompGUIDSet: oG, fullChurnSet: fC, healthySet: hG,
-        expiredGSTINCount: eGST.size, activeGSTINCount: aGST.size, gstinOverlap: oGST.size,
-        expiredNoGST: expiredNoGST, activeNoGST: activeNoGST, totalCompanies: tot
-    };
-
-    debugLog(`Single-pass analysis completed in ${(performance.now() - t0).toFixed(0)}ms`, 'success');
-}
-
-// ==================== LAZY DRILL-DOWN MODAL ====================
-function openDrillDown(title, data, statsArray){
-    currentModalData=data; document.getElementById('modalTitle').textContent=title;
-    document.getElementById('modalStats').innerHTML=statsArray.map(s=>`<div class="modal-stat"><div class="modal-stat-value" style="color:${s.color||'#667eea'}">${s.value}</div><div class="modal-stat-label">${s.label}</div></div>`).join('');
-    document.getElementById('modalSearch').value=''; renderModalTable(data);
-    document.getElementById('drillModal').classList.add('show');
+function openDrillDown(title,data,stats){
+  currentModalAll=data; currentModalData=data;
+  document.getElementById('modalTitle').textContent=title;
+  document.getElementById('modalStats').innerHTML=stats.map(s=>`<div class="modal-stat"><div class="modal-stat-value" style="color:${s.color||'#667eea'}">${s.value}</div><div class="modal-stat-label">${s.label}</div></div>`).join('');
+  document.getElementById('modalSearch').value='';
+  renderModalTable(data);
+  document.getElementById('drillModal').classList.add('show');
 }
 
 function renderModalTable(data){
-    document.getElementById('modalTableHead').innerHTML=`<tr><th>CompGUID</th><th>Sub No</th><th>GSTIN</th><th>BLS Expiry</th><th>Source</th><th>Linked Co-Subscriptions (Same CompGUID)</th></tr>`;
-    const today=new Date();
-    const limit = 300;
-    
-    let html = '';
-    for (let i = 0; i < Math.min(data.length, limit); i++) {
-        const d = data[i];
-        const net = window.compNetwork[d.compGUID] || { active: new Set(), expired: new Set() };
-        
-        let linksHtml = '';
-        let actCount = 0, expCount = 0, actStr = '', expStr = '';
-        
-        for (let s of net.active) { if (s !== d.subscriptionId) { actCount++; if (actCount <= 2) actStr += (actStr ? ', ' : '') + s; } }
-        for (let s of net.expired) { if (s !== d.subscriptionId) { expCount++; if (expCount <= 2) expStr += (expStr ? ', ' : '') + s; } }
-        
-        if (actCount > 0) linksHtml += `<div class="linked-act">🟢 Act: ${actStr}${actCount > 2 ? '...' : ''}</div>`;
-        if (expCount > 0) linksHtml += `<div class="linked-exp">🔴 Exp: ${expStr}${expCount > 2 ? '...' : ''}</div>`;
-        if (!linksHtml) linksHtml = `<span style="color:#555;font-size:0.65rem;">No other subs</span>`;
+  document.getElementById('modalTableHead').innerHTML=`<tr><th>CompGUID</th><th>Sub No</th><th>GSTIN</th><th>Expiry</th><th>Source</th><th>Linked by CompGUID (ALL)</th><th>Linked by GSTIN (ALL)</th></tr>`;
+  const n=Math.min(data.length,ROW_CAP);
+  let html='';
+  for(let i=0;i<n;i++){
+    const d=data[i];
+    const L=linkedHTML(d);
+    const esc=(d.compGUID||'').replace(/'/g,"\\'");
+    html+=`<tr>
+      <td class="compguid-cell" title="Click to filter" onclick="document.getElementById('modalSearch').value='${esc}';filterModalTable()">${d.compGUID||''}</td>
+      <td>${d.subscriptionId||''}</td>
+      <td>${d.gstin||'<span style="color:#555">N/A</span>'}</td>
+      <td>${d.currentBlsExpiry.toLocaleDateString()}</td>
+      <td><span class="status-badge ${d.source==='expired'?'status-expired':'status-active'}">${d.source}</span></td>
+      <td>${L.byComp}</td>
+      <td>${L.byGst}</td>
+    </tr>`;
+  }
+  document.getElementById('modalTableBody').innerHTML=html;
+  document.getElementById('modalRecordCount').textContent=`Showing ${n.toLocaleString()} of ${data.length.toLocaleString()} (capped for speed)`;
+}
 
-        html += `<tr>
-            <td class="compguid-cell" title="Click to filter" onclick="document.getElementById('modalSearch').value='${d.compGUID}'; filterModalTable();">${d.compGUID}</td>
-            <td>${d.subscriptionId}</td>
-            <td>${d.gstin||'<span style="color:#555">N/A</span>'}</td>
-            <td>${d.currentBlsExpiry.toLocaleDateString()}</td>
-            <td><span class="status-badge ${d.source==='expired'?'status-expired':'status-active'}">${d.source}</span></td>
-            <td><div class="linked-subs">${linksHtml}</div></td>
-        </tr>`;
-    }
-
-    document.getElementById('modalTableBody').innerHTML = html;
-    document.getElementById('modalRecordCount').textContent = `${Math.min(data.length, limit).toLocaleString()} of ${data.length.toLocaleString()} records shown`;
+function onModalSearchInput(){
+  clearTimeout(modalSearchTimer);
+  modalSearchTimer=setTimeout(filterModalTable,250);
 }
 
 function filterModalTable(){
-    const rawQ = document.getElementById('modalSearch').value.trim();
-    if (!rawQ) { renderModalTable(currentModalData); return; }
-
-    const lowerQ = rawQ.toLowerCase();
-    const cleanQ = lowerQ.replace(/[^a-z0-9]/g, '');
-
-    const filtered = [];
-    for (let i = 0; i < currentModalData.length; i++) {
-        const d = currentModalData[i];
-        const comp = String(d.compGUID || '').toLowerCase();
-        const sub  = String(d.subscriptionId || '').toLowerCase();
-        const gst  = String(d.gstin || '').toLowerCase();
-
-        if (comp.includes(lowerQ) || sub.includes(lowerQ) || gst.includes(lowerQ)) { filtered.push(d); continue; }
-
-        if (cleanQ.length >= 2) {
-            const cleanComp = comp.replace(/[^a-z0-9]/g, '');
-            const cleanSub  = sub.replace(/[^a-z0-9]/g, '');
-            const cleanGst  = gst.replace(/[^a-z0-9]/g, '');
-            if (cleanComp.includes(cleanQ) || cleanSub.includes(cleanQ) || cleanGst.includes(cleanQ)) { filtered.push(d); }
-        }
+  const raw=document.getElementById('modalSearch').value.trim();
+  if(!raw){currentModalData=currentModalAll;renderModalTable(currentModalData);return;}
+  const q=raw.toLowerCase(), cq=q.replace(/[^a-z0-9]/g,'');
+  const out=[];
+  const src=currentModalAll;
+  for(let i=0;i<src.length;i++){
+    const d=src[i];
+    const comp=(d.compGUID||'').toLowerCase(), sub=(d.subscriptionId||'').toLowerCase(), gst=(d.gstin||'').toLowerCase();
+    if(comp.includes(q)||sub.includes(q)||gst.includes(q)){out.push(d);continue;}
+    if(cq.length>=2){
+      if(comp.replace(/[^a-z0-9]/g,'').includes(cq)||sub.replace(/[^a-z0-9]/g,'').includes(cq)||gst.replace(/[^a-z0-9]/g,'').includes(cq))out.push(d);
     }
-
-    renderModalTable(filtered);
+  }
+  currentModalData=out;
+  renderModalTable(out);
 }
 
-function runGlobalSearch() {
-    const rawQ = document.getElementById('globalSearchInput').value.trim();
-    if (!rawQ) { alert('Please type a CompGUID, Subscription ID, or GSTIN to search.'); return; }
-
-    const lowerQ = rawQ.toLowerCase();
-    const cleanQ = lowerQ.replace(/[^a-z0-9]/g, '');
-
-    const matches = [];
-    const searchIn = (arr) => {
-        for (let i = 0; i < arr.length; i++) {
-            const d = arr[i];
-            const comp = String(d.compGUID || '').toLowerCase();
-            const sub  = String(d.subscriptionId || '').toLowerCase();
-            const gst  = String(d.gstin || '').toLowerCase();
-
-            if (comp.includes(lowerQ) || sub.includes(lowerQ) || gst.includes(lowerQ)) { matches.push(d); continue; }
-
-            if (cleanQ.length >= 2) {
-                const cleanComp = comp.replace(/[^a-z0-9]/g, '');
-                const cleanSub  = sub.replace(/[^a-z0-9]/g, '');
-                const cleanGst  = gst.replace(/[^a-z0-9]/g, '');
-                if (cleanComp.includes(cleanQ) || cleanSub.includes(cleanQ) || cleanGst.includes(cleanQ)) { matches.push(d); }
-            }
-        }
-    };
-
-    searchIn(expiredData);
-    searchIn(activeData);
-
-    const expCount = matches.filter(d => d.source === 'expired').length;
-    const actCount = matches.filter(d => d.source === 'active').length;
-
-    openDrillDown(`🔍 Global Search Results for: "${rawQ}"`, matches, [
-        { value: matches.length, label: 'Matching Subscriptions', color: '#667eea' },
-        { value: expCount, label: 'Expired', color: '#f45c43' },
-        { value: actCount, label: 'Active', color: '#38ef7d' }
-    ]);
+function runGlobalSearch(){
+  const raw=document.getElementById('globalSearchInput').value.trim();
+  if(!raw){alert('Enter CompGUID / Sub / GSTIN');return;}
+  const q=raw.toLowerCase(), cq=q.replace(/[^a-z0-9]/g,'');
+  const matches=[];
+  const scan=arr=>{for(let i=0;i<arr.length;i++){const d=arr[i];const comp=(d.compGUID||'').toLowerCase(),sub=(d.subscriptionId||'').toLowerCase(),gst=(d.gstin||'').toLowerCase();
+    if(comp.includes(q)||sub.includes(q)||gst.includes(q)){matches.push(d);continue;}
+    if(cq.length>=2&&(comp.replace(/[^a-z0-9]/g,'').includes(cq)||sub.replace(/[^a-z0-9]/g,'').includes(cq)||gst.replace(/[^a-z0-9]/g,'').includes(cq)))matches.push(d);
+  }};
+  scan(expiredData);scan(activeData);
+  openDrillDown(`🔍 Search: "${raw}"`,matches,[
+    {value:matches.length.toLocaleString(),label:'Matches',color:'#667eea'},
+    {value:matches.filter(d=>d.source==='expired').length.toLocaleString(),label:'Expired',color:'#f45c43'},
+    {value:matches.filter(d=>d.source==='active').length.toLocaleString(),label:'Active',color:'#38ef7d'}
+  ]);
 }
 
 function closeModal(){document.getElementById('drillModal').classList.remove('show');}
 
 function downloadModalData(){
-    let csv='CompGUID,Subscription No,GSTIN,BLS Expiry,Source,Linked Active Subs,Linked Expired Subs\n';
-    currentModalData.forEach(d=>{
-        const net = window.compNetwork[d.compGUID] || {active:new Set(), expired:new Set()};
-        const actList = Array.from(net.active).filter(s => s !== d.subscriptionId).join('; ');
-        const expList = Array.from(net.expired).filter(s => s !== d.subscriptionId).join('; ');
-        csv+=`"${d.compGUID}","${d.subscriptionId}","${d.gstin||''}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}","${actList}","${expList}"\n`;
-    });
-    dlFile(csv,'drill_down_export.csv','text/csv');
+  let csv='CompGUID,Subscription No,GSTIN,BLS Expiry,Source,Linked Active by CompGUID,Linked Expired by CompGUID,Linked Active by GSTIN,Linked Expired by GSTIN\n';
+  const rows=currentModalData;
+  for(let i=0;i<rows.length;i++){
+    const d=rows[i];
+    const cn=window.compNet[d.compGUID]||{a:[],e:[]};
+    const gn=d.gstin?(window.gstNet[d.gstin]||{a:[],e:[]}):{a:[],e:[]};
+    const ca=[...new Set(cn.a.filter(s=>s!==d.subscriptionId))].join('; ');
+    const ce=[...new Set(cn.e.filter(s=>s!==d.subscriptionId))].join('; ');
+    const ga=[...new Set(gn.a.filter(s=>s!==d.subscriptionId))].join('; ');
+    const ge=[...new Set(gn.e.filter(s=>s!==d.subscriptionId))].join('; ');
+    csv+=`"${d.compGUID}","${d.subscriptionId}","${d.gstin||''}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}","${ca}","${ce}","${ga}","${ge}"\n`;
+  }
+  dlFile(csv,'drill_down_full_links.csv','text/csv');
 }
 
-// ==================== DRILL-DOWN HELPERS ====================
 function drillByCategory(cat){
-    const r=analysisResults; let data=[],title='',stats=[];
-    switch(cat){
-        case 'total': data=[...expiredData,...activeData]; title='📊 All Subscriptions'; stats=[{value:data.length.toLocaleString(),label:'Total Records'},{value:expiredData.length.toLocaleString(),label:'Expired',color:'#f45c43'},{value:activeData.length.toLocaleString(),label:'Active',color:'#38ef7d'}]; break;
-        case 'churned': data=expiredData.filter(d=>r.fullChurnSet.has(d.compGUID)); title='🔴 Full Churn'; stats=[{value:data.length.toLocaleString(),label:'Records',color:'#f45c43'},{value:r.churnRate+'%',label:'Churn Rate',color:'#f45c43'}]; break;
-        case 'healthy': data=activeData.filter(d=>r.healthySet.has(d.compGUID)); title='🟢 Healthy'; stats=[{value:data.length.toLocaleString(),label:'Records',color:'#38ef7d'},{value:r.retentionRate+'%',label:'Retention',color:'#38ef7d'}]; break;
-        case 'overlap': data=[...expiredData,...activeData].filter(d=>r.overlappingCompGUIDSet.has(d.compGUID)); title='🟡 Partial Churn (Overlap)'; stats=[{value:data.length.toLocaleString(),label:'Records',color:'#a855f7'},{value:r.overlappingCompGUIDs.toLocaleString(),label:'Companies',color:'#a855f7'}]; break;
-        case 'atrisk': data=r.atRiskData; title='⚠️ At-Risk'; stats=[{value:data.length.toLocaleString(),label:'Records',color:'#ffd200'}]; break;
-        case 'gstin_overlap': data=[...expiredData,...activeData].filter(d=>d.gstin&&(new Set([...new Set(expiredData.filter(x=>x.gstin).map(x=>x.gstin))].filter(x=>(new Set(activeData.filter(y=>y.gstin).map(y=>y.gstin))).has(x)))).has(d.gstin)); title='🏢 GSTIN Overlap'; stats=[{value:data.length.toLocaleString(),label:'Records',color:'#22d3ee'},{value:r.gstinOverlap.toLocaleString(),label:'Unique GSTINs',color:'#22d3ee'}]; break;
-    }
-    openDrillDown(title,data,stats);
+  const r=analysisResults; let data=[],title='',stats=[];
+  if(cat==='total'){data=expiredData.concat(activeData);title='📊 All';stats=[{value:(r.totalExpired+r.totalActive).toLocaleString(),label:'Total'},{value:r.totalExpired.toLocaleString(),label:'Expired',color:'#f45c43'},{value:r.totalActive.toLocaleString(),label:'Active',color:'#38ef7d'}];}
+  else if(cat==='churned'){data=expiredData.filter(d=>r.fullChurnSet.has(d.compGUID));title='🔴 Full Churn';stats=[{value:data.length.toLocaleString(),label:'Records',color:'#f45c43'},{value:r.churnRate+'%',label:'Rate',color:'#f45c43'}];}
+  else if(cat==='healthy'){data=activeData.filter(d=>r.healthySet.has(d.compGUID));title='🟢 Healthy';stats=[{value:data.length.toLocaleString(),label:'Records',color:'#38ef7d'},{value:r.retentionRate+'%',label:'Rate',color:'#38ef7d'}];}
+  else if(cat==='overlap'){data=expiredData.concat(activeData).filter(d=>r.overlappingCompGUIDSet.has(d.compGUID));title='🟡 Partial Churn (Overlap)';stats=[{value:data.length.toLocaleString(),label:'Records',color:'#a855f7'},{value:r.overlappingCompGUIDs.toLocaleString(),label:'Companies',color:'#a855f7'}];}
+  else if(cat==='atrisk'){data=r.atRiskData;title='⚠️ At-Risk';stats=[{value:data.length.toLocaleString(),label:'Records',color:'#ffd200'}];}
+  else if(cat==='gstin_overlap'){
+    const set=new Set(); expiredData.forEach(d=>{if(d.gstin){let ok=false;for(const a of activeData){if(a.gstin===d.gstin){ok=true;break;}}if(ok)set.add(d.gstin);}});
+    // faster gst overlap using analysisResults
+    data=expiredData.concat(activeData).filter(d=>d.gstin&&window.gstNet[d.gstin]&&window.gstNet[d.gstin].a.length&&window.gstNet[d.gstin].e.length);
+    title='🏢 GSTIN Overlap';stats=[{value:data.length.toLocaleString(),label:'Records',color:'#22d3ee'},{value:r.gstinOverlap.toLocaleString(),label:'GSTINs',color:'#22d3ee'}];
+  }
+  openDrillDown(title,data,stats);
 }
 
 function drillByState(st){
-    const data=[...expiredData,...activeData].filter(d=>d.gstin&&d.gstin.length>=2&&(stateGSTCodes[d.gstin.substring(0,2)]||'Other')===st);
-    const e=data.filter(d=>d.source==='expired').length,a=data.filter(d=>d.source==='active').length;
-    openDrillDown(`🗺️ ${st} Data`,data,[{value:data.length.toLocaleString(),label:'Records'},{value:e.toLocaleString(),label:'Expired',color:'#f45c43'},{value:a.toLocaleString(),label:'Active',color:'#38ef7d'},{value:(data.length>0?((e/(e+a))*100).toFixed(1):'0')+'%',label:'Churn Rate'}]);
+  const data=expiredData.concat(activeData).filter(d=>d.gstin&&d.gstin.length>=2&&(stateGST[d.gstin.slice(0,2)]||'Other')===st);
+  const e=data.filter(d=>d.source==='expired').length,a=data.filter(d=>d.source==='active').length;
+  openDrillDown('🗺️ '+st,data,[{value:data.length.toLocaleString(),label:'Records'},{value:e.toLocaleString(),label:'Expired',color:'#f45c43'},{value:a.toLocaleString(),label:'Active',color:'#38ef7d'}]);
 }
-
 function drillByMonth(m,t){
-    const ad=t==='expired'?expiredData:t==='active'?activeData:[...expiredData,...activeData];
-    const data=ad.filter(d=>d.currentBlsExpiry.toISOString().slice(0,7)===m);
-    openDrillDown(`📅 ${m} - ${t==='expired'?'Expired':'Active'}`,data,[{value:data.length.toLocaleString(),label:'Records',color:t==='expired'?'#f45c43':'#38ef7d'}]);
+  const ad=t==='expired'?expiredData:activeData;
+  const data=ad.filter(d=>d.currentBlsExpiry.toISOString().slice(0,7)===m);
+  openDrillDown('📅 '+m+' '+t,data,[{value:data.length.toLocaleString(),label:'Records',color:t==='expired'?'#f45c43':'#38ef7d'}]);
 }
 
-function drillByCompGUID(guid){
-    const data=[...expiredData,...activeData].filter(d=>d.compGUID===guid);
-    openDrillDown(`🔍 Company Drill-Down`,data,[{value:data.length.toLocaleString(),label:'Subscriptions'},{value:data.filter(d=>d.source==='expired').length,label:'Expired',color:'#f45c43'},{value:data.filter(d=>d.source==='active').length,label:'Active',color:'#38ef7d'}]);
-}
-
-// ==================== RENDER ====================
 function renderKPIs(){
-    const r=analysisResults;
-    document.getElementById('kpiStrip').innerHTML=`
-        <div class="kpi-card blue animate-in" onclick="drillByCategory('total')" style="animation-delay:0.1s"><div class="kpi-label">Total Subscriptions</div><div class="kpi-value">${(r.totalExpired+r.totalActive).toLocaleString()}</div><div class="kpi-sublabel">${r.totalExpired.toLocaleString()} expired + ${r.totalActive.toLocaleString()} active</div><div class="kpi-click-hint">👆 Click to view records</div></div>
-        <div class="kpi-card red animate-in" onclick="drillByCategory('churned')" style="animation-delay:0.15s"><div class="kpi-label">Full Churn Rate</div><div class="kpi-value">${r.churnRate}%</div><div class="kpi-sublabel">${r.fullChurn.toLocaleString()} companies fully left</div><div class="kpi-click-hint">👆 Click to view records</div></div>
-        <div class="kpi-card green animate-in" onclick="drillByCategory('healthy')" style="animation-delay:0.2s"><div class="kpi-label">Retention Rate</div><div class="kpi-value">${r.retentionRate}%</div><div class="kpi-sublabel">${r.healthy.toLocaleString()} healthy companies</div><div class="kpi-click-hint">👆 Click to view records</div></div>
-        <div class="kpi-card purple animate-in" onclick="drillByCategory('overlap')" style="animation-delay:0.25s"><div class="kpi-label">Partial Churn</div><div class="kpi-value">${r.overlappingCompGUIDs.toLocaleString()}</div><div class="kpi-sublabel">${r.partialChurnRate}% overlap</div><div class="kpi-click-hint">👆 Click to view records</div></div>
-        <div class="kpi-card orange animate-in" onclick="drillByCategory('atrisk')" style="animation-delay:0.3s"><div class="kpi-label">At-Risk Active</div><div class="kpi-value">${r.atRisk.toLocaleString()}</div><div class="kpi-sublabel">Expiring within ${document.getElementById('riskDays').value} days</div><div class="kpi-click-hint">👆 Click to view records</div></div>
-        <div class="kpi-card cyan animate-in" onclick="drillByCategory('gstin_overlap')" style="animation-delay:0.35s"><div class="kpi-label">GSTIN Overlap</div><div class="kpi-value">${r.gstinOverlap.toLocaleString()}</div><div class="kpi-sublabel">Same entity in both</div><div class="kpi-click-hint">👆 Click to view records</div></div>`;
+  const r=analysisResults;
+  document.getElementById('kpiStrip').innerHTML=`
+    <div class="kpi-card blue" onclick="drillByCategory('total')"><div class="kpi-label">Total</div><div class="kpi-value">${(r.totalExpired+r.totalActive).toLocaleString()}</div><div class="kpi-sublabel">${r.totalExpired.toLocaleString()} exp + ${r.totalActive.toLocaleString()} act</div><div class="kpi-click-hint">👆 Click</div></div>
+    <div class="kpi-card red" onclick="drillByCategory('churned')"><div class="kpi-label">Full Churn</div><div class="kpi-value">${r.churnRate}%</div><div class="kpi-sublabel">${r.fullChurn.toLocaleString()} companies</div><div class="kpi-click-hint">👆 Click</div></div>
+    <div class="kpi-card green" onclick="drillByCategory('healthy')"><div class="kpi-label">Retention</div><div class="kpi-value">${r.retentionRate}%</div><div class="kpi-sublabel">${r.healthy.toLocaleString()} healthy</div><div class="kpi-click-hint">👆 Click</div></div>
+    <div class="kpi-card purple" onclick="drillByCategory('overlap')"><div class="kpi-label">Partial Churn</div><div class="kpi-value">${r.overlappingCompGUIDs.toLocaleString()}</div><div class="kpi-sublabel">${r.partialChurnRate}% overlap</div><div class="kpi-click-hint">👆 Click</div></div>
+    <div class="kpi-card orange" onclick="drillByCategory('atrisk')"><div class="kpi-label">At-Risk</div><div class="kpi-value">${r.atRisk.toLocaleString()}</div><div class="kpi-sublabel">within ${document.getElementById('riskDays').value} days</div><div class="kpi-click-hint">👆 Click</div></div>
+    <div class="kpi-card cyan" onclick="drillByCategory('gstin_overlap')"><div class="kpi-label">GSTIN Overlap</div><div class="kpi-value">${r.gstinOverlap.toLocaleString()}</div><div class="kpi-sublabel">same entity both</div><div class="kpi-click-hint">👆 Click</div></div>`;
 }
 
 function renderInsights(){
-    const r=analysisResults,cr=parseFloat(r.churnRate),ins=[];
-    if(cr>40) ins.push({i:'🔴',t:`<strong>HIGH CHURN:</strong> ${r.churnRate}% fully churned. Immediate intervention needed.`});
-    else if(cr>20) ins.push({i:'🟡',t:`<strong>MODERATE CHURN:</strong> ${r.churnRate}%. Review pricing and support.`});
-    else ins.push({i:'🟢',t:`<strong>HEALTHY:</strong> Only ${r.churnRate}% churn. Good retention.`});
-    if(r.overlappingCompGUIDs>0) ins.push({i:'🔗',t:`<strong>OVERLAP:</strong> ${r.overlappingCompGUIDs.toLocaleString()} companies partially churned.`});
-    if(r.atRisk>0) ins.push({i:'⚠️',t:`<strong>URGENT:</strong> ${r.atRisk.toLocaleString()} subs expire within ${document.getElementById('riskDays').value} days.`});
-    if(r.gstinOverlap>0) ins.push({i:'🏢',t:`<strong>GSTIN:</strong> ${r.gstinOverlap.toLocaleString()} same entities in both datasets.`});
-    document.getElementById('insightBox').innerHTML=`<h4>💡 Insights & Actions</h4>${ins.map(x=>`<div class="insight-item">${x.i} ${x.t}</div>`).join('')}`;
+  const r=analysisResults,cr=+r.churnRate,ins=[];
+  if(cr>40)ins.push('🔴 <strong>HIGH CHURN:</strong> '+r.churnRate+'%');
+  else if(cr>20)ins.push('🟡 <strong>MODERATE CHURN:</strong> '+r.churnRate+'%');
+  else ins.push('🟢 <strong>HEALTHY:</strong> '+r.churnRate+'% churn');
+  if(r.overlappingCompGUIDs)ins.push('🔗 <strong>OVERLAP:</strong> '+r.overlappingCompGUIDs.toLocaleString()+' companies partial churn — see ALL linked active/expired subs in drill-down');
+  if(r.atRisk)ins.push('⚠️ <strong>AT-RISK:</strong> '+r.atRisk.toLocaleString()+' expiring soon');
+  document.getElementById('insightBox').innerHTML='<h4>💡 Insights</h4>'+ins.map(t=>'<div class="insight-item">'+t+'</div>').join('');
 }
 
 function renderVenn(){
-    const r=analysisResults;
-    document.getElementById('vennDiagram').innerHTML=`
-        <div class="venn-circle venn-active" onclick="drillByCategory('healthy')"><div style="margin-left:-30px;"><div style="font-size:1.3rem;color:#38ef7d;">${r.healthy.toLocaleString()}</div><div style="font-size:0.65rem;color:#999;">Active Only</div></div></div>
-        <div class="venn-circle venn-expired" onclick="drillByCategory('churned')"><div style="margin-left:30px;"><div style="font-size:1.3rem;color:#f45c43;">${r.fullChurn.toLocaleString()}</div><div style="font-size:0.65rem;color:#999;">Expired Only</div></div></div>
-        <div class="venn-overlap-zone" onclick="drillByCategory('overlap')"><div><div>${r.overlappingCompGUIDs.toLocaleString()}</div><div style="font-size:0.6rem;color:#ccc;">Both</div></div></div>
-        <div class="venn-labels"><div class="venn-label"><div class="venn-dot" style="background:#38ef7d;"></div>Healthy</div><div class="venn-label"><div class="venn-dot" style="background:#a855f7;"></div>Overlap</div><div class="venn-label"><div class="venn-dot" style="background:#f45c43;"></div>Churned</div></div>`;
+  const r=analysisResults;
+  document.getElementById('vennDiagram').innerHTML=`
+    <div class="venn-circle venn-active" onclick="drillByCategory('healthy')"><div style="margin-left:-24px"><div style="font-size:1.2rem;color:#38ef7d">${r.healthy.toLocaleString()}</div><div style="font-size:.6rem;color:#999">Active Only</div></div></div>
+    <div class="venn-circle venn-expired" onclick="drillByCategory('churned')"><div style="margin-left:24px"><div style="font-size:1.2rem;color:#f45c43">${r.fullChurn.toLocaleString()}</div><div style="font-size:.6rem;color:#999">Expired Only</div></div></div>
+    <div class="venn-overlap-zone" onclick="drillByCategory('overlap')"><div><div>${r.overlappingCompGUIDs.toLocaleString()}</div><div style="font-size:.55rem;color:#ccc">Both</div></div></div>
+    <div class="venn-labels"><div class="venn-label"><div class="venn-dot" style="background:#38ef7d"></div>Healthy</div><div class="venn-label"><div class="venn-dot" style="background:#a855f7"></div>Overlap</div><div class="venn-label"><div class="venn-dot" style="background:#f45c43"></div>Churned</div></div>`;
 }
 
 function renderFlowDiagram(){
-    const r=analysisResults,tot=r.totalCompanies||1;
-    const hp=((r.healthy/tot)*100).toFixed(1),pp=((r.overlappingCompGUIDs/tot)*100).toFixed(1),fp=((r.fullChurn/tot)*100).toFixed(1),ap=r.totalActive>0?((r.atRisk/r.totalActive)*100).toFixed(1):'0';
-    document.getElementById('flowDiagram').innerHTML=`
-        <div class="flow-row" onclick="drillByCategory('healthy')"><div class="flow-icon">🟢</div><div class="flow-label">Healthy</div><div class="flow-bar-container"><div class="flow-bar healthy" style="width:${Math.max(hp,5)}%">${r.healthy.toLocaleString()} (${hp}%)</div></div><div class="flow-value" style="color:#38ef7d;">${hp}%</div></div>
-        <div class="flow-row" onclick="drillByCategory('overlap')"><div class="flow-icon">🟡</div><div class="flow-label">Partial Churn</div><div class="flow-bar-container"><div class="flow-bar partial" style="width:${Math.max(pp,5)}%">${r.overlappingCompGUIDs.toLocaleString()} (${pp}%)</div></div><div class="flow-value" style="color:#a855f7;">${pp}%</div></div>
-        <div class="flow-row" onclick="drillByCategory('churned')"><div class="flow-icon">🔴</div><div class="flow-label">Full Churn</div><div class="flow-bar-container"><div class="flow-bar churned" style="width:${Math.max(fp,5)}%">${r.fullChurn.toLocaleString()} (${fp}%)</div></div><div class="flow-value" style="color:#f45c43;">${fp}%</div></div>
-        <div class="flow-row" onclick="drillByCategory('atrisk')"><div class="flow-icon">⚠️</div><div class="flow-label">At-Risk</div><div class="flow-bar-container"><div class="flow-bar atrisk" style="width:${Math.max(ap,3)}%">${r.atRisk.toLocaleString()} (${ap}%)</div></div><div class="flow-value" style="color:#ffd200;">${ap}%</div></div>`;
+  const r=analysisResults,tot=r.totalCompanies||1;
+  const hp=((r.healthy/tot)*100).toFixed(1),pp=((r.overlappingCompGUIDs/tot)*100).toFixed(1),fp=((r.fullChurn/tot)*100).toFixed(1),ap=r.totalActive?((r.atRisk/r.totalActive)*100).toFixed(1):'0';
+  document.getElementById('flowDiagram').innerHTML=`
+    <div class="flow-row" onclick="drillByCategory('healthy')"><div class="flow-icon">🟢</div><div class="flow-label">Healthy</div><div class="flow-bar-container"><div class="flow-bar healthy" style="width:${Math.max(+hp,5)}%">${r.healthy.toLocaleString()} (${hp}%)</div></div><div class="flow-value" style="color:#38ef7d">${hp}%</div></div>
+    <div class="flow-row" onclick="drillByCategory('overlap')"><div class="flow-icon">🟡</div><div class="flow-label">Partial</div><div class="flow-bar-container"><div class="flow-bar partial" style="width:${Math.max(+pp,5)}%">${r.overlappingCompGUIDs.toLocaleString()} (${pp}%)</div></div><div class="flow-value" style="color:#a855f7">${pp}%</div></div>
+    <div class="flow-row" onclick="drillByCategory('churned')"><div class="flow-icon">🔴</div><div class="flow-label">Full Churn</div><div class="flow-bar-container"><div class="flow-bar churned" style="width:${Math.max(+fp,5)}%">${r.fullChurn.toLocaleString()} (${fp}%)</div></div><div class="flow-value" style="color:#f45c43">${fp}%</div></div>
+    <div class="flow-row" onclick="drillByCategory('atrisk')"><div class="flow-icon">⚠️</div><div class="flow-label">At-Risk</div><div class="flow-bar-container"><div class="flow-bar atrisk" style="width:${Math.max(+ap,3)}%">${r.atRisk.toLocaleString()} (${ap}%)</div></div><div class="flow-value" style="color:#ffd200">${ap}%</div></div>`;
 }
 
 function renderCorrelationBars(){
-    const r=analysisResults,tot=r.totalCompanies||1;
-    const bars=[
-        {l:'CompGUID Overlap',v:(r.overlappingCompGUIDs/tot)*100,c:'#a855f7',cat:'overlap'},
-        {l:'GSTIN Overlap',v:r.expiredGSTINCount>0?(r.gstinOverlap/r.expiredGSTINCount)*100:0,c:'#22d3ee',cat:'gstin_overlap'},
-        {l:'Full Churn Impact',v:(r.fullChurn/tot)*100,c:'#f45c43',cat:'churned'},
-        {l:'At-Risk Exposure',v:r.totalActive>0?(r.atRisk/r.totalActive)*100:0,c:'#ffd200',cat:'atrisk'}
-    ];
-    const gs=v=>v>=30?{c:'strength-high',t:'HIGH'}:v>=10?{c:'strength-medium',t:'MEDIUM'}:{c:'strength-low',t:'LOW'};
-    document.getElementById('correlationBars').innerHTML=bars.map(b=>{const s=gs(b.v);return`<div class="corr-row" onclick="drillByCategory('${b.cat}')"><div class="corr-label">${b.l}</div><div class="corr-bar-bg"><div class="corr-bar-fill" style="width:${Math.min(b.v,100)}%;background:${b.c};">${b.v.toFixed(1)}%</div></div><div class="corr-strength ${s.c}">${s.t}</div></div>`;}).join('');
+  const r=analysisResults,tot=r.totalCompanies||1;
+  const bars=[
+    {l:'CompGUID Overlap',v:(r.overlappingCompGUIDs/tot)*100,c:'#a855f7',cat:'overlap'},
+    {l:'GSTIN Overlap',v:r.expiredGSTINCount?(r.gstinOverlap/r.expiredGSTINCount)*100:0,c:'#22d3ee',cat:'gstin_overlap'},
+    {l:'Full Churn',v:(r.fullChurn/tot)*100,c:'#f45c43',cat:'churned'},
+    {l:'At-Risk',v:r.totalActive?(r.atRisk/r.totalActive)*100:0,c:'#ffd200',cat:'atrisk'}
+  ];
+  const gs=v=>v>=30?{c:'strength-high',t:'HIGH'}:v>=10?{c:'strength-medium',t:'MEDIUM'}:{c:'strength-low',t:'LOW'};
+  document.getElementById('correlationBars').innerHTML=bars.map(b=>{const s=gs(b.v);return`<div class="corr-row" onclick="drillByCategory('${b.cat}')"><div class="corr-label">${b.l}</div><div class="corr-bar-bg"><div class="corr-bar-fill" style="width:${Math.min(b.v,100)}%;background:${b.c}">${b.v.toFixed(1)}%</div></div><div class="corr-strength ${s.c}">${s.t}</div></div>`;}).join('');
 }
 
 function dc(n){if(charts[n]){charts[n].destroy();charts[n]=null;}}
 
 function renderCharts(){
-    const r=analysisResults,months=[...new Set([...Object.keys(r.monthlyExpired),...Object.keys(r.monthlyActive)])].sort(),rd=parseInt(document.getElementById('riskDays').value),today=new Date();
-    
-    dc('cd');charts.cd=new Chart(document.getElementById('churnDoughnut'),{type:'doughnut',data:{labels:['Healthy','Partial Churn','Full Churn'],datasets:[{data:[r.healthy,r.overlappingCompGUIDs,r.fullChurn],backgroundColor:['rgba(56,239,125,0.7)','rgba(168,85,247,0.7)','rgba(244,92,67,0.7)'],borderColor:['#38ef7d','#a855f7','#f45c43'],borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,onClick:(e,el)=>{if(el.length)drillByCategory(['healthy','overlap','churned'][el[0].index]);},plugins:{legend:{position:'bottom',labels:{color:'#aaa',padding:12,font:{size:10}}}},cutout:'60%'}});
-    
-    dc('tl');charts.tl=new Chart(document.getElementById('timelineChart'),{type:'bar',data:{labels:months,datasets:[{label:'Expired',data:months.map(m=>r.monthlyExpired[m]||0),backgroundColor:'rgba(244,92,67,0.55)',borderColor:'#f45c43',borderWidth:1},{label:'Active',data:months.map(m=>r.monthlyActive[m]||0),backgroundColor:'rgba(56,239,125,0.55)',borderColor:'#38ef7d',borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,onClick:(e,el)=>{if(el.length)drillByMonth(months[el[0].index],el[0].datasetIndex===0?'expired':'active');},plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{ticks:{color:'#888',maxRotation:45},grid:{color:'rgba(255,255,255,0.03)'}},y:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,0.03)'}}}}});
-    
-    const bk={};for(let i=0;i<rd;i+=7)bk[`Day ${i+1}-${Math.min(i+7,rd)}`]=0;
-    r.atRiskData.forEach(d=>{const dl=Math.floor((d.currentBlsExpiry-today)/86400000);const ks=Object.keys(bk);const idx=Math.min(Math.floor(dl/7),ks.length-1);if(idx>=0)bk[ks[idx]]++;});
-    dc('ar');charts.ar=new Chart(document.getElementById('atRiskChart'),{type:'bar',data:{labels:Object.keys(bk),datasets:[{label:'At-Risk',data:Object.values(bk),backgroundColor:Object.keys(bk).map((_,i)=>`rgba(255,${Math.min(150+i*30,255)},0,0.6)`),borderColor:'#ffd200',borderWidth:1,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,onClick:()=>drillByCategory('atrisk'),plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,0.03)'}},y:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,0.03)'}}}}});
-
-    let cum=0;const cd=months.map(m=>{cum+=(r.monthlyExpired[m]||0);return cum;});
-    dc('cm');charts.cm=new Chart(document.getElementById('cumulativeChart'),{type:'line',data:{labels:months,datasets:[{label:'Cumulative Expired',data:cd,borderColor:'#f45c43',backgroundColor:'rgba(244,92,67,0.08)',borderWidth:2,fill:true,tension:0.3,pointRadius:2},{label:'Monthly',data:months.map(m=>r.monthlyExpired[m]||0),borderColor:'#ffd200',borderWidth:1.5,borderDash:[5,5],tension:0.3,pointRadius:1.5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{ticks:{color:'#888',maxRotation:45},grid:{color:'rgba(255,255,255,0.03)'}},y:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,0.03)'}}}}});
-
-    const states=Object.keys(r.stateChurn).sort();
-    dc('st');charts.st=new Chart(document.getElementById('stateChart'),{type:'bar',data:{labels:states,datasets:[{label:'Expired',data:states.map(s=>r.stateChurn[s].expired),backgroundColor:'rgba(244,92,67,0.55)',borderColor:'#f45c43',borderWidth:1},{label:'Active',data:states.map(s=>r.stateChurn[s].active),backgroundColor:'rgba(56,239,125,0.55)',borderColor:'#38ef7d',borderWidth:1},{label:'Churn %',data:states.map(s=>{const t=r.stateChurn[s].expired+r.stateChurn[s].active;return t>0?((r.stateChurn[s].expired/t)*100).toFixed(1):0;}),type:'line',borderColor:'#ffd200',borderWidth:2,pointBackgroundColor:'#ffd200',pointRadius:3,yAxisID:'y1',tension:0.3}]},options:{responsive:true,maintainAspectRatio:false,onClick:(e,el)=>{if(el.length)drillByState(states[el[0].index]);},plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{ticks:{color:'#888',maxRotation:45},grid:{color:'rgba(255,255,255,0.03)'}},y:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,0.03)'}},y1:{position:'right',ticks:{color:'#ffd200'},grid:{display:false},min:0,max:100}}}});
-
-    dc('rd');charts.rd=new Chart(document.getElementById('radarChart'),{type:'radar',data:{labels:['Churn%','Partial%','At-Risk%','No GST%','Multi-Sub%'],datasets:[{label:'Current',data:[parseFloat(r.churnRate),parseFloat(r.partialChurnRate),r.totalActive>0?((r.atRisk/r.totalActive)*100):0,((r.expiredNoGST+r.activeNoGST)/(r.totalExpired+r.totalActive)*100),(((Object.values(r.densityDist).reduce((a,b)=>a+b,0)-(r.densityDist['1']||0))/Math.max(Object.values(r.densityDist).reduce((a,b)=>a+b,0),1))*100)].map(v=>parseFloat(v.toFixed(1))),backgroundColor:'rgba(244,92,67,0.12)',borderColor:'#f45c43',borderWidth:2,pointBackgroundColor:'#f45c43',pointRadius:3.5},{label:'Benchmark',data:[15,10,5,20,30],backgroundColor:'rgba(56,239,125,0.06)',borderColor:'#38ef7d',borderWidth:1.5,borderDash:[5,5],pointRadius:2.5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa',font:{size:10}}}},scales:{r:{ticks:{color:'#888',backdropColor:'transparent',stepSize:20},grid:{color:'rgba(255,255,255,0.06)'},pointLabels:{color:'#aaa',font:{size:9}},suggestedMax:100}}}});
-
-    const labels=['1','2','3','4','5','6+'];
-    dc('dn');charts.dn=new Chart(document.getElementById('densityChart'),{type:'bar',data:{labels:labels.map(l=>l+' subs'),datasets:[{label:'Companies',data:labels.map(l=>r.densityDist[l]||0),backgroundColor:'rgba(102,126,234,0.5)',borderColor:'#667eea',borderWidth:1,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,0.03)'}},y:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,0.03)'}}}}});
+  const r=analysisResults,months=[...new Set([...Object.keys(r.monthlyExpired),...Object.keys(r.monthlyActive)])].sort();
+  const rd=+document.getElementById('riskDays').value||30,today=new Date();
+  dc('cd');charts.cd=new Chart(document.getElementById('churnDoughnut'),{type:'doughnut',data:{labels:['Healthy','Partial','Full Churn'],datasets:[{data:[r.healthy,r.overlappingCompGUIDs,r.fullChurn],backgroundColor:['rgba(56,239,125,.7)','rgba(168,85,247,.7)','rgba(244,92,67,.7)'],borderColor:['#38ef7d','#a855f7','#f45c43'],borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,onClick:(e,el)=>{if(el.length)drillByCategory(['healthy','overlap','churned'][el[0].index]);},plugins:{legend:{position:'bottom',labels:{color:'#aaa',font:{size:10}}}},cutout:'60%'}});
+  dc('tl');charts.tl=new Chart(document.getElementById('timelineChart'),{type:'bar',data:{labels:months,datasets:[{label:'Expired',data:months.map(m=>r.monthlyExpired[m]||0),backgroundColor:'rgba(244,92,67,.55)',borderColor:'#f45c43',borderWidth:1},{label:'Active',data:months.map(m=>r.monthlyActive[m]||0),backgroundColor:'rgba(56,239,125,.55)',borderColor:'#38ef7d',borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,onClick:(e,el)=>{if(el.length)drillByMonth(months[el[0].index],el[0].datasetIndex===0?'expired':'active');},plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{ticks:{color:'#888',maxRotation:45},grid:{color:'rgba(255,255,255,.03)'}},y:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,.03)'}}}}});
+  const bk={};for(let i=0;i<rd;i+=7)bk[`D${i+1}-${Math.min(i+7,rd)}`]=0;
+  r.atRiskData.forEach(d=>{const dl=Math.floor((d.currentBlsExpiry-today)/86400000);const ks=Object.keys(bk);const idx=Math.min(Math.floor(dl/7),ks.length-1);if(idx>=0)bk[ks[idx]]++;});
+  dc('ar');charts.ar=new Chart(document.getElementById('atRiskChart'),{type:'bar',data:{labels:Object.keys(bk),datasets:[{label:'At-Risk',data:Object.values(bk),backgroundColor:'rgba(255,180,0,.6)',borderColor:'#ffd200',borderWidth:1,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,onClick:()=>drillByCategory('atrisk'),plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,.03)'}},y:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,.03)'}}}}});
+  let cum=0;const cd=months.map(m=>{cum+=(r.monthlyExpired[m]||0);return cum;});
+  dc('cm');charts.cm=new Chart(document.getElementById('cumulativeChart'),{type:'line',data:{labels:months,datasets:[{label:'Cumulative Expired',data:cd,borderColor:'#f45c43',backgroundColor:'rgba(244,92,67,.08)',borderWidth:2,fill:true,tension:.3,pointRadius:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{ticks:{color:'#888',maxRotation:45},grid:{color:'rgba(255,255,255,.03)'}},y:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,.03)'}}}}});
+  const states=Object.keys(r.stateChurn).sort();
+  dc('st');charts.st=new Chart(document.getElementById('stateChart'),{type:'bar',data:{labels:states,datasets:[{label:'Expired',data:states.map(s=>r.stateChurn[s].expired),backgroundColor:'rgba(244,92,67,.55)',borderColor:'#f45c43',borderWidth:1},{label:'Active',data:states.map(s=>r.stateChurn[s].active),backgroundColor:'rgba(56,239,125,.55)',borderColor:'#38ef7d',borderWidth:1},{label:'Churn%',data:states.map(s=>{const t=r.stateChurn[s].expired+r.stateChurn[s].active;return t?((r.stateChurn[s].expired/t)*100).toFixed(1):0;}),type:'line',borderColor:'#ffd200',borderWidth:2,pointRadius:3,yAxisID:'y1',tension:.3}]},options:{responsive:true,maintainAspectRatio:false,onClick:(e,el)=>{if(el.length)drillByState(states[el[0].index]);},plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{ticks:{color:'#888',maxRotation:45},grid:{color:'rgba(255,255,255,.03)'}},y:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,.03)'}},y1:{position:'right',ticks:{color:'#ffd200'},grid:{display:false},min:0,max:100}}}});
+  dc('rd');charts.rd=new Chart(document.getElementById('radarChart'),{type:'radar',data:{labels:['Churn%','Partial%','At-Risk%','NoGST%','MultiSub%'],datasets:[{label:'Current',data:[+r.churnRate,+r.partialChurnRate,r.totalActive?(r.atRisk/r.totalActive*100):0,((r.expiredNoGST+r.activeNoGST)/(r.totalExpired+r.totalActive)*100),(((Object.values(r.densityDist).reduce((a,b)=>a+b,0)-(r.densityDist['1']||0))/Math.max(Object.values(r.densityDist).reduce((a,b)=>a+b,0),1))*100)].map(v=>+v.toFixed(1)),backgroundColor:'rgba(244,92,67,.12)',borderColor:'#f45c43',borderWidth:2,pointRadius:3},{label:'Benchmark',data:[15,10,5,20,30],backgroundColor:'rgba(56,239,125,.06)',borderColor:'#38ef7d',borderWidth:1.5,borderDash:[5,5],pointRadius:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa',font:{size:10}}}},scales:{r:{ticks:{color:'#888',backdropColor:'transparent',stepSize:20},grid:{color:'rgba(255,255,255,.06)'},pointLabels:{color:'#aaa',font:{size:9}},suggestedMax:100}}}});
+  const labels=['1','2','3','4','5','6+'];
+  dc('dn');charts.dn=new Chart(document.getElementById('densityChart'),{type:'bar',data:{labels:labels.map(l=>l+' subs'),datasets:[{label:'Companies',data:labels.map(l=>r.densityDist[l]||0),backgroundColor:'rgba(102,126,234,.5)',borderColor:'#667eea',borderWidth:1,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,.03)'}},y:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,.03)'}}}}});
 }
 
-// LAZY STREAMING MAIN TABLE RENDERER
 function renderDataTable(filter='all'){
-    const r=analysisResults,today=new Date(),rd=parseInt(document.getElementById('riskDays').value);
-    const riskDate=new Date(today.getTime()+rd*86400000);
-    const limit = 300;
-    let count = 0;
-    let html = '';
-
-    function processItem(d) {
-        const isOverlap = r.overlappingCompGUIDSet.has(d.compGUID);
-        const isAtRisk = d.source === 'active' && d.currentBlsExpiry <= riskDate && d.currentBlsExpiry >= today;
-        const status = d.source === 'expired' ? 'Expired' : (isAtRisk ? 'At Risk' : 'Active');
-        const cat = isOverlap ? 'Partial Churn' : (d.source === 'expired' ? 'Full Churn' : (isAtRisk ? 'Renewal Due' : 'Healthy'));
-
-        if (filter === 'overlap' && cat !== 'Partial Churn') return;
-        if (filter === 'churned' && cat !== 'Full Churn') return;
-        if (filter === 'atrisk' && status !== 'At Risk') return;
-        if (filter === 'healthy' && cat !== 'Healthy') return;
-
-        count++;
-        if (count <= limit) {
-            const net = window.compNetwork[d.compGUID] || { active: new Set(), expired: new Set() };
-            let linksHtml = '';
-            let actCount = 0, expCount = 0, actStr = '', expStr = '';
-
-            for (let s of net.active) { if (s !== d.subscriptionId) { actCount++; if (actCount <= 2) actStr += (actStr ? ', ' : '') + s; } }
-            for (let s of net.expired) { if (s !== d.subscriptionId) { expCount++; if (expCount <= 2) expStr += (expStr ? ', ' : '') + s; } }
-
-            if (actCount > 0) linksHtml += `<div class="linked-act">🟢 Act: ${actStr}${actCount > 2 ? '...' : ''}</div>`;
-            if (expCount > 0) linksHtml += `<div class="linked-exp">🔴 Exp: ${expStr}${expCount > 2 ? '...' : ''}</div>`;
-            if (!linksHtml) linksHtml = `<span style="color:#555;font-size:0.65rem;">No other subs</span>`;
-
-            const sc = status === 'At Risk' ? 'status-atrisk' : (d.source === 'expired' ? 'status-expired' : 'status-active');
-            const cc = isOverlap ? 'status-overlap' : (status === 'At Risk' ? 'status-atrisk' : (d.source === 'expired' ? 'status-expired' : 'status-active'));
-
-            html += `<tr>
-                <td class="compguid-cell" title="Click to filter" onclick="document.getElementById('modalSearch').value='${d.compGUID}'; filterModalTable();">${d.compGUID.substring(0,16)}...</td>
-                <td>${d.subscriptionId}</td>
-                <td>${d.gstin||'<span style="color:#555">N/A</span>'}</td>
-                <td>${d.currentBlsExpiry.toLocaleDateString()}</td>
-                <td><span class="status-badge ${sc}">${status}</span></td>
-                <td><div class="linked-subs">${linksHtml}</div></td>
-            </tr>`;
-        }
-    }
-
-    if (filter === 'churned' || filter === 'all' || filter === 'overlap') {
-        for (let i = 0; i < expiredData.length; i++) processItem(expiredData[i]);
-    }
-    if (filter === 'healthy' || filter === 'all' || filter === 'overlap' || filter === 'atrisk') {
-        for (let i = 0; i < activeData.length; i++) processItem(activeData[i]);
-    }
-
-    document.getElementById('tableCount').textContent=`(${count.toLocaleString()} total records)`;
-    document.getElementById('tableBody').innerHTML=html;
+  const r=analysisResults,rd=+document.getElementById('riskDays').value||30;
+  const riskDate=new Date(Date.now()+rd*86400000),today=new Date();
+  let count=0,html='',shown=0;
+  const tryAdd=d=>{
+    const o=r.overlappingCompGUIDSet.has(d.compGUID);
+    const ar=d.source==='active'&&d.currentBlsExpiry<=riskDate&&d.currentBlsExpiry>=today;
+    const status=d.source==='expired'?'Expired':(ar?'At Risk':'Active');
+    const cat=o?'Partial Churn':(d.source==='expired'?'Full Churn':(ar?'Renewal Due':'Healthy'));
+    if(filter==='overlap'&&cat!=='Partial Churn')return;
+    if(filter==='churned'&&cat!=='Full Churn')return;
+    if(filter==='atrisk'&&status!=='At Risk')return;
+    if(filter==='healthy'&&cat!=='Healthy')return;
+    count++;
+    if(shown>=ROW_CAP)return;
+    shown++;
+    const L=linkedHTML(d);
+    const sc=status==='At Risk'?'status-atrisk':(d.source==='expired'?'status-expired':'status-active');
+    const esc=(d.compGUID||'').replace(/'/g,"\\'");
+    html+=`<tr>
+      <td class="compguid-cell" onclick="document.getElementById('globalSearchInput').value='${esc}';runGlobalSearch()">${(d.compGUID||'').slice(0,18)}...</td>
+      <td>${d.subscriptionId||''}</td>
+      <td>${d.gstin||'<span style="color:#555">N/A</span>'}</td>
+      <td>${d.currentBlsExpiry.toLocaleDateString()}</td>
+      <td><span class="status-badge ${sc}">${status}</span></td>
+      <td>${L.byComp}</td>
+      <td>${L.byGst}</td>
+    </tr>`;
+  };
+  if(filter==='churned'||filter==='all'||filter==='overlap')for(let i=0;i<expiredData.length;i++)tryAdd(expiredData[i]);
+  if(filter==='healthy'||filter==='all'||filter==='overlap'||filter==='atrisk')for(let i=0;i<activeData.length;i++)tryAdd(activeData[i]);
+  document.getElementById('tableCount').textContent=`(${count.toLocaleString()} match · showing ${shown})`;
+  document.getElementById('tableBody').innerHTML=html;
 }
-
 function showTable(f,btn){renderDataTable(f);document.querySelectorAll('.table-tab').forEach(t=>t.classList.remove('active'));if(btn)btn.classList.add('active');}
 
-// ==================== DOWNLOADS ====================
 function dlFile(c,n,t){const b=new Blob([c],{type:t});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=n;a.click();URL.revokeObjectURL(u);}
 
 function downloadCSV(){
-    const r=analysisResults,today=new Date(),rd=parseInt(document.getElementById('riskDays').value),rDate=new Date(today.getTime()+rd*86400000);
-    let csv='CompGUID,Subscription No,GSTIN,BLS Expiry,Source,Status,Category,Linked Active Subs,Linked Expired Subs\n';
-    const writeRow = (d) => {
-        const o=r.overlappingCompGUIDSet.has(d.compGUID);
-        const ar=d.source==='active'&&d.currentBlsExpiry<=rDate&&d.currentBlsExpiry>=today;
-        const net = window.compNetwork[d.compGUID] || {active:new Set(), expired:new Set()};
-        const actList = Array.from(net.active).filter(s => s !== d.subscriptionId).join('; ');
-        const expList = Array.from(net.expired).filter(s => s !== d.subscriptionId).join('; ');
-        csv+=`"${d.compGUID}","${d.subscriptionId}","${d.gstin||''}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}","${d.source==='expired'?'Expired':(ar?'At Risk':'Active')}","${o?'Partial Churn':(d.source==='expired'?'Full Churn':(ar?'Renewal Due':'Healthy'))}","${actList}","${expList}"\n`;
-    };
-    expiredData.forEach(writeRow); activeData.forEach(writeRow);
-    dlFile(csv,'churn_analysis.csv','text/csv');
+  const r=analysisResults,rd=+document.getElementById('riskDays').value||30,rDate=new Date(Date.now()+rd*86400000);
+  let csv='CompGUID,Sub No,GSTIN,Expiry,Source,Status,Category,Linked Active CompGUID,Linked Expired CompGUID,Linked Active GSTIN,Linked Expired GSTIN\n';
+  const w=d=>{
+    const o=r.overlappingCompGUIDSet.has(d.compGUID);
+    const ar=d.source==='active'&&d.currentBlsExpiry<=rDate&&d.currentBlsExpiry>=new Date();
+    const cn=window.compNet[d.compGUID]||{a:[],e:[]};
+    const gn=d.gstin?(window.gstNet[d.gstin]||{a:[],e:[]}):{a:[],e:[]};
+    const ca=[...new Set(cn.a.filter(s=>s!==d.subscriptionId))].join('; ');
+    const ce=[...new Set(cn.e.filter(s=>s!==d.subscriptionId))].join('; ');
+    const ga=[...new Set(gn.a.filter(s=>s!==d.subscriptionId))].join('; ');
+    const ge=[...new Set(gn.e.filter(s=>s!==d.subscriptionId))].join('; ');
+    csv+=`"${d.compGUID}","${d.subscriptionId}","${d.gstin||''}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}","${d.source==='expired'?'Expired':(ar?'At Risk':'Active')}","${o?'Partial Churn':(d.source==='expired'?'Full Churn':(ar?'Renewal Due':'Healthy'))}","${ca}","${ce}","${ga}","${ge}"\n`;
+  };
+  expiredData.forEach(w);activeData.forEach(w);
+  dlFile(csv,'churn_full_links.csv','text/csv');
 }
 
 function downloadExcel(){
-    const r=analysisResults,today=new Date(),rd=parseInt(document.getElementById('riskDays').value),rDate=new Date(today.getTime()+rd*86400000);
-    const ws1=[['CompGUID','Sub No','GSTIN','BLS Expiry','Source','Status','Category','Linked Active','Linked Expired']];
-    const writeRow = (d) => {
-        const o=r.overlappingCompGUIDSet.has(d.compGUID);
-        const ar=d.source==='active'&&d.currentBlsExpiry<=rDate&&d.currentBlsExpiry>=today;
-        const net = window.compNetwork[d.compGUID] || {active:new Set(), expired:new Set()};
-        const actList = Array.from(net.active).filter(s => s !== d.subscriptionId).join('; ');
-        const expList = Array.from(net.expired).filter(s => s !== d.subscriptionId).join('; ');
-        ws1.push([d.compGUID,d.subscriptionId,d.gstin||'',d.currentBlsExpiry.toISOString().slice(0,10),d.source,d.source==='expired'?'Expired':(ar?'At Risk':'Active'),o?'Partial Churn':(d.source==='expired'?'Full Churn':(ar?'Renewal Due':'Healthy')),actList,expList]);
-    };
-    expiredData.forEach(writeRow); activeData.forEach(writeRow);
-    const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(ws1),'Analysis');
-    XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['Metric','Value'],['Expired',r.totalExpired],['Active',r.totalActive],['Full Churn',r.fullChurn],['Healthy',r.healthy],['Overlap',r.overlappingCompGUIDs],['Churn%',r.churnRate],['Retention%',r.retentionRate],['At-Risk',r.atRisk]]),'Summary');
-    XLSX.writeFile(wb,'churn_analysis.xlsx');
+  const r=analysisResults,rd=+document.getElementById('riskDays').value||30,rDate=new Date(Date.now()+rd*86400000);
+  const ws1=[['CompGUID','Sub No','GSTIN','Expiry','Source','Status','Category','Linked Act Comp','Linked Exp Comp','Linked Act GST','Linked Exp GST']];
+  const w=d=>{
+    const o=r.overlappingCompGUIDSet.has(d.compGUID);
+    const ar=d.source==='active'&&d.currentBlsExpiry<=rDate&&d.currentBlsExpiry>=new Date();
+    const cn=window.compNet[d.compGUID]||{a:[],e:[]};
+    const gn=d.gstin?(window.gstNet[d.gstin]||{a:[],e:[]}):{a:[],e:[]};
+    ws1.push([d.compGUID,d.subscriptionId,d.gstin||'',d.currentBlsExpiry.toISOString().slice(0,10),d.source,d.source==='expired'?'Expired':(ar?'At Risk':'Active'),o?'Partial Churn':(d.source==='expired'?'Full Churn':(ar?'Renewal Due':'Healthy')),
+      [...new Set(cn.a.filter(s=>s!==d.subscriptionId))].join('; '),
+      [...new Set(cn.e.filter(s=>s!==d.subscriptionId))].join('; '),
+      [...new Set(gn.a.filter(s=>s!==d.subscriptionId))].join('; '),
+      [...new Set(gn.e.filter(s=>s!==d.subscriptionId))].join('; ')]);
+  };
+  expiredData.forEach(w);activeData.forEach(w);
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(ws1),'Analysis');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['Metric','Value'],['Expired',r.totalExpired],['Active',r.totalActive],['Full Churn',r.fullChurn],['Healthy',r.healthy],['Overlap',r.overlappingCompGUIDs],['Churn%',r.churnRate],['Retention%',r.retentionRate],['At-Risk',r.atRisk]]),'Summary');
+  XLSX.writeFile(wb,'churn_full_links.xlsx');
 }
 
 function downloadOverlap(){
-    const r=analysisResults;let csv='CompGUID,Subscription No,GSTIN,BLS Expiry,Source,Linked Active,Linked Expired\n';
-    const writeRow = (d) => {
-        if (!r.overlappingCompGUIDSet.has(d.compGUID)) return;
-        const net = window.compNetwork[d.compGUID] || {active:new Set(), expired:new Set()};
-        const actList = Array.from(net.active).filter(s => s !== d.subscriptionId).join('; ');
-        const expList = Array.from(net.expired).filter(s => s !== d.subscriptionId).join('; ');
-        csv+=`"${d.compGUID}","${d.subscriptionId}","${d.gstin||''}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}","${actList}","${expList}"\n`;
-    };
-    expiredData.forEach(writeRow); activeData.forEach(writeRow);
-    dlFile(csv,'overlap_data.csv','text/csv');
+  const r=analysisResults; let csv='CompGUID,Sub No,GSTIN,Expiry,Source,Linked Act Comp,Linked Exp Comp,Linked Act GST,Linked Exp GST\n';
+  const w=d=>{
+    if(!r.overlappingCompGUIDSet.has(d.compGUID))return;
+    const cn=window.compNet[d.compGUID]||{a:[],e:[]};
+    const gn=d.gstin?(window.gstNet[d.gstin]||{a:[],e:[]}):{a:[],e:[]};
+    csv+=`"${d.compGUID}","${d.subscriptionId}","${d.gstin||''}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}","${[...new Set(cn.a.filter(s=>s!==d.subscriptionId))].join('; ')}","${[...new Set(cn.e.filter(s=>s!==d.subscriptionId))].join('; ')}","${[...new Set(gn.a.filter(s=>s!==d.subscriptionId))].join('; ')}","${[...new Set(gn.e.filter(s=>s!==d.subscriptionId))].join('; ')}"\n`;
+  };
+  expiredData.forEach(w);activeData.forEach(w);
+  dlFile(csv,'overlap_full_links.csv','text/csv');
 }
 
 function downloadAtRisk(){
-    let csv='CompGUID,Subscription No,GSTIN,BLS Expiry,Days Left\n';const today=new Date();
-    analysisResults.atRiskData.forEach(d=>{const dl=Math.floor((d.currentBlsExpiry-today)/86400000);csv+=`"${d.compGUID}","${d.subscriptionId}","${d.gstin||''}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${dl}"\n`;});
-    dlFile(csv,'at_risk_data.csv','text/csv');
+  let csv='CompGUID,Sub No,GSTIN,Expiry,Days Left\n'; const today=new Date();
+  analysisResults.atRiskData.forEach(d=>{csv+=`"${d.compGUID}","${d.subscriptionId}","${d.gstin||''}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${Math.floor((d.currentBlsExpiry-today)/86400000)}"\n`;});
+  dlFile(csv,'at_risk.csv','text/csv');
 }
 
-// ==================== MAIN RUNNER ====================
 function runAnalysis(){
-    document.getElementById('loadingOverlay').classList.add('show');
-    document.getElementById('loadingText').textContent=`Analyzing ${(expiredData.length+activeData.length).toLocaleString()} records...`;
-    
-    // Non-blocking deferred execution
-    setTimeout(()=>{
-        analyzeData();
-        renderKPIs();
-        renderInsights();
-        renderVenn();
-        renderFlowDiagram();
-        renderCorrelationBars();
-        renderCharts();
-        renderDataTable('all');
-        document.getElementById('loadingOverlay').classList.remove('show');
-    }, 50);
+  document.getElementById('loadingOverlay').classList.add('show');
+  document.getElementById('loadingText').textContent=`Analyzing ${(expiredData.length+activeData.length).toLocaleString()} records...`;
+  setTimeout(()=>{
+    analyzeData();
+    renderKPIs(); renderInsights(); renderVenn(); renderFlowDiagram();
+    renderCorrelationBars(); renderCharts(); renderDataTable('all');
+    document.getElementById('loadingOverlay').classList.remove('show');
+  },40);
 }
 
-// AUTO-START
-window.addEventListener('load',()=>{
-    debugLog('Page loaded. Starting High-Speed Turbo Engine...');
-    autoLoadFromRepo();
-});
+window.addEventListener('load',autoLoadFromRepo);
 </script>
 </body>
 </html>
