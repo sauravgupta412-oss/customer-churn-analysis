@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Churn & Retention - Drill-Down Dashboard</title>
+    <title>Customer Churn & Retention - Turbo Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
@@ -248,12 +248,12 @@
         .modal-overlay {
             display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(10,10,26,0.92); z-index: 2000;
-            justify-content: center; align-items: center; padding: 20px;
+            justify-content: center; align-items: center; padding: 30px;
         }
         .modal-overlay.show { display: flex; }
         .modal {
             background: #1a1a3e; border: 1px solid rgba(255,255,255,0.12);
-            border-radius: 16px; width: 100%; max-width: 1200px; max-height: 90vh; /* WIDER MODAL */
+            border-radius: 16px; width: 100%; max-width: 1200px; max-height: 90vh;
             overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.5);
             display: flex; flex-direction: column;
         }
@@ -310,10 +310,10 @@
         .modal-btn:hover { background: rgba(102,126,234,0.15); border-color: #667eea; }
         .modal-btn.primary { background: linear-gradient(135deg, #667eea, #764ba2); border-color: transparent; color: #fff; }
 
-        /* Correlation Table Formatting */
         .compguid-cell {
             font-family: monospace; font-size: 0.72rem; color: #a855f7;
             text-decoration: underline; cursor: pointer; transition: color 0.2s;
+            word-break: break-all; max-width: 280px; user-select: all;
         }
         .compguid-cell:hover { color: #fff; }
         
@@ -325,7 +325,7 @@
         .status-active { background: rgba(56,239,125,0.12); color: #38ef7d; }
         .status-expired { background: rgba(244,92,67,0.12); color: #f45c43; }
 
-        /* Data Table (Bottom) */
+        /* Data Table */
         .data-table-container {
             margin: 16px 30px; background: rgba(255,255,255,0.04);
             border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; overflow: hidden;
@@ -423,13 +423,13 @@
 <div class="header">
     <h1>📊 Customer Churn & Retention Dashboard</h1>
     <p>Click any KPI, chart or number for drill-down analysis</p>
-    <div class="header-badge">v6.2 — Linked Co-Subscriptions Engine & Click-to-Filter</div>
+    <div class="header-badge">v7.0 — High-Speed Ultra Performance Engine</div>
 </div>
 
 <!-- Status Bar -->
 <div class="status-bar loading" id="statusBar">
     <div class="status-spinner"></div>
-    <span>Connecting to SheetJS Binary Engine...</span>
+    <span>Connecting to High-Speed Engine...</span>
 </div>
 
 <!-- Global Search Bar -->
@@ -466,6 +466,15 @@
         </div>
         <button class="file-btn repo-btn" onclick="loadFromRepo()">🔄 Retry Auto-Load</button>
     </div>
+</div>
+
+<!-- Controls -->
+<div class="controls-panel" id="simControls">
+    <div class="control-group"><label>Expired Count</label><input type="number" id="expiredCount" value="350" min="50" max="5000"></div>
+    <div class="control-group"><label>Active Count</label><input type="number" id="activeCount" value="500" min="50" max="5000"></div>
+    <div class="control-group"><label>Overlap %</label><input type="number" id="overlapPct" value="15" min="0" max="50"></div>
+    <div class="control-group"><label>At-Risk Days</label><input type="number" id="riskDays" value="30" min="7" max="90"></div>
+    <button class="btn-generate" onclick="generateSimulation()">🔄 Run Simulation</button>
 </div>
 
 <!-- KPIs -->
@@ -568,13 +577,13 @@
     </div>
 </div>
 
-<footer>Customer Churn Dashboard v6.2 | GitHub API Engine | GitHub Pages</footer>
+<footer>Customer Churn Dashboard v7.0 | High-Speed Turbo Engine | GitHub Pages</footer>
 
 <script>
 // ==================== STATE ====================
-let expiredData=[],activeData=[],analysisResults={},charts={},currentModalData=[];
+let expiredData=[], activeData=[], analysisResults={}, charts={}, currentModalData=[];
 let dataSource='none';
-window.compNetwork = {}; // GLOBAL NETWORK MAP
+window.compNetwork = {}; 
 const stateGSTCodes={'01':'Jammu & Kashmir','02':'Himachal Pradesh','03':'Punjab','04':'Chandigarh','05':'Uttarakhand','06':'Haryana','07':'Delhi','08':'Rajasthan','09':'Uttar Pradesh','10':'Bihar','11':'Sikkim','12':'Arunachal Pradesh','13':'Nagaland','14':'Manipur','15':'Mizoram','16':'Tripura','17':'Meghalaya','18':'Assam','19':'West Bengal','20':'Jharkhand','21':'Odisha','22':'Chhattisgarh','23':'Madhya Pradesh','24':'Gujarat','26':'Dadra Nagar Haveli','27':'Maharashtra','29':'Karnataka','30':'Goa','32':'Kerala','33':'Tamil Nadu','34':'Puducherry','36':'Telangana','37':'Andhra Pradesh'};
 
 // ==================== DEBUG LOGGER ====================
@@ -585,7 +594,6 @@ function debugLog(msg, type='info') {
     const time=new Date().toLocaleTimeString();
     db.innerHTML+=`<div class="debug-line ${type}">[${time}] ${msg}</div>`;
     db.scrollTop=db.scrollHeight;
-    console.log(`[${type}] ${msg}`);
 }
 
 function setStatus(msg, type='info') {
@@ -594,122 +602,133 @@ function setStatus(msg, type='info') {
     sb.innerHTML=type==='loading'?`<div class="status-spinner"></div><span>${msg}</span>`:`<span>${msg}</span>`;
 }
 
-// ==================== CSV PARSING ====================
-function parseCSVRobust(csvText) {
-    if(csvText.charCodeAt(0)===0xFEFF) csvText=csvText.slice(1);
-    csvText=csvText.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
-    const lines=csvText.split('\n').filter(l=>l.trim());
-    if(lines.length<2) return {headers:[],rows:[]};
+// ==================== FAST ULTRA-SPEED DATE PARSER ====================
+function fastParseDate(str) {
+    if (!str) return new Date();
+    if (str instanceof Date) return str;
+    if (typeof str === 'number') return new Date((str - 25569) * 86400000);
     
-    const firstLine=lines[0];
-    const commaCount=(firstLine.match(/,/g)||[]).length;
-    const semiCount=(firstLine.match(/;/g)||[]).length;
-    const tabCount=(firstLine.match(/\t/g)||[]).length;
-    let delimiter=',';
-    if(semiCount>commaCount) delimiter=';';
-    if(tabCount>commaCount&&tabCount>semiCount) delimiter='\t';
-    
-    const parseRow=(line)=>{
-        const result=[]; let current=''; let inQuotes=false;
-        for(let i=0;i<line.length;i++){
-            const ch=line[i];
-            if(ch==='"'){inQuotes=!inQuotes;continue;}
-            if(ch===delimiter&&!inQuotes){result.push(current.trim());current='';continue;}
-            current+=ch;
+    const s = String(str).trim();
+    if (!s) return new Date();
+
+    // Fast ISO YYYY-MM-DD
+    if (s.length >= 10 && s.charAt(4) === '-' && s.charAt(7) === '-') {
+        const y = parseInt(s.substring(0,4), 10);
+        const m = parseInt(s.substring(5,7), 10) - 1;
+        const d = parseInt(s.substring(8,10), 10);
+        return new Date(y, m, d);
+    }
+
+    const d = new Date(s);
+    if (!isNaN(d.getTime())) return d;
+
+    const parts = s.split(/[\/\-\.]/);
+    if (parts.length === 3) {
+        const p0 = parseInt(parts[0], 10), p1 = parseInt(parts[1], 10), p2 = parseInt(parts[2], 10);
+        const yr = p2 < 100 ? 2000 + p2 : p2;
+        if (p0 > 12) return new Date(yr, p1 - 1, p0);
+        return new Date(yr, p0 - 1, p1);
+    }
+    return new Date();
+}
+
+// ==================== FAST NATIVE CSV STREAMING PARSER ====================
+function parseCSVFast(text, source) {
+    if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+    const lines = text.split(/\r?\n/);
+    if (lines.length < 2) return [];
+
+    const firstLine = lines[0];
+    let delimiter = ',';
+    if ((firstLine.match(/;/g)||[]).length > (firstLine.match(/,/g)||[]).length) delimiter = ';';
+    if ((firstLine.match(/\t/g)||[]).length > (firstLine.match(/,/g)||[]).length) delimiter = '\t';
+
+    const parseRow = (line) => {
+        const res = []; let cur = ''; let inQ = false;
+        for (let i = 0; i < line.length; i++) {
+            const c = line[i];
+            if (c === '"') { inQ = !inQ; continue; }
+            if (c === delimiter && !inQ) { res.push(cur.trim()); cur = ''; continue; }
+            cur += c;
         }
-        result.push(current.trim());
-        return result;
+        res.push(cur.trim());
+        return res;
     };
-    
-    const headers=parseRow(lines[0]);
-    const rows=[];
-    for(let i=1;i<lines.length;i++){
-        const cols=parseRow(lines[i]);
-        if(cols.length>=2){
-            const row={}; headers.forEach((h,j)=>{row[h]=cols[j]||'';}); rows.push(row);
+
+    const headers = parseRow(lines[0]);
+    debugLog(`Fast CSV Headers (${source}): [${headers.join(', ')}]`);
+
+    // Column Index Mapping
+    let compIdx = 0, subIdx = 1, gstIdx = 2, expIdx = 3;
+    headers.forEach((h, idx) => {
+        const l = h.toLowerCase().replace(/[^a-z0-9]/g, '');
+        if (l.includes('guid') || l.includes('comp')) compIdx = idx;
+        else if (l.includes('sub') || l.includes('serial') || l.includes('number')) subIdx = idx;
+        else if (l.includes('gst')) gstIdx = idx;
+        else if (l.includes('expiry') || l.includes('bls') || l.includes('date')) expIdx = idx;
+    });
+
+    const parsed = [];
+    for (let i = 1; i < lines.length; i++) {
+        if (!lines[i].trim()) continue;
+        const cols = parseRow(lines[i]);
+        if (cols.length <= compIdx && cols.length <= subIdx) continue;
+
+        const compVal = cols[compIdx] || '';
+        const subVal = cols[subIdx] || '';
+        const gstVal = cols[gstIdx] || '';
+        const expVal = cols[expIdx] || '';
+
+        if (compVal || subVal) {
+            parsed.push({
+                compGUID: compVal,
+                subscriptionId: subVal,
+                gstin: gstVal.length >= 8 ? gstVal : null,
+                currentBlsExpiry: fastParseDate(expVal),
+                source: source
+            });
         }
     }
-    return {headers,rows};
+    return parsed;
 }
 
-// ==================== COLUMN DETECTION ====================
-function autoDetectColumn(headers,keywords){
-    const lower=headers.map(h=>String(h).toLowerCase().replace(/[^a-z0-9]/g,''));
-    for(const kw of keywords){
-        const lk=kw.toLowerCase().replace(/[^a-z0-9]/g,'');
-        let idx=lower.findIndex(h=>h===lk);
-        if(idx!==-1) return headers[idx];
-    }
-    for(const kw of keywords){
-        const lk=kw.toLowerCase().replace(/[^a-z0-9]/g,'');
-        let idx=lower.findIndex(h=>h.includes(lk)||lk.includes(h));
-        if(idx!==-1) return headers[idx];
-    }
-    return null;
-}
-
-function detectMappings(headers){
-    let comp = autoDetectColumn(headers, ['compguid','comp_guid','companyguid','company_guid','database reference','db ref','company','guid','comp']);
-    let sub  = autoDetectColumn(headers, ['subscription_number','subscription number','subscription id','subscriptionid','subscription_id','sub_id','subid','serial','subscription','sub']);
-    let gst  = autoDetectColumn(headers, ['gstin','gst_number','gstnumber','gst no','gstno','gst']);
-    let exp  = autoDetectColumn(headers, ['current_bls_expiry','current bls expiry','bls_expiry','blsexpiry','expiry_date','expiry date','expiry','bls','date']);
-
-    if (!comp && headers.length >= 1) { comp = headers[0]; debugLog(`Positional Fallback: Col 1 -> CompGUID ("${headers[0]}")`, 'warn'); }
-    if (!sub  && headers.length >= 2) { sub  = headers[1]; debugLog(`Positional Fallback: Col 2 -> Sub No ("${headers[1]}")`, 'warn'); }
-    if (!gst  && headers.length >= 3) { gst  = headers[2]; debugLog(`Positional Fallback: Col 3 -> GSTIN ("${headers[2]}")`, 'warn'); }
-    if (!exp  && headers.length >= 4) { exp  = headers[3]; debugLog(`Positional Fallback: Col 4 -> Expiry Date ("${headers[3]}")`, 'warn'); }
-
-    return { compGUID: comp, subscriptionId: sub, gstin: gst, expiry: exp };
-}
-
-function parseWithMapping(rows,mapping,source){
-    return rows.map(row=>{
-        let ev=mapping.expiry?row[mapping.expiry]:null, pd;
-        if(ev instanceof Date) pd=ev;
-        else if(typeof ev==='number') pd=new Date((ev-25569)*86400000);
-        else if(typeof ev==='string'&&ev.trim()){
-            pd=new Date(ev.trim());
-            if(isNaN(pd.getTime())){
-                const parts=ev.trim().split(/[\/\-\.]/);
-                if(parts.length===3){
-                    const p0=parseInt(parts[0],10), p1=parseInt(parts[1],10), p2=parseInt(parts[2],10);
-                    const yr=p2<100?2000+p2:p2;
-                    if(p0>12) pd=new Date(yr,p1-1,p0); else pd=new Date(yr,p0-1,p1);
-                }
-            }
-        }
-        else pd=new Date();
-        if(!pd||isNaN(pd.getTime())) pd=new Date();
-        
-        const compVal=mapping.compGUID?String(row[mapping.compGUID]||'').trim():'';
-        const subVal=mapping.subscriptionId?String(row[mapping.subscriptionId]||'').trim():'';
-        const gstVal=mapping.gstin?String(row[mapping.gstin]||'').trim():'';
-
-        return{compGUID:compVal, subscriptionId:subVal, gstin:gstVal&&gstVal.length>=8?gstVal:null, currentBlsExpiry:pd, source:source};
-    }).filter(d=>d.compGUID||d.subscriptionId);
-}
-
-// ==================== SHEETJS BINARY ENGINE ====================
-function parseFileBuffer(arrayBuffer, source) {
+// ==================== FAST SHEETJS FALLBACK (FOR .XLSX) ====================
+function parseExcelBuffer(arrayBuffer, source) {
     try {
         const wb = XLSX.read(new Uint8Array(arrayBuffer), { type: 'array', cellDates: true });
-        if (!wb.SheetNames || wb.SheetNames.length === 0) return [];
         const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: '' });
         if (!json || json.length === 0) return [];
-        const mapping = detectMappings(Object.keys(json[0]));
-        return parseWithMapping(json, mapping, source);
-    } catch (err) {
-        debugLog(`SheetJS Engine Error (${source}): ${err.message}`, 'error');
+        
+        const headers = Object.keys(json[0]);
+        let compKey = headers[0], subKey = headers[1], gstKey = headers[2], expKey = headers[3];
+        
+        headers.forEach(h => {
+            const l = h.toLowerCase().replace(/[^a-z0-9]/g, '');
+            if (l.includes('guid') || l.includes('comp')) compKey = h;
+            else if (l.includes('sub') || l.includes('number')) subKey = h;
+            else if (l.includes('gst')) gstKey = h;
+            else if (l.includes('expiry') || l.includes('bls')) expKey = h;
+        });
+
+        return json.map(row => ({
+            compGUID: String(row[compKey] || '').trim(),
+            subscriptionId: String(row[subKey] || '').trim(),
+            gstin: String(row[gstKey] || '').trim().length >= 8 ? String(row[gstKey] || '').trim() : null,
+            currentBlsExpiry: fastParseDate(row[expKey]),
+            source: source
+        })).filter(d => d.compGUID || d.subscriptionId);
+    } catch (e) {
+        debugLog(`SheetJS parse error: ${e.message}`, 'error');
         return [];
     }
 }
 
-// ==================== GITHUB REST API ENGINE ====================
+// ==================== FAST REPO AUTO-LOADER ====================
 async function autoLoadFromRepo() {
-    setStatus('Connecting to SheetJS Binary Engine & GitHub API...', 'loading');
-    let owner = 'sauravgupta412-oss';
-    let repo = 'customer-churn-analysis';
+    setStatus('Connecting to High-Speed Turbo Engine & GitHub API...', 'loading');
+    debugLog('🚀 High-Speed Turbo Engine Initialized...');
 
+    let owner = 'sauravgupta412-oss', repo = 'customer-churn-analysis';
     if (window.location.hostname.includes('github.io')) {
         owner = window.location.hostname.split('.')[0];
         const pathParts = window.location.pathname.split('/').filter(p => p);
@@ -718,41 +737,56 @@ async function autoLoadFromRepo() {
 
     try {
         const repoRes = await fetch(`https://api.github.com/repos/${owner}/${repo}`);
-        if (!repoRes.ok) throw new Error(`API returned HTTP ${repoRes.status} for repo info.`);
+        if (!repoRes.ok) throw new Error(`Repo HTTP ${repoRes.status}`);
         const repoData = await repoRes.json();
         const branch = repoData.default_branch || 'main';
 
         const treeRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`);
-        if (!treeRes.ok) throw new Error(`Git Tree API returned HTTP ${treeRes.status}`);
+        if (!treeRes.ok) throw new Error(`Tree HTTP ${treeRes.status}`);
         const treeData = await treeRes.json();
         const files = treeData.tree || [];
 
         const expFile = files.find(f => f.path.toLowerCase().includes('expired') && (f.path.endsWith('.csv') || f.path.endsWith('.xlsx')));
         const actFile = files.find(f => f.path.toLowerCase().includes('active') && (f.path.endsWith('.csv') || f.path.endsWith('.xlsx')));
 
-        if (!expFile || !actFile) throw new Error(`Matching files not found in Git tree.`);
+        if (!expFile || !actFile) throw new Error('Matching files not found in Git tree.');
+
+        debugLog(`Matched Expired: "${expFile.path}"`, 'success');
+        debugLog(`Matched Active: "${actFile.path}"`, 'success');
 
         const expUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${expFile.path}`;
         const actUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${actFile.path}`;
 
+        // Download & Parse Expired
+        const t0 = performance.now();
         const expRes = await fetch(expUrl + '?t=' + Date.now());
-        const expBuffer = await expRes.arrayBuffer();
+        if (expFile.path.endsWith('.xlsx')) {
+            expiredData = parseExcelBuffer(await expRes.arrayBuffer(), 'expired');
+        } else {
+            expiredData = parseCSVFast(await expRes.text(), 'expired');
+        }
+        debugLog(`Parsed Expired Data (${expiredData.length.toLocaleString()} rows) in ${(performance.now() - t0).toFixed(0)}ms`, 'success');
 
+        // Download & Parse Active
+        const t1 = performance.now();
         const actRes = await fetch(actUrl + '?t=' + Date.now());
-        const actBuffer = await actRes.arrayBuffer();
-
-        expiredData = parseFileBuffer(expBuffer, 'expired');
-        activeData  = parseFileBuffer(actBuffer, 'active');
+        if (actFile.path.endsWith('.xlsx')) {
+            activeData = parseExcelBuffer(await actRes.arrayBuffer(), 'active');
+        } else {
+            activeData = parseCSVFast(await actRes.text(), 'active');
+        }
+        debugLog(`Parsed Active Data (${activeData.length.toLocaleString()} rows) in ${(performance.now() - t1).toFixed(0)}ms`, 'success');
 
         if (expiredData.length > 0 && activeData.length > 0) {
             dataSource = 'repo';
-            setStatus(`✅ Real Data Auto-Loaded: ${expiredData.length} expired + ${activeData.length} active records`, 'success');
+            setStatus(`✅ Real Data Auto-Loaded: ${expiredData.length.toLocaleString()} expired + ${activeData.length.toLocaleString()} active records`, 'success');
             runAnalysis();
         } else {
-            throw new Error(`Parsed 0 valid records from files.`);
+            throw new Error('Parsed 0 records.');
         }
 
     } catch (err) {
+        debugLog(`❌ Engine Error: ${err.message}`, 'error');
         setStatus(`⚠️ Auto-load failed: ${err.message}. Using simulation mode.`, 'error');
         generateSimulation();
     }
@@ -764,26 +798,25 @@ async function handleFileUpload(type, input) {
     const fn = document.getElementById(type + 'FileName');
     fn.className = 'file-name'; fn.textContent = `⏳ Reading ${file.name}...`;
     try {
-        const buf = await file.arrayBuffer();
-        const parsed = parseFileBuffer(buf, type);
+        let parsed = [];
+        if (file.name.endsWith('.csv')) {
+            parsed = parseCSVFast(await file.text(), type);
+        } else {
+            parsed = parseExcelBuffer(await file.arrayBuffer(), type);
+        }
         if (type === 'expired') expiredData = parsed; else activeData = parsed;
-        fn.textContent = `✅ ${file.name} (${parsed.length} rows)`;
+        fn.textContent = `✅ ${file.name} (${parsed.length.toLocaleString()} rows)`;
         if (expiredData.length > 0 && activeData.length > 0) {
             dataSource = 'uploaded';
-            setStatus(`✅ Uploaded Data: ${expiredData.length} expired + ${activeData.length} active`, 'success');
+            setStatus(`✅ Uploaded Data: ${expiredData.length.toLocaleString()} expired + ${activeData.length.toLocaleString()} active`, 'success');
             runAnalysis();
         }
-    } catch (e) { fn.className = 'file-name error'; fn.textContent = `❌ ${e}`; }
+    } catch (e) { fn.className = 'file-name error'; fn.textContent = `❌ ${e.message}`; }
 }
 
 function loadFromRepo() { autoLoadFromRepo(); }
 
 // ==================== SIMULATION ====================
-function genUUID(){return'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c==='x'?r:(r&0x3|0x8)).toString(16);});}
-function genSubId(){return'SUB-'+String(Math.floor(Math.random()*900000)+100000);}
-function genGSTIN(sc){const c='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';let g=sc;for(let i=0;i<10;i++)g+=c[Math.floor(Math.random()*c.length)];g+=(Math.floor(Math.random()*9)+1)+'Z'+c[Math.floor(Math.random()*c.length)];return g;}
-function rndDate(s,e){return new Date(s.getTime()+Math.random()*(e.getTime()-s.getTime()));}
-
 function generateSimulation(){
     const ec=parseInt(document.getElementById('expiredCount').value)||350,ac=parseInt(document.getElementById('activeCount').value)||500,op=parseInt(document.getElementById('overlapPct').value)||15;
     const oc=Math.floor(Math.min(ec,ac)*op/100),sk=Object.keys(stateGSTCodes),sg=[],sgt=[];
@@ -794,43 +827,102 @@ function generateSimulation(){
     dataSource='simulation'; runAnalysis();
 }
 
-// ==================== ANALYSIS ENGINE ====================
-function analyzeData(){
-    const eG=new Set(), aG=new Set();
-    const eGST=new Set(), aGST=new Set();
+// ==================== SINGLE-PASS $O(N)$ ANALYSIS ENGINE ====================
+function analyzeData() {
+    const t0 = performance.now();
     
-    // BUILD NETWORK MAP FOR CORRELATION
-    window.compNetwork = {};
-    [...expiredData, ...activeData].forEach(d => {
-        if(!window.compNetwork[d.compGUID]) {
-            window.compNetwork[d.compGUID] = { active: new Set(), expired: new Set() };
-        }
-        window.compNetwork[d.compGUID][d.source].add(d.subscriptionId);
-        
-        if(d.source === 'expired') { eG.add(d.compGUID); if(d.gstin) eGST.add(d.gstin); }
-        if(d.source === 'active') { aG.add(d.compGUID); if(d.gstin) aGST.add(d.gstin); }
-    });
+    const eG = new Set(), aG = new Set();
+    const eGST = new Set(), aGST = new Set();
+    const mE = {}, mA = {};
+    const sC = {};
+    const sPC = {};
+    let expiredNoGST = 0, activeNoGST = 0;
 
-    const oG=new Set([...eG].filter(x=>aG.has(x))),oGST=new Set([...eGST].filter(x=>aGST.has(x)));
-    const fC=new Set([...eG].filter(x=>!aG.has(x))),hG=new Set([...aG].filter(x=>!eG.has(x)));
-    const rd=parseInt(document.getElementById('riskDays').value)||30;
-    const today=new Date(),riskDate=new Date(today.getTime()+rd*86400000);
-    const atRisk=activeData.filter(d=>d.currentBlsExpiry<=riskDate&&d.currentBlsExpiry>=today);
-    
-    const mE={},mA={};
-    expiredData.forEach(d=>{const k=d.currentBlsExpiry.toISOString().slice(0,7);mE[k]=(mE[k]||0)+1;});
-    activeData.forEach(d=>{const k=d.currentBlsExpiry.toISOString().slice(0,7);mA[k]=(mA[k]||0)+1;});
-    const sC={};
-    expiredData.forEach(d=>{if(d.gstin&&d.gstin.length>=2){const s=stateGSTCodes[d.gstin.substring(0,2)]||'Other';if(!sC[s])sC[s]={expired:0,active:0};sC[s].expired++;}});
-    activeData.forEach(d=>{if(d.gstin&&d.gstin.length>=2){const s=stateGSTCodes[d.gstin.substring(0,2)]||'Other';if(!sC[s])sC[s]={expired:0,active:0};sC[s].active++;}});
-    const sPC={};[...expiredData,...activeData].forEach(d=>{sPC[d.compGUID]=(sPC[d.compGUID]||0)+1;});
-    const dd={};Object.values(sPC).forEach(c=>{const b=c>5?'6+':String(c);dd[b]=(dd[b]||0)+1;});
-    const tot=fC.size+hG.size+oG.size;
-    
-    analysisResults={totalExpired:expiredData.length,totalActive:activeData.length,overlappingCompGUIDs:oG.size,overlappingGSTINs:oGST.size,fullChurn:fC.size,healthy:hG.size,atRisk:atRisk.length,atRiskData:atRisk,churnRate:tot>0?((fC.size/tot)*100).toFixed(1):'0.0',retentionRate:tot>0?((hG.size/tot)*100).toFixed(1):'0.0',partialChurnRate:tot>0?((oG.size/tot)*100).toFixed(1):'0.0',monthlyExpired:mE,monthlyActive:mA,stateChurn:sC,densityDist:dd,overlappingCompGUIDSet:oG,fullChurnSet:fC,healthySet:hG,expiredGSTINCount:eGST.size,activeGSTINCount:aGST.size,gstinOverlap:oGST.size,expiredNoGST:expiredData.filter(d=>!d.gstin).length,activeNoGST:activeData.filter(d=>!d.gstin).length,totalCompanies:tot};
+    window.compNetwork = {};
+
+    // Single-pass Expired Loop
+    for (let i = 0; i < expiredData.length; i++) {
+        const d = expiredData[i];
+        eG.add(d.compGUID);
+        sPC[d.compGUID] = (sPC[d.compGUID] || 0) + 1;
+
+        if (!window.compNetwork[d.compGUID]) window.compNetwork[d.compGUID] = { active: new Set(), expired: new Set() };
+        window.compNetwork[d.compGUID].expired.add(d.subscriptionId);
+
+        const m = d.currentBlsExpiry.toISOString().slice(0, 7);
+        mE[m] = (mE[m] || 0) + 1;
+
+        if (d.gstin) {
+            eGST.add(d.gstin);
+            if (d.gstin.length >= 2) {
+                const s = stateGSTCodes[d.gstin.substring(0, 2)] || 'Other';
+                if (!sC[s]) sC[s] = { expired: 0, active: 0 };
+                sC[s].expired++;
+            }
+        } else {
+            expiredNoGST++;
+        }
+    }
+
+    // Single-pass Active Loop
+    const rd = parseInt(document.getElementById('riskDays').value) || 30;
+    const today = new Date(), riskDate = new Date(today.getTime() + rd * 86400000);
+    const atRiskData = [];
+
+    for (let i = 0; i < activeData.length; i++) {
+        const d = activeData[i];
+        aG.add(d.compGUID);
+        sPC[d.compGUID] = (sPC[d.compGUID] || 0) + 1;
+
+        if (!window.compNetwork[d.compGUID]) window.compNetwork[d.compGUID] = { active: new Set(), expired: new Set() };
+        window.compNetwork[d.compGUID].active.add(d.subscriptionId);
+
+        const m = d.currentBlsExpiry.toISOString().slice(0, 7);
+        mA[m] = (mA[m] || 0) + 1;
+
+        if (d.currentBlsExpiry <= riskDate && d.currentBlsExpiry >= today) {
+            atRiskData.push(d);
+        }
+
+        if (d.gstin) {
+            aGST.add(d.gstin);
+            if (d.gstin.length >= 2) {
+                const s = stateGSTCodes[d.gstin.substring(0, 2)] || 'Other';
+                if (!sC[s]) sC[s] = { expired: 0, active: 0 };
+                sC[s].active++;
+            }
+        } else {
+            activeNoGST++;
+        }
+    }
+
+    const oG = new Set([...eG].filter(x => aG.has(x)));
+    const oGST = new Set([...eGST].filter(x => aGST.has(x)));
+    const fC = new Set([...eG].filter(x => !aG.has(x)));
+    const hG = new Set([...aG].filter(x => !eG.has(x)));
+
+    const dd = {};
+    Object.values(sPC).forEach(c => { const b = c > 5 ? '6+' : String(c); dd[b] = (dd[b] || 0) + 1; });
+
+    const tot = fC.size + hG.size + oG.size;
+
+    analysisResults = {
+        totalExpired: expiredData.length, totalActive: activeData.length,
+        overlappingCompGUIDs: oG.size, overlappingGSTINs: oGST.size,
+        fullChurn: fC.size, healthy: hG.size, atRisk: atRiskData.length, atRiskData: atRiskData,
+        churnRate: tot > 0 ? ((fC.size / tot) * 100).toFixed(1) : '0.0',
+        retentionRate: tot > 0 ? ((hG.size / tot) * 100).toFixed(1) : '0.0',
+        partialChurnRate: tot > 0 ? ((oG.size / tot) * 100).toFixed(1) : '0.0',
+        monthlyExpired: mE, monthlyActive: mA, stateChurn: sC, densityDist: dd,
+        overlappingCompGUIDSet: oG, fullChurnSet: fC, healthySet: hG,
+        expiredGSTINCount: eGST.size, activeGSTINCount: aGST.size, gstinOverlap: oGST.size,
+        expiredNoGST: expiredNoGST, activeNoGST: activeNoGST, totalCompanies: tot
+    };
+
+    debugLog(`Single-pass analysis completed in ${(performance.now() - t0).toFixed(0)}ms`, 'success');
 }
 
-// ==================== DRILL-DOWN & CORRELATION MODAL ====================
+// ==================== LAZY DRILL-DOWN MODAL ====================
 function openDrillDown(title, data, statsArray){
     currentModalData=data; document.getElementById('modalTitle').textContent=title;
     document.getElementById('modalStats').innerHTML=statsArray.map(s=>`<div class="modal-stat"><div class="modal-stat-value" style="color:${s.color||'#667eea'}">${s.value}</div><div class="modal-stat-label">${s.label}</div></div>`).join('');
@@ -839,32 +931,37 @@ function openDrillDown(title, data, statsArray){
 }
 
 function renderModalTable(data){
-    document.getElementById('modalTableHead').innerHTML=`<tr><th>CompGUID</th><th>Sub No</th><th>GSTIN</th><th>BLS Expiry</th><th>Status</th><th>Linked Co-Subscriptions (Same CompGUID)</th></tr>`;
+    document.getElementById('modalTableHead').innerHTML=`<tr><th>CompGUID</th><th>Sub No</th><th>GSTIN</th><th>BLS Expiry</th><th>Source</th><th>Linked Co-Subscriptions (Same CompGUID)</th></tr>`;
     const today=new Date();
-    document.getElementById('modalTableBody').innerHTML=data.slice(0,500).map(d=>{
-        const diff=Math.floor((d.currentBlsExpiry-today)/86400000);
-        const diffColor=diff>30?'#38ef7d':diff>0?'#ffd200':'#f45c43';
-        
-        // CORRELATION LOGIC
+    const limit = 300;
+    
+    let html = '';
+    for (let i = 0; i < Math.min(data.length, limit); i++) {
+        const d = data[i];
         const net = window.compNetwork[d.compGUID] || { active: new Set(), expired: new Set() };
-        const actList = Array.from(net.active).filter(s => s !== d.subscriptionId);
-        const expList = Array.from(net.expired).filter(s => s !== d.subscriptionId);
         
         let linksHtml = '';
-        if(actList.length > 0) linksHtml += `<div class="linked-act" title="${actList.join('\n')}">🟢 Act: ${actList.slice(0,2).join(', ')}${actList.length>2?'...':''}</div>`;
-        if(expList.length > 0) linksHtml += `<div class="linked-exp" title="${expList.join('\n')}">🔴 Exp: ${expList.slice(0,2).join(', ')}${expList.length>2?'...':''}</div>`;
-        if(linksHtml === '') linksHtml = `<span style="color:#555;font-size:0.65rem;">No other subs</span>`;
+        let actCount = 0, expCount = 0, actStr = '', expStr = '';
+        
+        for (let s of net.active) { if (s !== d.subscriptionId) { actCount++; if (actCount <= 2) actStr += (actStr ? ', ' : '') + s; } }
+        for (let s of net.expired) { if (s !== d.subscriptionId) { expCount++; if (expCount <= 2) expStr += (expStr ? ', ' : '') + s; } }
+        
+        if (actCount > 0) linksHtml += `<div class="linked-act">🟢 Act: ${actStr}${actCount > 2 ? '...' : ''}</div>`;
+        if (expCount > 0) linksHtml += `<div class="linked-exp">🔴 Exp: ${expStr}${expCount > 2 ? '...' : ''}</div>`;
+        if (!linksHtml) linksHtml = `<span style="color:#555;font-size:0.65rem;">No other subs</span>`;
 
-        return`<tr>
-            <td class="compguid-cell" title="Click to filter this company only" onclick="document.getElementById('modalSearch').value='${d.compGUID}'; filterModalTable();">${d.compGUID}</td>
+        html += `<tr>
+            <td class="compguid-cell" title="Click to filter" onclick="document.getElementById('modalSearch').value='${d.compGUID}'; filterModalTable();">${d.compGUID}</td>
             <td>${d.subscriptionId}</td>
             <td>${d.gstin||'<span style="color:#555">N/A</span>'}</td>
             <td>${d.currentBlsExpiry.toLocaleDateString()}</td>
             <td><span class="status-badge ${d.source==='expired'?'status-expired':'status-active'}">${d.source}</span></td>
             <td><div class="linked-subs">${linksHtml}</div></td>
         </tr>`;
-    }).join('');
-    document.getElementById('modalRecordCount').textContent=`${data.length} records shown`;
+    }
+
+    document.getElementById('modalTableBody').innerHTML = html;
+    document.getElementById('modalRecordCount').textContent = `${Math.min(data.length, limit).toLocaleString()} of ${data.length.toLocaleString()} records shown`;
 }
 
 function filterModalTable(){
@@ -874,21 +971,22 @@ function filterModalTable(){
     const lowerQ = rawQ.toLowerCase();
     const cleanQ = lowerQ.replace(/[^a-z0-9]/g, '');
 
-    const filtered = currentModalData.filter(d => {
+    const filtered = [];
+    for (let i = 0; i < currentModalData.length; i++) {
+        const d = currentModalData[i];
         const comp = String(d.compGUID || '').toLowerCase();
         const sub  = String(d.subscriptionId || '').toLowerCase();
         const gst  = String(d.gstin || '').toLowerCase();
 
-        if (comp.includes(lowerQ) || sub.includes(lowerQ) || gst.includes(lowerQ)) return true;
+        if (comp.includes(lowerQ) || sub.includes(lowerQ) || gst.includes(lowerQ)) { filtered.push(d); continue; }
 
         if (cleanQ.length >= 2) {
             const cleanComp = comp.replace(/[^a-z0-9]/g, '');
             const cleanSub  = sub.replace(/[^a-z0-9]/g, '');
             const cleanGst  = gst.replace(/[^a-z0-9]/g, '');
-            if (cleanComp.includes(cleanQ) || cleanSub.includes(cleanQ) || cleanGst.includes(cleanQ)) return true;
+            if (cleanComp.includes(cleanQ) || cleanSub.includes(cleanQ) || cleanGst.includes(cleanQ)) { filtered.push(d); }
         }
-        return false;
-    });
+    }
 
     renderModalTable(filtered);
 }
@@ -897,24 +995,30 @@ function runGlobalSearch() {
     const rawQ = document.getElementById('globalSearchInput').value.trim();
     if (!rawQ) { alert('Please type a CompGUID, Subscription ID, or GSTIN to search.'); return; }
 
-    const allData = [...expiredData, ...activeData];
     const lowerQ = rawQ.toLowerCase();
     const cleanQ = lowerQ.replace(/[^a-z0-9]/g, '');
 
-    const matches = allData.filter(d => {
-        const comp = String(d.compGUID || '').toLowerCase();
-        const sub  = String(d.subscriptionId || '').toLowerCase();
-        const gst  = String(d.gstin || '').toLowerCase();
+    const matches = [];
+    const searchIn = (arr) => {
+        for (let i = 0; i < arr.length; i++) {
+            const d = arr[i];
+            const comp = String(d.compGUID || '').toLowerCase();
+            const sub  = String(d.subscriptionId || '').toLowerCase();
+            const gst  = String(d.gstin || '').toLowerCase();
 
-        if (comp.includes(lowerQ) || sub.includes(lowerQ) || gst.includes(lowerQ)) return true;
-        if (cleanQ.length >= 2) {
-            const cleanComp = comp.replace(/[^a-z0-9]/g, '');
-            const cleanSub  = sub.replace(/[^a-z0-9]/g, '');
-            const cleanGst  = gst.replace(/[^a-z0-9]/g, '');
-            if (cleanComp.includes(cleanQ) || cleanSub.includes(cleanQ) || cleanGst.includes(cleanQ)) return true;
+            if (comp.includes(lowerQ) || sub.includes(lowerQ) || gst.includes(lowerQ)) { matches.push(d); continue; }
+
+            if (cleanQ.length >= 2) {
+                const cleanComp = comp.replace(/[^a-z0-9]/g, '');
+                const cleanSub  = sub.replace(/[^a-z0-9]/g, '');
+                const cleanGst  = gst.replace(/[^a-z0-9]/g, '');
+                if (cleanComp.includes(cleanQ) || cleanSub.includes(cleanQ) || cleanGst.includes(cleanQ)) { matches.push(d); }
+            }
         }
-        return false;
-    });
+    };
+
+    searchIn(expiredData);
+    searchIn(activeData);
 
     const expCount = matches.filter(d => d.source === 'expired').length;
     const actCount = matches.filter(d => d.source === 'active').length;
@@ -943,12 +1047,12 @@ function downloadModalData(){
 function drillByCategory(cat){
     const r=analysisResults; let data=[],title='',stats=[];
     switch(cat){
-        case 'total': data=[...expiredData,...activeData]; title='📊 All Subscriptions'; stats=[{value:data.length,label:'Total Records'},{value:expiredData.length,label:'Expired',color:'#f45c43'},{value:activeData.length,label:'Active',color:'#38ef7d'}]; break;
-        case 'churned': data=expiredData.filter(d=>r.fullChurnSet.has(d.compGUID)); title='🔴 Full Churn'; stats=[{value:data.length,label:'Records',color:'#f45c43'},{value:r.churnRate+'%',label:'Churn Rate',color:'#f45c43'}]; break;
-        case 'healthy': data=activeData.filter(d=>r.healthySet.has(d.compGUID)); title='🟢 Healthy'; stats=[{value:data.length,label:'Records',color:'#38ef7d'},{value:r.retentionRate+'%',label:'Retention',color:'#38ef7d'}]; break;
-        case 'overlap': data=[...expiredData,...activeData].filter(d=>r.overlappingCompGUIDSet.has(d.compGUID)); title='🟡 Partial Churn (Overlap)'; stats=[{value:data.length,label:'Records',color:'#a855f7'},{value:r.overlappingCompGUIDs,label:'Companies',color:'#a855f7'}]; break;
-        case 'atrisk': data=r.atRiskData; title='⚠️ At-Risk'; stats=[{value:data.length,label:'Records',color:'#ffd200'}]; break;
-        case 'gstin_overlap': data=[...expiredData,...activeData].filter(d=>d.gstin&&(new Set([...new Set(expiredData.filter(x=>x.gstin).map(x=>x.gstin))].filter(x=>(new Set(activeData.filter(y=>y.gstin).map(y=>y.gstin))).has(x)))).has(d.gstin)); title='🏢 GSTIN Overlap'; stats=[{value:data.length,label:'Records',color:'#22d3ee'},{value:r.gstinOverlap,label:'Unique GSTINs',color:'#22d3ee'}]; break;
+        case 'total': data=[...expiredData,...activeData]; title='📊 All Subscriptions'; stats=[{value:data.length.toLocaleString(),label:'Total Records'},{value:expiredData.length.toLocaleString(),label:'Expired',color:'#f45c43'},{value:activeData.length.toLocaleString(),label:'Active',color:'#38ef7d'}]; break;
+        case 'churned': data=expiredData.filter(d=>r.fullChurnSet.has(d.compGUID)); title='🔴 Full Churn'; stats=[{value:data.length.toLocaleString(),label:'Records',color:'#f45c43'},{value:r.churnRate+'%',label:'Churn Rate',color:'#f45c43'}]; break;
+        case 'healthy': data=activeData.filter(d=>r.healthySet.has(d.compGUID)); title='🟢 Healthy'; stats=[{value:data.length.toLocaleString(),label:'Records',color:'#38ef7d'},{value:r.retentionRate+'%',label:'Retention',color:'#38ef7d'}]; break;
+        case 'overlap': data=[...expiredData,...activeData].filter(d=>r.overlappingCompGUIDSet.has(d.compGUID)); title='🟡 Partial Churn (Overlap)'; stats=[{value:data.length.toLocaleString(),label:'Records',color:'#a855f7'},{value:r.overlappingCompGUIDs.toLocaleString(),label:'Companies',color:'#a855f7'}]; break;
+        case 'atrisk': data=r.atRiskData; title='⚠️ At-Risk'; stats=[{value:data.length.toLocaleString(),label:'Records',color:'#ffd200'}]; break;
+        case 'gstin_overlap': data=[...expiredData,...activeData].filter(d=>d.gstin&&(new Set([...new Set(expiredData.filter(x=>x.gstin).map(x=>x.gstin))].filter(x=>(new Set(activeData.filter(y=>y.gstin).map(y=>y.gstin))).has(x)))).has(d.gstin)); title='🏢 GSTIN Overlap'; stats=[{value:data.length.toLocaleString(),label:'Records',color:'#22d3ee'},{value:r.gstinOverlap.toLocaleString(),label:'Unique GSTINs',color:'#22d3ee'}]; break;
     }
     openDrillDown(title,data,stats);
 }
@@ -956,30 +1060,30 @@ function drillByCategory(cat){
 function drillByState(st){
     const data=[...expiredData,...activeData].filter(d=>d.gstin&&d.gstin.length>=2&&(stateGSTCodes[d.gstin.substring(0,2)]||'Other')===st);
     const e=data.filter(d=>d.source==='expired').length,a=data.filter(d=>d.source==='active').length;
-    openDrillDown(`🗺️ ${st} Data`,data,[{value:data.length,label:'Records'},{value:e,label:'Expired',color:'#f45c43'},{value:a,label:'Active',color:'#38ef7d'},{value:(data.length>0?((e/(e+a))*100).toFixed(1):'0')+'%',label:'Churn Rate'}]);
+    openDrillDown(`🗺️ ${st} Data`,data,[{value:data.length.toLocaleString(),label:'Records'},{value:e.toLocaleString(),label:'Expired',color:'#f45c43'},{value:a.toLocaleString(),label:'Active',color:'#38ef7d'},{value:(data.length>0?((e/(e+a))*100).toFixed(1):'0')+'%',label:'Churn Rate'}]);
 }
 
 function drillByMonth(m,t){
     const ad=t==='expired'?expiredData:t==='active'?activeData:[...expiredData,...activeData];
     const data=ad.filter(d=>d.currentBlsExpiry.toISOString().slice(0,7)===m);
-    openDrillDown(`📅 ${m} - ${t==='expired'?'Expired':'Active'}`,data,[{value:data.length,label:'Records',color:t==='expired'?'#f45c43':'#38ef7d'}]);
+    openDrillDown(`📅 ${m} - ${t==='expired'?'Expired':'Active'}`,data,[{value:data.length.toLocaleString(),label:'Records',color:t==='expired'?'#f45c43':'#38ef7d'}]);
 }
 
 function drillByCompGUID(guid){
     const data=[...expiredData,...activeData].filter(d=>d.compGUID===guid);
-    openDrillDown(`🔍 Company Drill-Down`,data,[{value:data.length,label:'Subscriptions'},{value:data.filter(d=>d.source==='expired').length,label:'Expired',color:'#f45c43'},{value:data.filter(d=>d.source==='active').length,label:'Active',color:'#38ef7d'}]);
+    openDrillDown(`🔍 Company Drill-Down`,data,[{value:data.length.toLocaleString(),label:'Subscriptions'},{value:data.filter(d=>d.source==='expired').length,label:'Expired',color:'#f45c43'},{value:data.filter(d=>d.source==='active').length,label:'Active',color:'#38ef7d'}]);
 }
 
 // ==================== RENDER ====================
 function renderKPIs(){
     const r=analysisResults;
     document.getElementById('kpiStrip').innerHTML=`
-        <div class="kpi-card blue animate-in" onclick="drillByCategory('total')" style="animation-delay:0.1s"><div class="kpi-label">Total Subscriptions</div><div class="kpi-value">${(r.totalExpired+r.totalActive).toLocaleString()}</div><div class="kpi-sublabel">${r.totalExpired} expired + ${r.totalActive} active</div><div class="kpi-click-hint">👆 Click to view records</div></div>
-        <div class="kpi-card red animate-in" onclick="drillByCategory('churned')" style="animation-delay:0.15s"><div class="kpi-label">Full Churn Rate</div><div class="kpi-value">${r.churnRate}%</div><div class="kpi-sublabel">${r.fullChurn} companies fully left</div><div class="kpi-click-hint">👆 Click to view records</div></div>
-        <div class="kpi-card green animate-in" onclick="drillByCategory('healthy')" style="animation-delay:0.2s"><div class="kpi-label">Retention Rate</div><div class="kpi-value">${r.retentionRate}%</div><div class="kpi-sublabel">${r.healthy} healthy companies</div><div class="kpi-click-hint">👆 Click to view records</div></div>
-        <div class="kpi-card purple animate-in" onclick="drillByCategory('overlap')" style="animation-delay:0.25s"><div class="kpi-label">Partial Churn</div><div class="kpi-value">${r.overlappingCompGUIDs}</div><div class="kpi-sublabel">${r.partialChurnRate}% overlap</div><div class="kpi-click-hint">👆 Click to view records</div></div>
-        <div class="kpi-card orange animate-in" onclick="drillByCategory('atrisk')" style="animation-delay:0.3s"><div class="kpi-label">At-Risk Active</div><div class="kpi-value">${r.atRisk}</div><div class="kpi-sublabel">Expiring within ${document.getElementById('riskDays').value} days</div><div class="kpi-click-hint">👆 Click to view records</div></div>
-        <div class="kpi-card cyan animate-in" onclick="drillByCategory('gstin_overlap')" style="animation-delay:0.35s"><div class="kpi-label">GSTIN Overlap</div><div class="kpi-value">${r.gstinOverlap}</div><div class="kpi-sublabel">Same entity in both</div><div class="kpi-click-hint">👆 Click to view records</div></div>`;
+        <div class="kpi-card blue animate-in" onclick="drillByCategory('total')" style="animation-delay:0.1s"><div class="kpi-label">Total Subscriptions</div><div class="kpi-value">${(r.totalExpired+r.totalActive).toLocaleString()}</div><div class="kpi-sublabel">${r.totalExpired.toLocaleString()} expired + ${r.totalActive.toLocaleString()} active</div><div class="kpi-click-hint">👆 Click to view records</div></div>
+        <div class="kpi-card red animate-in" onclick="drillByCategory('churned')" style="animation-delay:0.15s"><div class="kpi-label">Full Churn Rate</div><div class="kpi-value">${r.churnRate}%</div><div class="kpi-sublabel">${r.fullChurn.toLocaleString()} companies fully left</div><div class="kpi-click-hint">👆 Click to view records</div></div>
+        <div class="kpi-card green animate-in" onclick="drillByCategory('healthy')" style="animation-delay:0.2s"><div class="kpi-label">Retention Rate</div><div class="kpi-value">${r.retentionRate}%</div><div class="kpi-sublabel">${r.healthy.toLocaleString()} healthy companies</div><div class="kpi-click-hint">👆 Click to view records</div></div>
+        <div class="kpi-card purple animate-in" onclick="drillByCategory('overlap')" style="animation-delay:0.25s"><div class="kpi-label">Partial Churn</div><div class="kpi-value">${r.overlappingCompGUIDs.toLocaleString()}</div><div class="kpi-sublabel">${r.partialChurnRate}% overlap</div><div class="kpi-click-hint">👆 Click to view records</div></div>
+        <div class="kpi-card orange animate-in" onclick="drillByCategory('atrisk')" style="animation-delay:0.3s"><div class="kpi-label">At-Risk Active</div><div class="kpi-value">${r.atRisk.toLocaleString()}</div><div class="kpi-sublabel">Expiring within ${document.getElementById('riskDays').value} days</div><div class="kpi-click-hint">👆 Click to view records</div></div>
+        <div class="kpi-card cyan animate-in" onclick="drillByCategory('gstin_overlap')" style="animation-delay:0.35s"><div class="kpi-label">GSTIN Overlap</div><div class="kpi-value">${r.gstinOverlap.toLocaleString()}</div><div class="kpi-sublabel">Same entity in both</div><div class="kpi-click-hint">👆 Click to view records</div></div>`;
 }
 
 function renderInsights(){
@@ -987,18 +1091,18 @@ function renderInsights(){
     if(cr>40) ins.push({i:'🔴',t:`<strong>HIGH CHURN:</strong> ${r.churnRate}% fully churned. Immediate intervention needed.`});
     else if(cr>20) ins.push({i:'🟡',t:`<strong>MODERATE CHURN:</strong> ${r.churnRate}%. Review pricing and support.`});
     else ins.push({i:'🟢',t:`<strong>HEALTHY:</strong> Only ${r.churnRate}% churn. Good retention.`});
-    if(r.overlappingCompGUIDs>0) ins.push({i:'🔗',t:`<strong>OVERLAP:</strong> ${r.overlappingCompGUIDs} companies partially churned.`});
-    if(r.atRisk>0) ins.push({i:'⚠️',t:`<strong>URGENT:</strong> ${r.atRisk} subs expire within ${document.getElementById('riskDays').value} days.`});
-    if(r.gstinOverlap>0) ins.push({i:'🏢',t:`<strong>GSTIN:</strong> ${r.gstinOverlap} same entities in both datasets.`});
+    if(r.overlappingCompGUIDs>0) ins.push({i:'🔗',t:`<strong>OVERLAP:</strong> ${r.overlappingCompGUIDs.toLocaleString()} companies partially churned.`});
+    if(r.atRisk>0) ins.push({i:'⚠️',t:`<strong>URGENT:</strong> ${r.atRisk.toLocaleString()} subs expire within ${document.getElementById('riskDays').value} days.`});
+    if(r.gstinOverlap>0) ins.push({i:'🏢',t:`<strong>GSTIN:</strong> ${r.gstinOverlap.toLocaleString()} same entities in both datasets.`});
     document.getElementById('insightBox').innerHTML=`<h4>💡 Insights & Actions</h4>${ins.map(x=>`<div class="insight-item">${x.i} ${x.t}</div>`).join('')}`;
 }
 
 function renderVenn(){
     const r=analysisResults;
     document.getElementById('vennDiagram').innerHTML=`
-        <div class="venn-circle venn-active" onclick="drillByCategory('healthy')"><div style="margin-left:-30px;"><div style="font-size:1.4rem;color:#38ef7d;">${r.healthy}</div><div style="font-size:0.65rem;color:#999;">Active Only</div></div></div>
-        <div class="venn-circle venn-expired" onclick="drillByCategory('churned')"><div style="margin-left:30px;"><div style="font-size:1.4rem;color:#f45c43;">${r.fullChurn}</div><div style="font-size:0.65rem;color:#999;">Expired Only</div></div></div>
-        <div class="venn-overlap-zone" onclick="drillByCategory('overlap')"><div><div>${r.overlappingCompGUIDs}</div><div style="font-size:0.6rem;color:#ccc;">Both</div></div></div>
+        <div class="venn-circle venn-active" onclick="drillByCategory('healthy')"><div style="margin-left:-30px;"><div style="font-size:1.3rem;color:#38ef7d;">${r.healthy.toLocaleString()}</div><div style="font-size:0.65rem;color:#999;">Active Only</div></div></div>
+        <div class="venn-circle venn-expired" onclick="drillByCategory('churned')"><div style="margin-left:30px;"><div style="font-size:1.3rem;color:#f45c43;">${r.fullChurn.toLocaleString()}</div><div style="font-size:0.65rem;color:#999;">Expired Only</div></div></div>
+        <div class="venn-overlap-zone" onclick="drillByCategory('overlap')"><div><div>${r.overlappingCompGUIDs.toLocaleString()}</div><div style="font-size:0.6rem;color:#ccc;">Both</div></div></div>
         <div class="venn-labels"><div class="venn-label"><div class="venn-dot" style="background:#38ef7d;"></div>Healthy</div><div class="venn-label"><div class="venn-dot" style="background:#a855f7;"></div>Overlap</div><div class="venn-label"><div class="venn-dot" style="background:#f45c43;"></div>Churned</div></div>`;
 }
 
@@ -1006,10 +1110,10 @@ function renderFlowDiagram(){
     const r=analysisResults,tot=r.totalCompanies||1;
     const hp=((r.healthy/tot)*100).toFixed(1),pp=((r.overlappingCompGUIDs/tot)*100).toFixed(1),fp=((r.fullChurn/tot)*100).toFixed(1),ap=r.totalActive>0?((r.atRisk/r.totalActive)*100).toFixed(1):'0';
     document.getElementById('flowDiagram').innerHTML=`
-        <div class="flow-row" onclick="drillByCategory('healthy')"><div class="flow-icon">🟢</div><div class="flow-label">Healthy</div><div class="flow-bar-container"><div class="flow-bar healthy" style="width:${Math.max(hp,5)}%">${r.healthy} (${hp}%)</div></div><div class="flow-value" style="color:#38ef7d;">${hp}%</div></div>
-        <div class="flow-row" onclick="drillByCategory('overlap')"><div class="flow-icon">🟡</div><div class="flow-label">Partial Churn</div><div class="flow-bar-container"><div class="flow-bar partial" style="width:${Math.max(pp,5)}%">${r.overlappingCompGUIDs} (${pp}%)</div></div><div class="flow-value" style="color:#a855f7;">${pp}%</div></div>
-        <div class="flow-row" onclick="drillByCategory('churned')"><div class="flow-icon">🔴</div><div class="flow-label">Full Churn</div><div class="flow-bar-container"><div class="flow-bar churned" style="width:${Math.max(fp,5)}%">${r.fullChurn} (${fp}%)</div></div><div class="flow-value" style="color:#f45c43;">${fp}%</div></div>
-        <div class="flow-row" onclick="drillByCategory('atrisk')"><div class="flow-icon">⚠️</div><div class="flow-label">At-Risk</div><div class="flow-bar-container"><div class="flow-bar atrisk" style="width:${Math.max(ap,3)}%">${r.atRisk} (${ap}%)</div></div><div class="flow-value" style="color:#ffd200;">${ap}%</div></div>`;
+        <div class="flow-row" onclick="drillByCategory('healthy')"><div class="flow-icon">🟢</div><div class="flow-label">Healthy</div><div class="flow-bar-container"><div class="flow-bar healthy" style="width:${Math.max(hp,5)}%">${r.healthy.toLocaleString()} (${hp}%)</div></div><div class="flow-value" style="color:#38ef7d;">${hp}%</div></div>
+        <div class="flow-row" onclick="drillByCategory('overlap')"><div class="flow-icon">🟡</div><div class="flow-label">Partial Churn</div><div class="flow-bar-container"><div class="flow-bar partial" style="width:${Math.max(pp,5)}%">${r.overlappingCompGUIDs.toLocaleString()} (${pp}%)</div></div><div class="flow-value" style="color:#a855f7;">${pp}%</div></div>
+        <div class="flow-row" onclick="drillByCategory('churned')"><div class="flow-icon">🔴</div><div class="flow-label">Full Churn</div><div class="flow-bar-container"><div class="flow-bar churned" style="width:${Math.max(fp,5)}%">${r.fullChurn.toLocaleString()} (${fp}%)</div></div><div class="flow-value" style="color:#f45c43;">${fp}%</div></div>
+        <div class="flow-row" onclick="drillByCategory('atrisk')"><div class="flow-icon">⚠️</div><div class="flow-label">At-Risk</div><div class="flow-bar-container"><div class="flow-bar atrisk" style="width:${Math.max(ap,3)}%">${r.atRisk.toLocaleString()} (${ap}%)</div></div><div class="flow-value" style="color:#ffd200;">${ap}%</div></div>`;
 }
 
 function renderCorrelationBars(){
@@ -1049,100 +1153,141 @@ function renderCharts(){
     dc('dn');charts.dn=new Chart(document.getElementById('densityChart'),{type:'bar',data:{labels:labels.map(l=>l+' subs'),datasets:[{label:'Companies',data:labels.map(l=>r.densityDist[l]||0),backgroundColor:'rgba(102,126,234,0.5)',borderColor:'#667eea',borderWidth:1,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,0.03)'}},y:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,0.03)'}}}}});
 }
 
+// LAZY STREAMING MAIN TABLE RENDERER
 function renderDataTable(filter='all'){
-    const r=analysisResults,today=new Date(),rd=parseInt(document.getElementById('riskDays').value),rDate=new Date(today.getTime()+rd*86400000);
-    let cd=[];
-    expiredData.forEach(d=>{const o=r.overlappingCompGUIDSet.has(d.compGUID);cd.push({...d,status:'Expired',cat:o?'Partial Churn':'Full Churn',sc:'status-expired',cc:o?'status-overlap':'status-expired'});});
-    activeData.forEach(d=>{const o=r.overlappingCompGUIDSet.has(d.compGUID);const ar=d.currentBlsExpiry<=rDate&&d.currentBlsExpiry>=today;cd.push({...d,status:ar?'At Risk':'Active',cat:o?'Partial Churn':(ar?'Renewal Due':'Healthy'),sc:ar?'status-atrisk':'status-active',cc:o?'status-overlap':(ar?'status-atrisk':'status-active')});});
-    if(filter==='overlap')cd=cd.filter(d=>d.cat==='Partial Churn');
-    else if(filter==='churned')cd=cd.filter(d=>d.cat==='Full Churn');
-    else if(filter==='atrisk')cd=cd.filter(d=>d.status==='At Risk');
-    else if(filter==='healthy')cd=cd.filter(d=>d.cat==='Healthy');
-    
-    document.getElementById('tableCount').textContent=`(${cd.length} records)`;
-    document.getElementById('tableBody').innerHTML=cd.slice(0,300).map(d=>{
-        const net = window.compNetwork[d.compGUID] || { active: new Set(), expired: new Set() };
-        const actList = Array.from(net.active).filter(s => s !== d.subscriptionId);
-        const expList = Array.from(net.expired).filter(s => s !== d.subscriptionId);
-        
-        let linksHtml = '';
-        if(actList.length > 0) linksHtml += `<div class="linked-act" title="${actList.join('\n')}">🟢 Act: ${actList.slice(0,2).join(', ')}${actList.length>2?'...':''}</div>`;
-        if(expList.length > 0) linksHtml += `<div class="linked-exp" title="${expList.join('\n')}">🔴 Exp: ${expList.slice(0,2).join(', ')}${expList.length>2?'...':''}</div>`;
-        if(linksHtml === '') linksHtml = `<span style="color:#555;font-size:0.65rem;">No other subs</span>`;
+    const r=analysisResults,today=new Date(),rd=parseInt(document.getElementById('riskDays').value);
+    const riskDate=new Date(today.getTime()+rd*86400000);
+    const limit = 300;
+    let count = 0;
+    let html = '';
 
-        return `<tr>
-            <td class="compguid-cell" title="Click to filter this company" onclick="document.getElementById('modalSearch').value='${d.compGUID}'; filterModalTable();">${d.compGUID.substring(0,16)}...</td>
-            <td>${d.subscriptionId}</td>
-            <td>${d.gstin||'<span style="color:#555">N/A</span>'}</td>
-            <td>${d.currentBlsExpiry.toLocaleDateString()}</td>
-            <td><span class="status-badge ${d.sc}">${d.status}</span></td>
-            <td><div class="linked-subs">${linksHtml}</div></td>
-        </tr>`;
-    }).join('');
+    function processItem(d) {
+        const isOverlap = r.overlappingCompGUIDSet.has(d.compGUID);
+        const isAtRisk = d.source === 'active' && d.currentBlsExpiry <= riskDate && d.currentBlsExpiry >= today;
+        const status = d.source === 'expired' ? 'Expired' : (isAtRisk ? 'At Risk' : 'Active');
+        const cat = isOverlap ? 'Partial Churn' : (d.source === 'expired' ? 'Full Churn' : (isAtRisk ? 'Renewal Due' : 'Healthy'));
+
+        if (filter === 'overlap' && cat !== 'Partial Churn') return;
+        if (filter === 'churned' && cat !== 'Full Churn') return;
+        if (filter === 'atrisk' && status !== 'At Risk') return;
+        if (filter === 'healthy' && cat !== 'Healthy') return;
+
+        count++;
+        if (count <= limit) {
+            const net = window.compNetwork[d.compGUID] || { active: new Set(), expired: new Set() };
+            let linksHtml = '';
+            let actCount = 0, expCount = 0, actStr = '', expStr = '';
+
+            for (let s of net.active) { if (s !== d.subscriptionId) { actCount++; if (actCount <= 2) actStr += (actStr ? ', ' : '') + s; } }
+            for (let s of net.expired) { if (s !== d.subscriptionId) { expCount++; if (expCount <= 2) expStr += (expStr ? ', ' : '') + s; } }
+
+            if (actCount > 0) linksHtml += `<div class="linked-act">🟢 Act: ${actStr}${actCount > 2 ? '...' : ''}</div>`;
+            if (expCount > 0) linksHtml += `<div class="linked-exp">🔴 Exp: ${expStr}${expCount > 2 ? '...' : ''}</div>`;
+            if (!linksHtml) linksHtml = `<span style="color:#555;font-size:0.65rem;">No other subs</span>`;
+
+            const sc = status === 'At Risk' ? 'status-atrisk' : (d.source === 'expired' ? 'status-expired' : 'status-active');
+            const cc = isOverlap ? 'status-overlap' : (status === 'At Risk' ? 'status-atrisk' : (d.source === 'expired' ? 'status-expired' : 'status-active'));
+
+            html += `<tr>
+                <td class="compguid-cell" title="Click to filter" onclick="document.getElementById('modalSearch').value='${d.compGUID}'; filterModalTable();">${d.compGUID.substring(0,16)}...</td>
+                <td>${d.subscriptionId}</td>
+                <td>${d.gstin||'<span style="color:#555">N/A</span>'}</td>
+                <td>${d.currentBlsExpiry.toLocaleDateString()}</td>
+                <td><span class="status-badge ${sc}">${status}</span></td>
+                <td><div class="linked-subs">${linksHtml}</div></td>
+            </tr>`;
+        }
+    }
+
+    if (filter === 'churned' || filter === 'all' || filter === 'overlap') {
+        for (let i = 0; i < expiredData.length; i++) processItem(expiredData[i]);
+    }
+    if (filter === 'healthy' || filter === 'all' || filter === 'overlap' || filter === 'atrisk') {
+        for (let i = 0; i < activeData.length; i++) processItem(activeData[i]);
+    }
+
+    document.getElementById('tableCount').textContent=`(${count.toLocaleString()} total records)`;
+    document.getElementById('tableBody').innerHTML=html;
 }
 
 function showTable(f,btn){renderDataTable(f);document.querySelectorAll('.table-tab').forEach(t=>t.classList.remove('active'));if(btn)btn.classList.add('active');}
 
 // ==================== DOWNLOADS ====================
 function dlFile(c,n,t){const b=new Blob([c],{type:t});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=n;a.click();URL.revokeObjectURL(u);}
+
 function downloadCSV(){
     const r=analysisResults,today=new Date(),rd=parseInt(document.getElementById('riskDays').value),rDate=new Date(today.getTime()+rd*86400000);
     let csv='CompGUID,Subscription No,GSTIN,BLS Expiry,Source,Status,Category,Linked Active Subs,Linked Expired Subs\n';
-    [...expiredData,...activeData].forEach(d=>{
+    const writeRow = (d) => {
         const o=r.overlappingCompGUIDSet.has(d.compGUID);
         const ar=d.source==='active'&&d.currentBlsExpiry<=rDate&&d.currentBlsExpiry>=today;
         const net = window.compNetwork[d.compGUID] || {active:new Set(), expired:new Set()};
         const actList = Array.from(net.active).filter(s => s !== d.subscriptionId).join('; ');
         const expList = Array.from(net.expired).filter(s => s !== d.subscriptionId).join('; ');
         csv+=`"${d.compGUID}","${d.subscriptionId}","${d.gstin||''}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}","${d.source==='expired'?'Expired':(ar?'At Risk':'Active')}","${o?'Partial Churn':(d.source==='expired'?'Full Churn':(ar?'Renewal Due':'Healthy'))}","${actList}","${expList}"\n`;
-    });
+    };
+    expiredData.forEach(writeRow); activeData.forEach(writeRow);
     dlFile(csv,'churn_analysis.csv','text/csv');
 }
+
 function downloadExcel(){
     const r=analysisResults,today=new Date(),rd=parseInt(document.getElementById('riskDays').value),rDate=new Date(today.getTime()+rd*86400000);
     const ws1=[['CompGUID','Sub No','GSTIN','BLS Expiry','Source','Status','Category','Linked Active','Linked Expired']];
-    [...expiredData,...activeData].forEach(d=>{
+    const writeRow = (d) => {
         const o=r.overlappingCompGUIDSet.has(d.compGUID);
         const ar=d.source==='active'&&d.currentBlsExpiry<=rDate&&d.currentBlsExpiry>=today;
         const net = window.compNetwork[d.compGUID] || {active:new Set(), expired:new Set()};
         const actList = Array.from(net.active).filter(s => s !== d.subscriptionId).join('; ');
         const expList = Array.from(net.expired).filter(s => s !== d.subscriptionId).join('; ');
         ws1.push([d.compGUID,d.subscriptionId,d.gstin||'',d.currentBlsExpiry.toISOString().slice(0,10),d.source,d.source==='expired'?'Expired':(ar?'At Risk':'Active'),o?'Partial Churn':(d.source==='expired'?'Full Churn':(ar?'Renewal Due':'Healthy')),actList,expList]);
-    });
+    };
+    expiredData.forEach(writeRow); activeData.forEach(writeRow);
     const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(ws1),'Analysis');
     XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['Metric','Value'],['Expired',r.totalExpired],['Active',r.totalActive],['Full Churn',r.fullChurn],['Healthy',r.healthy],['Overlap',r.overlappingCompGUIDs],['Churn%',r.churnRate],['Retention%',r.retentionRate],['At-Risk',r.atRisk]]),'Summary');
     XLSX.writeFile(wb,'churn_analysis.xlsx');
 }
+
 function downloadOverlap(){
     const r=analysisResults;let csv='CompGUID,Subscription No,GSTIN,BLS Expiry,Source,Linked Active,Linked Expired\n';
-    [...expiredData,...activeData].filter(d=>r.overlappingCompGUIDSet.has(d.compGUID)).forEach(d=>{
+    const writeRow = (d) => {
+        if (!r.overlappingCompGUIDSet.has(d.compGUID)) return;
         const net = window.compNetwork[d.compGUID] || {active:new Set(), expired:new Set()};
         const actList = Array.from(net.active).filter(s => s !== d.subscriptionId).join('; ');
         const expList = Array.from(net.expired).filter(s => s !== d.subscriptionId).join('; ');
         csv+=`"${d.compGUID}","${d.subscriptionId}","${d.gstin||''}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}","${actList}","${expList}"\n`;
-    });
+    };
+    expiredData.forEach(writeRow); activeData.forEach(writeRow);
     dlFile(csv,'overlap_data.csv','text/csv');
 }
+
 function downloadAtRisk(){
     let csv='CompGUID,Subscription No,GSTIN,BLS Expiry,Days Left\n';const today=new Date();
     analysisResults.atRiskData.forEach(d=>{const dl=Math.floor((d.currentBlsExpiry-today)/86400000);csv+=`"${d.compGUID}","${d.subscriptionId}","${d.gstin||''}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${dl}"\n`;});
     dlFile(csv,'at_risk_data.csv','text/csv');
 }
 
-// ==================== MAIN ====================
+// ==================== MAIN RUNNER ====================
 function runAnalysis(){
     document.getElementById('loadingOverlay').classList.add('show');
-    document.getElementById('loadingText').textContent=`Analyzing ${expiredData.length+activeData.length} records...`;
+    document.getElementById('loadingText').textContent=`Analyzing ${(expiredData.length+activeData.length).toLocaleString()} records...`;
+    
+    // Non-blocking deferred execution
     setTimeout(()=>{
-        analyzeData();renderKPIs();renderInsights();renderVenn();renderFlowDiagram();
-        renderCorrelationBars();renderCharts();renderDataTable('all');
+        analyzeData();
+        renderKPIs();
+        renderInsights();
+        renderVenn();
+        renderFlowDiagram();
+        renderCorrelationBars();
+        renderCharts();
+        renderDataTable('all');
         document.getElementById('loadingOverlay').classList.remove('show');
-    },600);
+    }, 50);
 }
 
 // AUTO-START
 window.addEventListener('load',()=>{
-    debugLog('Page loaded. Starting SheetJS Engine...');
+    debugLog('Page loaded. Starting High-Speed Turbo Engine...');
     autoLoadFromRepo();
 });
 </script>
