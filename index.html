@@ -15,7 +15,7 @@
         }
         .header {
             background: linear-gradient(135deg, #667eea, #764ba2);
-            padding: 30px 40px; text-align: center;
+            padding: 28px 40px; text-align: center;
             box-shadow: 0 4px 30px rgba(102,126,234,0.3);
         }
         .header h1 { font-size: 2rem; color: #fff; margin-bottom: 6px; }
@@ -45,7 +45,7 @@
         /* Upload Section */
         .upload-section {
             background: rgba(255,255,255,0.04); border: 2px dashed rgba(255,255,255,0.15);
-            border-radius: 14px; margin: 16px 30px; padding: 24px; text-align: center;
+            border-radius: 14px; margin: 16px 30px; padding: 20px; text-align: center;
         }
         .upload-section:hover { border-color: #667eea; }
         .upload-text { color: #aaa; font-size: 0.88rem; line-height: 1.6; }
@@ -53,7 +53,7 @@
             background: rgba(102,126,234,0.15); padding: 2px 8px; border-radius: 4px;
             color: #667eea; font-size: 0.82rem;
         }
-        .file-inputs { display: flex; gap: 16px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
+        .file-inputs { display: flex; gap: 16px; justify-content: center; margin-top: 14px; flex-wrap: wrap; }
         .file-input-wrapper input[type="file"] { display: none; }
         .file-btn {
             border: none; color: #fff; padding: 9px 22px; border-radius: 8px;
@@ -95,7 +95,7 @@
             background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
             border-radius: 14px; padding: 18px 16px; text-align: center;
             transition: all 0.3s; position: relative; overflow: hidden;
-            cursor: pointer; /* CLICKABLE */
+            cursor: pointer;
         }
         .kpi-card::before { content:''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
         .kpi-card.blue::before { background: linear-gradient(90deg, #667eea, #764ba2); }
@@ -167,7 +167,7 @@
         .flow-row {
             display: flex; align-items: center; gap: 10px; margin: 8px 0;
             padding: 10px 14px; border-radius: 8px; transition: all 0.3s;
-            cursor: pointer; /* CLICKABLE */
+            cursor: pointer;
         }
         .flow-row:hover { background: rgba(255,255,255,0.04); transform: translateX(4px); }
         .flow-icon { font-size: 1.3rem; min-width: 32px; text-align: center; }
@@ -256,9 +256,7 @@
             background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.06);
             flex-wrap: wrap;
         }
-        .modal-stat {
-            text-align: center; min-width: 100px;
-        }
+        .modal-stat { text-align: center; min-width: 100px; }
         .modal-stat-value { font-size: 1.5rem; font-weight: 700; }
         .modal-stat-label { font-size: 0.7rem; color: #999; text-transform: uppercase; }
         .modal-body { padding: 0; max-height: 55vh; overflow-y: auto; }
@@ -280,8 +278,7 @@
         .modal-search:focus { border-color: #667eea; }
         .modal-footer {
             padding: 12px 24px; background: rgba(255,255,255,0.03);
-            border-top: 1px solid rgba(255,255,255,0.06);
-            display: flex; gap: 10px;
+            border-top: 1px solid rgba(255,255,255,0.06); display: flex; gap: 10px;
         }
         .modal-btn {
             background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15);
@@ -289,13 +286,8 @@
             font-size: 0.8rem; transition: all 0.3s;
         }
         .modal-btn:hover { background: rgba(102,126,234,0.15); border-color: #667eea; }
-        .modal-btn.primary {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-color: transparent; color: #fff;
-        }
-        .status-badge {
-            padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 600;
-        }
+        .modal-btn.primary { background: linear-gradient(135deg, #667eea, #764ba2); border-color: transparent; color: #fff; }
+        .status-badge { padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 600; }
         .status-active { background: rgba(56,239,125,0.12); color: #38ef7d; }
         .status-expired { background: rgba(244,92,67,0.12); color: #f45c43; }
         .status-atrisk { background: rgba(255,210,0,0.12); color: #ffd200; }
@@ -346,14 +338,10 @@
         .debug-console.show { display: block; }
         .debug-header {
             padding: 10px 16px; background: rgba(255,255,255,0.04);
-            display: flex; justify-content: space-between; align-items: center;
-            cursor: pointer;
+            display: flex; justify-content: space-between; align-items: center; cursor: pointer;
         }
         .debug-header h4 { font-size: 0.85rem; color: #888; }
-        .debug-body {
-            padding: 12px 16px; max-height: 200px; overflow-y: auto;
-            font-family: monospace; font-size: 0.75rem; color: #aaa;
-        }
+        .debug-body { padding: 12px 16px; max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 0.75rem; color: #aaa; }
         .debug-line { padding: 2px 0; border-bottom: 1px solid rgba(255,255,255,0.02); }
         .debug-line.success { color: #38ef7d; }
         .debug-line.error { color: #f45c43; }
@@ -370,22 +358,15 @@
             width: 44px; height: 44px; border: 4px solid rgba(102,126,234,0.2);
             border-top-color: #667eea; border-radius: 50%; animation: spin 0.8s linear infinite;
         }
-
         .animate-in { animation: fadeInUp 0.5s ease forwards; opacity: 0; }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
-
         footer { text-align: center; padding: 24px; color: #444; font-size: 0.75rem; }
-
-        @media (max-width: 768px) {
-            .dashboard { grid-template-columns: 1fr; }
-            .kpi-strip { grid-template-columns: repeat(2, 1fr); }
-            .controls-panel { flex-direction: column; }
-        }
+        @media (max-width: 768px) { .dashboard { grid-template-columns: 1fr; } .kpi-strip { grid-template-columns: repeat(2, 1fr); } .controls-panel { flex-direction: column; } }
     </style>
 </head>
 <body>
 
-<!-- Loading -->
+<!-- Loading Overlay -->
 <div class="loading-overlay" id="loadingOverlay">
     <div class="big-spinner"></div>
     <p style="color:#667eea;" id="loadingText">Loading...</p>
@@ -417,13 +398,13 @@
 <div class="header">
     <h1>📊 Customer Churn & Retention Dashboard</h1>
     <p>Click any KPI, chart or number for drill-down analysis</p>
-    <div class="header-badge">v4.0 — Auto-Load CSV + Clickable Drill-Down</div>
+    <div class="header-badge">v4.2 — Auto-Load + Smart Index Fallback</div>
 </div>
 
 <!-- Status Bar -->
 <div class="status-bar loading" id="statusBar">
     <div class="status-spinner"></div>
-    <span>Attempting to auto-load CSV files from /data/ folder...</span>
+    <span>Attempting to auto-load CSV files...</span>
 </div>
 
 <!-- Debug Console -->
@@ -451,7 +432,7 @@
             <button class="file-btn active-btn" onclick="document.getElementById('activeFile').click()">📤 Active Data</button>
             <div class="file-name" id="activeFileName"></div>
         </div>
-        <button class="file-btn repo-btn" onclick="loadFromRepo()">🔄 Retry Load from Repo</button>
+        <button class="file-btn repo-btn" onclick="loadFromRepo()">🔄 Retry Auto-Load</button>
     </div>
 </div>
 
@@ -524,7 +505,7 @@
 </div>
 
 <!-- Section 3 -->
-<div class="section-header"><h2>🗺️ Geographic & GSTIN Analysis</h2></div>
+<div class="section-header"><h2>MAP Geographic & GSTIN Analysis</h2></div>
 <div class="section-divider"></div>
 <div class="dashboard">
     <div class="chart-card full-width">
@@ -564,7 +545,7 @@
     </div>
 </div>
 
-<footer>Customer Churn Dashboard v4.0 | Auto-Load + Clickable Drill-Down | GitHub Pages</footer>
+<footer>Customer Churn Dashboard v4.2 | Auto-Load + Clickable Drill-Down | GitHub Pages</footer>
 
 <script>
 // ==================== STATE ====================
@@ -591,14 +572,11 @@ function setStatus(msg, type='info') {
 
 // ==================== CSV PARSING (ROBUST) ====================
 function parseCSVRobust(csvText) {
-    // Remove BOM
     if(csvText.charCodeAt(0)===0xFEFF) csvText=csvText.slice(1);
     csvText=csvText.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
-
     const lines=csvText.split('\n').filter(l=>l.trim());
     if(lines.length<2) return {headers:[],rows:[]};
-
-    // Detect delimiter
+    
     const firstLine=lines[0];
     const commaCount=(firstLine.match(/,/g)||[]).length;
     const semiCount=(firstLine.match(/;/g)||[]).length;
@@ -606,9 +584,9 @@ function parseCSVRobust(csvText) {
     let delimiter=',';
     if(semiCount>commaCount) delimiter=';';
     if(tabCount>commaCount&&tabCount>semiCount) delimiter='\t';
-
-    debugLog(`CSV delimiter detected: "${delimiter===',' ?'comma':delimiter===';'?'semicolon':'tab'}" | Lines: ${lines.length}`);
-
+    
+    debugLog(`CSV Delimiter: "${delimiter===','?'comma':delimiter===';'?'semicolon':'tab'}" | Lines: ${lines.length}`);
+    
     const parseRow=(line)=>{
         const result=[]; let current=''; let inQuotes=false;
         for(let i=0;i<line.length;i++){
@@ -620,53 +598,59 @@ function parseCSVRobust(csvText) {
         result.push(current.trim());
         return result;
     };
-
+    
     const headers=parseRow(lines[0]);
-    debugLog(`CSV headers found: [${headers.join(', ')}]`);
-
     const rows=[];
     for(let i=1;i<lines.length;i++){
         const cols=parseRow(lines[i]);
         if(cols.length>=2){
-            const row={};
-            headers.forEach((h,j)=>{row[h]=cols[j]||'';});
-            rows.push(row);
+            const row={}; headers.forEach((h,j)=>{row[h]=cols[j]||'';}); rows.push(row);
         }
     }
-
-    debugLog(`CSV parsed: ${rows.length} data rows`, 'success');
     return {headers,rows};
 }
 
-// ==================== COLUMN DETECTION ====================
+// ==================== COLUMN DETECTION & SMART FALLBACK ====================
 function autoDetectColumn(headers,keywords){
     const lower=headers.map(h=>h.toLowerCase().replace(/[^a-z0-9]/g,''));
-    for(const kw of keywords){const lk=kw.toLowerCase().replace(/[^a-z0-9]/g,'');let idx=lower.findIndex(h=>h===lk);if(idx!==-1)return headers[idx];}
-    for(const kw of keywords){const lk=kw.toLowerCase().replace(/[^a-z0-9]/g,'');let idx=lower.findIndex(h=>h.includes(lk)||lk.includes(h));if(idx!==-1)return headers[idx];}
+    for(const kw of keywords){
+        const lk=kw.toLowerCase().replace(/[^a-z0-9]/g,'');
+        let idx=lower.findIndex(h=>h===lk);
+        if(idx!==-1) return headers[idx];
+    }
+    for(const kw of keywords){
+        const lk=kw.toLowerCase().replace(/[^a-z0-9]/g,'');
+        let idx=lower.findIndex(h=>h.includes(lk)||lk.includes(h));
+        if(idx!==-1) return headers[idx];
+    }
     return null;
 }
 
 function detectMappings(headers){
-    const m={
-        subscriptionId:autoDetectColumn(headers,['Subscription Id','SubscriptionId','subscription_id','sub_id','SubId','Subscription']),
-        compGUID:autoDetectColumn(headers,['CompGUID','comp_guid','compguid','company_guid','CompanyGUID','GUID']),
-        gstin:autoDetectColumn(headers,['GSTIN','gst_number','gstnumber','gst','GSTNo','GST_Number']),
-        expiry:autoDetectColumn(headers,['current_bls_expiry','bls_expiry','blsexpiry','expiry_date','ExpiryDate','expiry','Expiry','BLS_Expiry'])
-    };
-    debugLog(`Column mapping: SubId=${m.subscriptionId||'NOT FOUND'}, CompGUID=${m.compGUID||'NOT FOUND'}, GSTIN=${m.gstin||'NOT FOUND'}, Expiry=${m.expiry||'NOT FOUND'}`);
-    return m;
+    let sub = autoDetectColumn(headers, ['subscription id','subscriptionid','subscription_id','sub_id','subid','serial','subscription','serial number']);
+    let comp = autoDetectColumn(headers, ['compguid','comp_guid','companyguid','company_guid','database reference','db ref','company','guid']);
+    let gst = autoDetectColumn(headers, ['gstin','gst_number','gstnumber','gst no','gstno','gst']);
+    let exp = autoDetectColumn(headers, ['current_bls_expiry','current bls expiry','bls_expiry','blsexpiry','expiry_date','expiry date','expiry','bls']);
+
+    // INDEX FALLBACK: If column names don't match, fall back to positions 0, 1, 2, 3
+    if(!sub && headers.length >= 1) { sub = headers[0]; debugLog(`Sub ID using fallback Column 1 (${headers[0]})`,'warn'); }
+    if(!comp && headers.length >= 2) { comp = headers[1]; debugLog(`CompGUID using fallback Column 2 (${headers[1]})`,'warn'); }
+    if(!gst && headers.length >= 3) { gst = headers[2]; debugLog(`GSTIN using fallback Column 3 (${headers[2]})`,'warn'); }
+    if(!exp && headers.length >= 4) { exp = headers[3]; debugLog(`Expiry using fallback Column 4 (${headers[3]})`,'warn'); }
+
+    debugLog(`Final Mapped Columns: Sub=[${sub}], Comp=[${comp}], GST=[${gst}], Expiry=[${exp}]`);
+    return { subscriptionId: sub, compGUID: comp, gstin: gst, expiry: exp };
 }
 
 function parseWithMapping(rows,mapping,source){
     return rows.map(row=>{
-        let ev=mapping.expiry?row[mapping.expiry]:null,pd;
-        if(ev instanceof Date)pd=ev;
-        else if(typeof ev==='number')pd=new Date((ev-25569)*86400000);
+        let ev=mapping.expiry?row[mapping.expiry]:null, pd;
+        if(ev instanceof Date) pd=ev;
+        else if(typeof ev==='number') pd=new Date((ev-25569)*86400000);
         else if(typeof ev==='string'&&ev){
-            // Try multiple date formats
             pd=new Date(ev);
             if(isNaN(pd.getTime())){
-                // Try DD/MM/YYYY
+                // DD/MM/YYYY or DD-MM-YYYY
                 const parts=ev.split(/[\/\-\.]/);
                 if(parts.length===3){
                     if(parseInt(parts[0])>12) pd=new Date(parts[2],parts[1]-1,parts[0]);
@@ -675,123 +659,77 @@ function parseWithMapping(rows,mapping,source){
             }
         }
         else pd=new Date();
-        if(!pd||isNaN(pd.getTime()))pd=new Date();
+        if(!pd||isNaN(pd.getTime())) pd=new Date();
         const gv=mapping.gstin?String(row[mapping.gstin]||'').trim():'';
-        return{subscriptionId:mapping.subscriptionId?String(row[mapping.subscriptionId]||''):'',compGUID:mapping.compGUID?String(row[mapping.compGUID]||''):'',gstin:gv&&gv.length>=15?gv:null,currentBlsExpiry:pd,source};
-    }).filter(d=>d.subscriptionId||d.compGUID);
+        return {
+            subscriptionId: mapping.subscriptionId ? String(row[mapping.subscriptionId]||'') : '',
+            compGUID: mapping.compGUID ? String(row[mapping.compGUID]||'') : '',
+            gstin: gv && gv.length >= 10 ? gv : null,
+            currentBlsExpiry: pd,
+            source: source
+        };
+    }).filter(d => d.subscriptionId || d.compGUID);
 }
 
 // ==================== AUTO-LOAD FROM REPO ====================
 async function autoLoadFromRepo(){
     setStatus('Auto-loading CSV files from repository...','loading');
-    debugLog('Starting auto-load from repository...');
+    debugLog('Starting auto-load process...');
 
-    // Try multiple possible file paths and names
     const expiredPaths=[
-        'data/expired_customers.csv',
-        'data/Expired_Customers.csv',
-        'data/expired.csv',
-        'data/Expired.csv',
-        'data/expired_customers.xlsx',
-        './data/expired_customers.csv',
+        'data/expired_customers.csv', 'data/Expired_Customers.csv',
+        'expired_customers.csv', 'Expired_Customers.csv',
+        'data/expired_customers.xlsx', 'expired_customers.xlsx'
     ];
     const activePaths=[
-        'data/active_customers.csv',
-        'data/Active_Customers.csv',
-        'data/active.csv',
-        'data/Active.csv',
-        'data/active_customers.xlsx',
-        './data/active_customers.csv',
+        'data/active_customers.csv', 'data/Active_Customers.csv',
+        'active_customers.csv', 'Active_Customers.csv',
+        'data/active_customers.xlsx', 'active_customers.xlsx'
     ];
 
     let expiredLoaded=false, activeLoaded=false;
 
-    // Try loading expired
     for(const path of expiredPaths){
         try{
             debugLog(`Trying: ${path}`);
-            const resp=await fetch(path+'?t='+Date.now()); // Cache busting
-            if(!resp.ok){debugLog(`${path} → ${resp.status} ${resp.statusText}`,'warn');continue;}
-            const contentType=resp.headers.get('content-type')||'';
-            debugLog(`${path} → 200 OK (type: ${contentType})`,'success');
-
-            if(path.endsWith('.xlsx')){
-                const buf=await resp.arrayBuffer();
-                const wb=XLSX.read(new Uint8Array(buf),{type:'array',cellDates:true});
-                const json=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''});
-                if(json.length>0){
-                    const m=detectMappings(Object.keys(json[0]));
-                    expiredData=parseWithMapping(json,m,'expired');
-                    debugLog(`Expired Excel loaded: ${expiredData.length} rows`,'success');
-                    expiredLoaded=true;break;
-                }
-            } else {
-                const text=await resp.text();
-                // Check if it's actually HTML (404 page)
-                if(text.trim().startsWith('<!DOCTYPE')||text.trim().startsWith('<html')){
-                    debugLog(`${path} returned HTML (likely 404 page)`,'warn');continue;
-                }
-                const{headers,rows}=parseCSVRobust(text);
-                if(rows.length>0){
-                    const m=detectMappings(headers);
-                    expiredData=parseWithMapping(rows,m,'expired');
-                    debugLog(`Expired CSV loaded: ${expiredData.length} rows`,'success');
-                    expiredLoaded=true;break;
-                }
+            const resp=await fetch(path+'?t='+Date.now());
+            if(!resp.ok){debugLog(`${path} → ${resp.status}`,'warn');continue;}
+            const text=await resp.text();
+            if(text.trim().startsWith('<!DOCTYPE')||text.trim().startsWith('<html')){debugLog(`${path} → Returned HTML/404`,'warn');continue;}
+            
+            const {headers,rows}=parseCSVRobust(text);
+            if(rows.length>0){
+                expiredData=parseWithMapping(rows,detectMappings(headers),'expired');
+                debugLog(`Success! Expired CSV loaded: ${expiredData.length} rows`,'success');
+                expiredLoaded=true;break;
             }
-        }catch(e){debugLog(`${path} → Error: ${e.message}`,'error');}
+        }catch(e){debugLog(`Error reading ${path}: ${e.message}`,'error');}
     }
 
-    // Try loading active
     for(const path of activePaths){
         try{
             debugLog(`Trying: ${path}`);
             const resp=await fetch(path+'?t='+Date.now());
             if(!resp.ok){debugLog(`${path} → ${resp.status}`,'warn');continue;}
-            const contentType=resp.headers.get('content-type')||'';
-            debugLog(`${path} → 200 OK (type: ${contentType})`,'success');
-
-            if(path.endsWith('.xlsx')){
-                const buf=await resp.arrayBuffer();
-                const wb=XLSX.read(new Uint8Array(buf),{type:'array',cellDates:true});
-                const json=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''});
-                if(json.length>0){
-                    const m=detectMappings(Object.keys(json[0]));
-                    activeData=parseWithMapping(json,m,'active');
-                    debugLog(`Active Excel loaded: ${activeData.length} rows`,'success');
-                    activeLoaded=true;break;
-                }
-            } else {
-                const text=await resp.text();
-                if(text.trim().startsWith('<!DOCTYPE')||text.trim().startsWith('<html')){
-                    debugLog(`${path} returned HTML (likely 404 page)`,'warn');continue;
-                }
-                const{headers,rows}=parseCSVRobust(text);
-                if(rows.length>0){
-                    const m=detectMappings(headers);
-                    activeData=parseWithMapping(rows,m,'active');
-                    debugLog(`Active CSV loaded: ${activeData.length} rows`,'success');
-                    activeLoaded=true;break;
-                }
+            const text=await resp.text();
+            if(text.trim().startsWith('<!DOCTYPE')||text.trim().startsWith('<html')){debugLog(`${path} → Returned HTML/404`,'warn');continue;}
+            
+            const {headers,rows}=parseCSVRobust(text);
+            if(rows.length>0){
+                activeData=parseWithMapping(rows,detectMappings(headers),'active');
+                debugLog(`Success! Active CSV loaded: ${activeData.length} rows`,'success');
+                activeLoaded=true;break;
             }
-        }catch(e){debugLog(`${path} → Error: ${e.message}`,'error');}
+        }catch(e){debugLog(`Error reading ${path}: ${e.message}`,'error');}
     }
 
-    if(expiredLoaded&&activeLoaded){
+    if(expiredLoaded && activeLoaded){
         dataSource='repo';
-        setStatus(`✅ Loaded from repository: ${expiredData.length} expired + ${activeData.length} active records`,'success');
-        debugLog('Both files loaded successfully! Running analysis...','success');
+        setStatus(`✅ Loaded real data: ${expiredData.length} expired + ${activeData.length} active records`,'success');
         runAnalysis();
-        return true;
     } else {
-        const missing=[];
-        if(!expiredLoaded) missing.push('expired_customers.csv');
-        if(!activeLoaded) missing.push('active_customers.csv');
-        setStatus(`⚠️ Could not load: ${missing.join(', ')} — Using simulation mode. Check Debug Console for details.`,'error');
-        debugLog(`Failed to load: ${missing.join(', ')}. Falling back to simulation.`,'error');
-        debugLog('Make sure files are in /data/ folder and names match exactly.','warn');
+        setStatus(`⚠️ Could not auto-load files. Check Debug Console. Using simulation mode.`,'error');
         generateSimulation();
-        return false;
     }
 }
 
@@ -800,7 +738,7 @@ async function handleFileUpload(type,input){
     const file=input.files[0];if(!file)return;
     const fn=document.getElementById(type+'FileName');
     fn.className='file-name';fn.textContent=`⏳ Reading ${file.name}...`;
-    debugLog(`Manual upload: ${file.name} (${type})`);
+    debugLog(`Manual upload: ${file.name}`);
     try{
         let headers,rows;
         if(file.name.endsWith('.csv')){
@@ -813,14 +751,12 @@ async function handleFileUpload(type,input){
             const json=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''});
             headers=Object.keys(json[0]||{});rows=json;
         }
-        const m=detectMappings(headers);
-        const pd=parseWithMapping(rows,m,type);
+        const pd=parseWithMapping(rows,detectMappings(headers),type);
         if(type==='expired')expiredData=pd;else activeData=pd;
         fn.textContent=`✅ ${file.name} (${pd.length} rows)`;
-        debugLog(`${type} uploaded: ${pd.length} rows`,'success');
         if(expiredData.length>0&&activeData.length>0){
             dataSource='uploaded';
-            setStatus(`✅ Uploaded: ${expiredData.length} expired + ${activeData.length} active records`,'success');
+            setStatus(`✅ Uploaded: ${expiredData.length} expired + ${activeData.length} active`,'success');
             runAnalysis();
         }
     }catch(e){fn.className='file-name error';fn.textContent=`❌ ${e}`;debugLog(`Upload error: ${e}`,'error');}
@@ -835,19 +771,13 @@ function genGSTIN(sc){const c='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';let g=sc;fo
 function rndDate(s,e){return new Date(s.getTime()+Math.random()*(e.getTime()-s.getTime()));}
 
 function generateSimulation(){
-    const ec=parseInt(document.getElementById('expiredCount').value)||350;
-    const ac=parseInt(document.getElementById('activeCount').value)||500;
-    const op=parseInt(document.getElementById('overlapPct').value)||15;
-    const oc=Math.floor(Math.min(ec,ac)*op/100);
-    const sk=Object.keys(stateGSTCodes);
-    const sg=[],sgt=[];
+    const ec=parseInt(document.getElementById('expiredCount').value)||350,ac=parseInt(document.getElementById('activeCount').value)||500,op=parseInt(document.getElementById('overlapPct').value)||15;
+    const oc=Math.floor(Math.min(ec,ac)*op/100),sk=Object.keys(stateGSTCodes),sg=[],sgt=[];
     for(let i=0;i<oc;i++){sg.push(genUUID());sgt.push(Math.random()>0.2?genGSTIN(sk[Math.floor(Math.random()*sk.length)]):null);}
     expiredData=[];activeData=[];
-    for(let i=0;i<ec;i++){const o=i<oc;const s=sk[Math.floor(Math.random()*sk.length)];expiredData.push({subscriptionId:genSubId(),compGUID:o?sg[i]:genUUID(),gstin:o?sgt[i]:(Math.random()>0.25?genGSTIN(s):null),currentBlsExpiry:rndDate(new Date('2023-01-01'),new Date('2024-12-31')),source:'expired'});}
-    for(let i=0;i<ac;i++){const o=i<oc;const s=sk[Math.floor(Math.random()*sk.length)];activeData.push({subscriptionId:genSubId(),compGUID:o?sg[i]:genUUID(),gstin:o?sgt[i]:(Math.random()>0.2?genGSTIN(s):null),currentBlsExpiry:rndDate(new Date('2024-06-01'),new Date('2026-06-30')),source:'active'});}
-    dataSource='simulation';
-    setStatus('📌 Using simulation data. Upload CSV or place files in /data/ folder for real data.','info');
-    runAnalysis();
+    for(let i=0;i<ec;i++){const o=i<oc,s=sk[Math.floor(Math.random()*sk.length)];expiredData.push({subscriptionId:genSubId(),compGUID:o?sg[i]:genUUID(),gstin:o?sgt[i]:(Math.random()>0.25?genGSTIN(s):null),currentBlsExpiry:rndDate(new Date('2023-01-01'),new Date('2024-12-31')),source:'expired'});}
+    for(let i=0;i<ac;i++){const o=i<oc,s=sk[Math.floor(Math.random()*sk.length)];activeData.push({subscriptionId:genSubId(),compGUID:o?sg[i]:genUUID(),gstin:o?sgt[i]:(Math.random()>0.2?genGSTIN(s):null),currentBlsExpiry:rndDate(new Date('2024-06-01'),new Date('2026-06-30')),source:'active'});}
+    dataSource='simulation'; runAnalysis();
 }
 
 // ==================== ANALYSIS ====================
@@ -873,31 +803,26 @@ function analyzeData(){
 
 // ==================== DRILL-DOWN MODAL ====================
 function openDrillDown(title, data, statsArray){
-    currentModalData=data;
-    document.getElementById('modalTitle').textContent=title;
-    const ms=document.getElementById('modalStats');
-    ms.innerHTML=statsArray.map(s=>`<div class="modal-stat"><div class="modal-stat-value" style="color:${s.color||'#667eea'}">${s.value}</div><div class="modal-stat-label">${s.label}</div></div>`).join('');
-    document.getElementById('modalSearch').value='';
-    renderModalTable(data);
+    currentModalData=data; document.getElementById('modalTitle').textContent=title;
+    document.getElementById('modalStats').innerHTML=statsArray.map(s=>`<div class="modal-stat"><div class="modal-stat-value" style="color:${s.color||'#667eea'}">${s.value}</div><div class="modal-stat-label">${s.label}</div></div>`).join('');
+    document.getElementById('modalSearch').value=''; renderModalTable(data);
     document.getElementById('drillModal').classList.add('show');
 }
 
 function renderModalTable(data){
-    document.getElementById('modalTableHead').innerHTML=`<tr><th>Subscription ID</th><th>CompGUID</th><th>GSTIN</th><th>BLS Expiry</th><th>Source</th><th>Days Left/Ago</th></tr>`;
+    document.getElementById('modalTableHead').innerHTML=`<tr><th>Sub ID</th><th>CompGUID</th><th>GSTIN</th><th>BLS Expiry</th><th>Source</th><th>Days</th></tr>`;
     const today=new Date();
     document.getElementById('modalTableBody').innerHTML=data.slice(0,500).map(d=>{
         const diff=Math.floor((d.currentBlsExpiry-today)/86400000);
-        const diffText=diff>0?`${diff} days left`:`${Math.abs(diff)} days ago`;
         const diffColor=diff>30?'#38ef7d':diff>0?'#ffd200':'#f45c43';
-        return`<tr><td>${d.subscriptionId}</td><td style="font-family:monospace;font-size:0.72rem;">${d.compGUID.substring(0,16)}...</td><td>${d.gstin||'<span style="color:#555">N/A</span>'}</td><td>${d.currentBlsExpiry.toLocaleDateString()}</td><td><span class="status-badge ${d.source==='expired'?'status-expired':'status-active'}">${d.source}</span></td><td style="color:${diffColor}">${diffText}</td></tr>`;
+        return`<tr><td>${d.subscriptionId}</td><td style="font-family:monospace;font-size:0.72rem;">${d.compGUID.substring(0,16)}...</td><td>${d.gstin||'<span style="color:#555">N/A</span>'}</td><td>${d.currentBlsExpiry.toLocaleDateString()}</td><td><span class="status-badge ${d.source==='expired'?'status-expired':'status-active'}">${d.source}</span></td><td style="color:${diffColor}">${diff>0?`${diff} left`:`${Math.abs(diff)} ago`}</td></tr>`;
     }).join('');
-    document.getElementById('modalRecordCount').textContent=`${data.length} records`;
+    document.getElementById('modalRecordCount').textContent=`${data.length} records shown`;
 }
 
 function filterModalTable(){
     const q=document.getElementById('modalSearch').value.toLowerCase();
-    const filtered=currentModalData.filter(d=>(d.subscriptionId||'').toLowerCase().includes(q)||(d.compGUID||'').toLowerCase().includes(q)||(d.gstin||'').toLowerCase().includes(q));
-    renderModalTable(filtered);
+    renderModalTable(currentModalData.filter(d=>(d.subscriptionId||'').toLowerCase().includes(q)||(d.compGUID||'').toLowerCase().includes(q)||(d.gstin||'').toLowerCase().includes(q)));
 }
 
 function closeModal(){document.getElementById('drillModal').classList.remove('show');}
@@ -909,84 +834,46 @@ function downloadModalData(){
 }
 
 // ==================== DRILL-DOWN HELPERS ====================
-function drillByCategory(category){
-    const r=analysisResults,today=new Date(),rd=parseInt(document.getElementById('riskDays').value),rDate=new Date(today.getTime()+rd*86400000);
-    let data=[],title='',stats=[];
-    switch(category){
-        case 'total':
-            data=[...expiredData,...activeData];
-            title='📊 All Subscriptions';
-            stats=[{value:data.length,label:'Total Records',color:'#667eea'},{value:expiredData.length,label:'Expired',color:'#f45c43'},{value:activeData.length,label:'Active',color:'#38ef7d'}];
-            break;
-        case 'churned':
-            data=expiredData.filter(d=>r.fullChurnSet.has(d.compGUID));
-            title='🔴 Full Churn — Companies That Completely Left';
-            stats=[{value:data.length,label:'Churned Records',color:'#f45c43'},{value:r.fullChurn,label:'Unique Companies',color:'#f45c43'},{value:r.churnRate+'%',label:'Churn Rate',color:'#f45c43'}];
-            break;
-        case 'healthy':
-            data=activeData.filter(d=>r.healthySet.has(d.compGUID));
-            title='🟢 Healthy — Fully Active Companies';
-            stats=[{value:data.length,label:'Active Records',color:'#38ef7d'},{value:r.healthy,label:'Healthy Companies',color:'#38ef7d'},{value:r.retentionRate+'%',label:'Retention Rate',color:'#38ef7d'}];
-            break;
-        case 'overlap':
-            data=[...expiredData,...activeData].filter(d=>r.overlappingCompGUIDSet.has(d.compGUID));
-            title='🟡 Partial Churn — Companies in Both Datasets';
-            stats=[{value:data.length,label:'Total Records',color:'#a855f7'},{value:r.overlappingCompGUIDs,label:'Overlap Companies',color:'#a855f7'},{value:data.filter(d=>d.source==='expired').length,label:'Expired Subs',color:'#f45c43'},{value:data.filter(d=>d.source==='active').length,label:'Active Subs',color:'#38ef7d'}];
-            break;
-        case 'atrisk':
-            data=r.atRiskData;
-            title='⚠️ At-Risk — Active Subscriptions Expiring Soon';
-            stats=[{value:data.length,label:'At-Risk Records',color:'#ffd200'},{value:rd+' days',label:'Risk Window',color:'#ffd200'}];
-            break;
-        case 'gstin_overlap':
-            data=[...expiredData,...activeData].filter(d=>d.gstin&&(new Set([...new Set(expiredData.filter(x=>x.gstin).map(x=>x.gstin))].filter(x=>(new Set(activeData.filter(y=>y.gstin).map(y=>y.gstin))).has(x)))).has(d.gstin));
-            title='🏢 GSTIN Overlap — Same Entity in Both Datasets';
-            stats=[{value:data.length,label:'Records',color:'#22d3ee'},{value:r.gstinOverlap,label:'Unique GSTINs',color:'#22d3ee'}];
-            break;
+function drillByCategory(cat){
+    const r=analysisResults; let data=[],title='',stats=[];
+    switch(cat){
+        case 'total': data=[...expiredData,...activeData]; title='📊 All Subscriptions'; stats=[{value:data.length,label:'Total Records'},{value:expiredData.length,label:'Expired',color:'#f45c43'},{value:activeData.length,label:'Active',color:'#38ef7d'}]; break;
+        case 'churned': data=expiredData.filter(d=>r.fullChurnSet.has(d.compGUID)); title='🔴 Full Churn'; stats=[{value:data.length,label:'Records',color:'#f45c43'},{value:r.churnRate+'%',label:'Churn Rate',color:'#f45c43'}]; break;
+        case 'healthy': data=activeData.filter(d=>r.healthySet.has(d.compGUID)); title='🟢 Healthy'; stats=[{value:data.length,label:'Records',color:'#38ef7d'},{value:r.retentionRate+'%',label:'Retention',color:'#38ef7d'}]; break;
+        case 'overlap': data=[...expiredData,...activeData].filter(d=>r.overlappingCompGUIDSet.has(d.compGUID)); title='🟡 Partial Churn (Overlap)'; stats=[{value:data.length,label:'Records',color:'#a855f7'},{value:r.overlappingCompGUIDs,label:'Companies',color:'#a855f7'}]; break;
+        case 'atrisk': data=r.atRiskData; title='⚠️ At-Risk'; stats=[{value:data.length,label:'Records',color:'#ffd200'}]; break;
+        case 'gstin_overlap': data=[...expiredData,...activeData].filter(d=>d.gstin&&(new Set([...new Set(expiredData.filter(x=>x.gstin).map(x=>x.gstin))].filter(x=>(new Set(activeData.filter(y=>y.gstin).map(y=>y.gstin))).has(x)))).has(d.gstin)); title='🏢 GSTIN Overlap'; stats=[{value:data.length,label:'Records',color:'#22d3ee'},{value:r.gstinOverlap,label:'Unique GSTINs',color:'#22d3ee'}]; break;
     }
     openDrillDown(title,data,stats);
 }
 
-function drillByState(stateName){
-    const data=[...expiredData,...activeData].filter(d=>d.gstin&&d.gstin.length>=2&&(stateGSTCodes[d.gstin.substring(0,2)]||'Other')===stateName);
-    const exp=data.filter(d=>d.source==='expired').length,act=data.filter(d=>d.source==='active').length;
-    const cr=data.length>0?((exp/(exp+act))*100).toFixed(1):'0';
-    openDrillDown(`🗺️ ${stateName} — State Drill-Down`,data,[
-        {value:data.length,label:'Total Records',color:'#667eea'},
-        {value:exp,label:'Expired',color:'#f45c43'},
-        {value:act,label:'Active',color:'#38ef7d'},
-        {value:cr+'%',label:'State Churn Rate',color:parseFloat(cr)>40?'#f45c43':'#38ef7d'}
-    ]);
+function drillByState(st){
+    const data=[...expiredData,...activeData].filter(d=>d.gstin&&d.gstin.length>=2&&(stateGSTCodes[d.gstin.substring(0,2)]||'Other')===st);
+    const e=data.filter(d=>d.source==='expired').length,a=data.filter(d=>d.source==='active').length;
+    openDrillDown(`🗺️ ${st} Data`,data,[{value:data.length,label:'Records'},{value:e,label:'Expired',color:'#f45c43'},{value:a,label:'Active',color:'#38ef7d'},{value:(data.length>0?((e/(e+a))*100).toFixed(1):'0')+'%',label:'Churn Rate'}]);
 }
 
-function drillByMonth(month,type){
-    const allData=type==='expired'?expiredData:type==='active'?activeData:[...expiredData,...activeData];
-    const data=allData.filter(d=>d.currentBlsExpiry.toISOString().slice(0,7)===month);
-    openDrillDown(`📅 ${month} — ${type==='expired'?'Expired':'Active'} Subscriptions`,data,[
-        {value:data.length,label:'Records',color:'#667eea'},
-        {value:month,label:'Month',color:'#667eea'}
-    ]);
+function drillByMonth(m,t){
+    const ad=t==='expired'?expiredData:t==='active'?activeData:[...expiredData,...activeData];
+    const data=ad.filter(d=>d.currentBlsExpiry.toISOString().slice(0,7)===m);
+    openDrillDown(`📅 ${m} - ${t==='expired'?'Expired':'Active'}`,data,[{value:data.length,label:'Records',color:t==='expired'?'#f45c43':'#38ef7d'}]);
 }
 
-function drillByCompGUID(compGUID){
-    const data=[...expiredData,...activeData].filter(d=>d.compGUID===compGUID);
-    openDrillDown(`🔍 Company Drill-Down: ${compGUID.substring(0,12)}...`,data,[
-        {value:data.length,label:'Subscriptions',color:'#667eea'},
-        {value:data.filter(d=>d.source==='expired').length,label:'Expired',color:'#f45c43'},
-        {value:data.filter(d=>d.source==='active').length,label:'Active',color:'#38ef7d'}
-    ]);
+function drillByCompGUID(guid){
+    const data=[...expiredData,...activeData].filter(d=>d.compGUID===guid);
+    openDrillDown(`🔍 Company Drill-Down`,data,[{value:data.length,label:'Subscriptions'},{value:data.filter(d=>d.source==='expired').length,label:'Expired',color:'#f45c43'},{value:data.filter(d=>d.source==='active').length,label:'Active',color:'#38ef7d'}]);
 }
 
 // ==================== RENDER ====================
 function renderKPIs(){
     const r=analysisResults;
     document.getElementById('kpiStrip').innerHTML=`
-        <div class="kpi-card blue animate-in" onclick="drillByCategory('total')" style="animation-delay:0.1s"><div class="kpi-label">Total Subscriptions</div><div class="kpi-value">${(r.totalExpired+r.totalActive).toLocaleString()}</div><div class="kpi-sublabel">${r.totalExpired} expired + ${r.totalActive} active</div><div class="kpi-click-hint">👆 Click to view all records</div></div>
-        <div class="kpi-card red animate-in" onclick="drillByCategory('churned')" style="animation-delay:0.15s"><div class="kpi-label">Full Churn Rate</div><div class="kpi-value">${r.churnRate}%</div><div class="kpi-sublabel">${r.fullChurn} companies fully left</div><div class="kpi-click-hint">👆 Click to see churned companies</div></div>
-        <div class="kpi-card green animate-in" onclick="drillByCategory('healthy')" style="animation-delay:0.2s"><div class="kpi-label">Retention Rate</div><div class="kpi-value">${r.retentionRate}%</div><div class="kpi-sublabel">${r.healthy} healthy companies</div><div class="kpi-click-hint">👆 Click to see healthy companies</div></div>
-        <div class="kpi-card purple animate-in" onclick="drillByCategory('overlap')" style="animation-delay:0.25s"><div class="kpi-label">Partial Churn</div><div class="kpi-value">${r.overlappingCompGUIDs}</div><div class="kpi-sublabel">${r.partialChurnRate}% overlap</div><div class="kpi-click-hint">👆 Click to see overlap records</div></div>
-        <div class="kpi-card orange animate-in" onclick="drillByCategory('atrisk')" style="animation-delay:0.3s"><div class="kpi-label">At-Risk Active</div><div class="kpi-value">${r.atRisk}</div><div class="kpi-sublabel">Expiring within ${document.getElementById('riskDays').value} days</div><div class="kpi-click-hint">👆 Click to see at-risk records</div></div>
-        <div class="kpi-card cyan animate-in" onclick="drillByCategory('gstin_overlap')" style="animation-delay:0.35s"><div class="kpi-label">GSTIN Overlap</div><div class="kpi-value">${r.gstinOverlap}</div><div class="kpi-sublabel">Same entity in both</div><div class="kpi-click-hint">👆 Click to see GSTIN overlaps</div></div>`;
+        <div class="kpi-card blue animate-in" onclick="drillByCategory('total')" style="animation-delay:0.1s"><div class="kpi-label">Total Subscriptions</div><div class="kpi-value">${(r.totalExpired+r.totalActive).toLocaleString()}</div><div class="kpi-sublabel">${r.totalExpired} expired + ${r.totalActive} active</div><div class="kpi-click-hint">👆 Click to view records</div></div>
+        <div class="kpi-card red animate-in" onclick="drillByCategory('churned')" style="animation-delay:0.15s"><div class="kpi-label">Full Churn Rate</div><div class="kpi-value">${r.churnRate}%</div><div class="kpi-sublabel">${r.fullChurn} companies fully left</div><div class="kpi-click-hint">👆 Click to view records</div></div>
+        <div class="kpi-card green animate-in" onclick="drillByCategory('healthy')" style="animation-delay:0.2s"><div class="kpi-label">Retention Rate</div><div class="kpi-value">${r.retentionRate}%</div><div class="kpi-sublabel">${r.healthy} healthy companies</div><div class="kpi-click-hint">👆 Click to view records</div></div>
+        <div class="kpi-card purple animate-in" onclick="drillByCategory('overlap')" style="animation-delay:0.25s"><div class="kpi-label">Partial Churn</div><div class="kpi-value">${r.overlappingCompGUIDs}</div><div class="kpi-sublabel">${r.partialChurnRate}% overlap</div><div class="kpi-click-hint">👆 Click to view records</div></div>
+        <div class="kpi-card orange animate-in" onclick="drillByCategory('atrisk')" style="animation-delay:0.3s"><div class="kpi-label">At-Risk Active</div><div class="kpi-value">${r.atRisk}</div><div class="kpi-sublabel">Expiring within ${document.getElementById('riskDays').value} days</div><div class="kpi-click-hint">👆 Click to view records</div></div>
+        <div class="kpi-card cyan animate-in" onclick="drillByCategory('gstin_overlap')" style="animation-delay:0.35s"><div class="kpi-label">GSTIN Overlap</div><div class="kpi-value">${r.gstinOverlap}</div><div class="kpi-sublabel">Same entity in both</div><div class="kpi-click-hint">👆 Click to view records</div></div>`;
 }
 
 function renderInsights(){
@@ -994,8 +881,8 @@ function renderInsights(){
     if(cr>40) ins.push({i:'🔴',t:`<strong>HIGH CHURN:</strong> ${r.churnRate}% fully churned. Immediate intervention needed.`});
     else if(cr>20) ins.push({i:'🟡',t:`<strong>MODERATE CHURN:</strong> ${r.churnRate}%. Review pricing and support.`});
     else ins.push({i:'🟢',t:`<strong>HEALTHY:</strong> Only ${r.churnRate}% churn. Good retention.`});
-    if(r.overlappingCompGUIDs>0) ins.push({i:'🔗',t:`<strong>OVERLAP:</strong> ${r.overlappingCompGUIDs} companies partially churned — best re-engagement targets.`});
-    if(r.atRisk>0) ins.push({i:'⚠️',t:`<strong>URGENT:</strong> ${r.atRisk} subscriptions expiring within ${document.getElementById('riskDays').value} days.`});
+    if(r.overlappingCompGUIDs>0) ins.push({i:'🔗',t:`<strong>OVERLAP:</strong> ${r.overlappingCompGUIDs} companies partially churned.`});
+    if(r.atRisk>0) ins.push({i:'⚠️',t:`<strong>URGENT:</strong> ${r.atRisk} subs expire within ${document.getElementById('riskDays').value} days.`});
     if(r.gstinOverlap>0) ins.push({i:'🏢',t:`<strong>GSTIN:</strong> ${r.gstinOverlap} same entities in both datasets.`});
     document.getElementById('insightBox').innerHTML=`<h4>💡 Insights & Actions</h4>${ins.map(x=>`<div class="insight-item">${x.i} ${x.t}</div>`).join('')}`;
 }
@@ -1016,8 +903,7 @@ function renderFlowDiagram(){
         <div class="flow-row" onclick="drillByCategory('healthy')"><div class="flow-icon">🟢</div><div class="flow-label">Healthy</div><div class="flow-bar-container"><div class="flow-bar healthy" style="width:${Math.max(hp,5)}%">${r.healthy} (${hp}%)</div></div><div class="flow-value" style="color:#38ef7d;">${hp}%</div></div>
         <div class="flow-row" onclick="drillByCategory('overlap')"><div class="flow-icon">🟡</div><div class="flow-label">Partial Churn</div><div class="flow-bar-container"><div class="flow-bar partial" style="width:${Math.max(pp,5)}%">${r.overlappingCompGUIDs} (${pp}%)</div></div><div class="flow-value" style="color:#a855f7;">${pp}%</div></div>
         <div class="flow-row" onclick="drillByCategory('churned')"><div class="flow-icon">🔴</div><div class="flow-label">Full Churn</div><div class="flow-bar-container"><div class="flow-bar churned" style="width:${Math.max(fp,5)}%">${r.fullChurn} (${fp}%)</div></div><div class="flow-value" style="color:#f45c43;">${fp}%</div></div>
-        <div class="flow-row" onclick="drillByCategory('atrisk')"><div class="flow-icon">⚠️</div><div class="flow-label">At-Risk</div><div class="flow-bar-container"><div class="flow-bar atrisk" style="width:${Math.max(ap,3)}%">${r.atRisk} (${ap}%)</div></div><div class="flow-value" style="color:#ffd200;">${ap}%</div></div>
-        <div style="font-size:0.7rem;color:#555;margin-top:8px;">👆 Click any row for detailed drill-down</div>`;
+        <div class="flow-row" onclick="drillByCategory('atrisk')"><div class="flow-icon">⚠️</div><div class="flow-label">At-Risk</div><div class="flow-bar-container"><div class="flow-bar atrisk" style="width:${Math.max(ap,3)}%">${r.atRisk} (${ap}%)</div></div><div class="flow-value" style="color:#ffd200;">${ap}%</div></div>`;
 }
 
 function renderCorrelationBars(){
@@ -1029,54 +915,32 @@ function renderCorrelationBars(){
         {l:'At-Risk Exposure',v:r.totalActive>0?(r.atRisk/r.totalActive)*100:0,c:'#ffd200',cat:'atrisk'}
     ];
     const gs=v=>v>=30?{c:'strength-high',t:'HIGH'}:v>=10?{c:'strength-medium',t:'MEDIUM'}:{c:'strength-low',t:'LOW'};
-    document.getElementById('correlationBars').innerHTML=bars.map(b=>{const s=gs(b.v);return`<div class="corr-row" onclick="drillByCategory('${b.cat}')"><div class="corr-label">${b.l}</div><div class="corr-bar-bg"><div class="corr-bar-fill" style="width:${Math.min(b.v,100)}%;background:${b.c};">${b.v.toFixed(1)}%</div></div><div class="corr-strength ${s.c}">${s.t}</div></div>`;}).join('')+`<div style="font-size:0.68rem;color:#555;margin-top:8px;">👆 Click any bar for drill-down</div>`;
+    document.getElementById('correlationBars').innerHTML=bars.map(b=>{const s=gs(b.v);return`<div class="corr-row" onclick="drillByCategory('${b.cat}')"><div class="corr-label">${b.l}</div><div class="corr-bar-bg"><div class="corr-bar-fill" style="width:${Math.min(b.v,100)}%;background:${b.c};">${b.v.toFixed(1)}%</div></div><div class="corr-strength ${s.c}">${s.t}</div></div>`;}).join('');
 }
 
 function dc(n){if(charts[n]){charts[n].destroy();charts[n]=null;}}
 
-function renderChurnDoughnut(){
-    const r=analysisResults;dc('cd');
-    charts.cd=new Chart(document.getElementById('churnDoughnut'),{type:'doughnut',data:{labels:['Healthy','Partial Churn','Full Churn'],datasets:[{data:[r.healthy,r.overlappingCompGUIDs,r.fullChurn],backgroundColor:['rgba(56,239,125,0.7)','rgba(168,85,247,0.7)','rgba(244,92,67,0.7)'],borderColor:['#38ef7d','#a855f7','#f45c43'],borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,onClick:(e,el)=>{if(el.length){const i=el[0].index;drillByCategory(['healthy','overlap','churned'][i]);}},plugins:{legend:{position:'bottom',labels:{color:'#aaa',padding:12,font:{size:10}}}},cutout:'60%'}});
-}
-
-function renderTimelineChart(){
-    const r=analysisResults;const months=[...new Set([...Object.keys(r.monthlyExpired),...Object.keys(r.monthlyActive)])].sort();
-    dc('tl');
-    charts.tl=new Chart(document.getElementById('timelineChart'),{type:'bar',data:{labels:months,datasets:[{label:'Expired',data:months.map(m=>r.monthlyExpired[m]||0),backgroundColor:'rgba(244,92,67,0.55)',borderColor:'#f45c43',borderWidth:1},{label:'Active',data:months.map(m=>r.monthlyActive[m]||0),backgroundColor:'rgba(56,239,125,0.55)',borderColor:'#38ef7d',borderWidth:1}]},
-    options:{responsive:true,maintainAspectRatio:false,onClick:(e,el)=>{if(el.length){const idx=el[0].index;const dsIdx=el[0].datasetIndex;drillByMonth(months[idx],dsIdx===0?'expired':'active');}},plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{ticks:{color:'#888',maxRotation:45},grid:{color:'rgba(255,255,255,0.03)'}},y:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,0.03)'}}}}});
-}
-
-function renderAtRiskChart(){
-    const r=analysisResults,rd=parseInt(document.getElementById('riskDays').value),today=new Date();
+function renderCharts(){
+    const r=analysisResults,months=[...new Set([...Object.keys(r.monthlyExpired),...Object.keys(r.monthlyActive)])].sort(),rd=parseInt(document.getElementById('riskDays').value),today=new Date();
+    
+    dc('cd');charts.cd=new Chart(document.getElementById('churnDoughnut'),{type:'doughnut',data:{labels:['Healthy','Partial Churn','Full Churn'],datasets:[{data:[r.healthy,r.overlappingCompGUIDs,r.fullChurn],backgroundColor:['rgba(56,239,125,0.7)','rgba(168,85,247,0.7)','rgba(244,92,67,0.7)'],borderColor:['#38ef7d','#a855f7','#f45c43'],borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,onClick:(e,el)=>{if(el.length)drillByCategory(['healthy','overlap','churned'][el[0].index]);},plugins:{legend:{position:'bottom',labels:{color:'#aaa',padding:12,font:{size:10}}}},cutout:'60%'}});
+    
+    dc('tl');charts.tl=new Chart(document.getElementById('timelineChart'),{type:'bar',data:{labels:months,datasets:[{label:'Expired',data:months.map(m=>r.monthlyExpired[m]||0),backgroundColor:'rgba(244,92,67,0.55)',borderColor:'#f45c43',borderWidth:1},{label:'Active',data:months.map(m=>r.monthlyActive[m]||0),backgroundColor:'rgba(56,239,125,0.55)',borderColor:'#38ef7d',borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,onClick:(e,el)=>{if(el.length)drillByMonth(months[el[0].index],el[0].datasetIndex===0?'expired':'active');},plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{ticks:{color:'#888',maxRotation:45},grid:{color:'rgba(255,255,255,0.03)'}},y:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,0.03)'}}}}});
+    
     const bk={};for(let i=0;i<rd;i+=7)bk[`Day ${i+1}-${Math.min(i+7,rd)}`]=0;
     r.atRiskData.forEach(d=>{const dl=Math.floor((d.currentBlsExpiry-today)/86400000);const ks=Object.keys(bk);const idx=Math.min(Math.floor(dl/7),ks.length-1);if(idx>=0)bk[ks[idx]]++;});
-    dc('ar');
-    charts.ar=new Chart(document.getElementById('atRiskChart'),{type:'bar',data:{labels:Object.keys(bk),datasets:[{label:'At-Risk',data:Object.values(bk),backgroundColor:Object.keys(bk).map((_,i)=>`rgba(255,${Math.min(150+i*30,255)},0,0.6)`),borderColor:'#ffd200',borderWidth:1,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,onClick:()=>drillByCategory('atrisk'),plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,0.03)'}},y:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,0.03)'}}}}});
-}
+    dc('ar');charts.ar=new Chart(document.getElementById('atRiskChart'),{type:'bar',data:{labels:Object.keys(bk),datasets:[{label:'At-Risk',data:Object.values(bk),backgroundColor:Object.keys(bk).map((_,i)=>`rgba(255,${Math.min(150+i*30,255)},0,0.6)`),borderColor:'#ffd200',borderWidth:1,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,onClick:()=>drillByCategory('atrisk'),plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,0.03)'}},y:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,0.03)'}}}}});
 
-function renderCumulativeChart(){
-    const r=analysisResults;const months=Object.keys(r.monthlyExpired).sort();
     let cum=0;const cd=months.map(m=>{cum+=(r.monthlyExpired[m]||0);return cum;});
-    dc('cm');
-    charts.cm=new Chart(document.getElementById('cumulativeChart'),{type:'line',data:{labels:months,datasets:[{label:'Cumulative Expired',data:cd,borderColor:'#f45c43',backgroundColor:'rgba(244,92,67,0.08)',borderWidth:2,fill:true,tension:0.3,pointRadius:2},{label:'Monthly',data:months.map(m=>r.monthlyExpired[m]||0),borderColor:'#ffd200',borderWidth:1.5,borderDash:[5,5],tension:0.3,pointRadius:1.5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{ticks:{color:'#888',maxRotation:45},grid:{color:'rgba(255,255,255,0.03)'}},y:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,0.03)'}}}}});
-}
+    dc('cm');charts.cm=new Chart(document.getElementById('cumulativeChart'),{type:'line',data:{labels:months,datasets:[{label:'Cumulative Expired',data:cd,borderColor:'#f45c43',backgroundColor:'rgba(244,92,67,0.08)',borderWidth:2,fill:true,tension:0.3,pointRadius:2},{label:'Monthly',data:months.map(m=>r.monthlyExpired[m]||0),borderColor:'#ffd200',borderWidth:1.5,borderDash:[5,5],tension:0.3,pointRadius:1.5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{ticks:{color:'#888',maxRotation:45},grid:{color:'rgba(255,255,255,0.03)'}},y:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,0.03)'}}}}});
 
-function renderStateChart(){
-    const r=analysisResults,states=Object.keys(r.stateChurn).sort();
-    dc('st');
-    charts.st=new Chart(document.getElementById('stateChart'),{type:'bar',data:{labels:states,datasets:[{label:'Expired',data:states.map(s=>r.stateChurn[s].expired),backgroundColor:'rgba(244,92,67,0.55)',borderColor:'#f45c43',borderWidth:1},{label:'Active',data:states.map(s=>r.stateChurn[s].active),backgroundColor:'rgba(56,239,125,0.55)',borderColor:'#38ef7d',borderWidth:1},{label:'Churn %',data:states.map(s=>{const t=r.stateChurn[s].expired+r.stateChurn[s].active;return t>0?((r.stateChurn[s].expired/t)*100).toFixed(1):0;}),type:'line',borderColor:'#ffd200',borderWidth:2,pointBackgroundColor:'#ffd200',pointRadius:3,yAxisID:'y1',tension:0.3}]},
-    options:{responsive:true,maintainAspectRatio:false,onClick:(e,el)=>{if(el.length){const idx=el[0].index;drillByState(states[idx]);}},plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{ticks:{color:'#888',maxRotation:45},grid:{color:'rgba(255,255,255,0.03)'}},y:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,0.03)'}},y1:{position:'right',ticks:{color:'#ffd200'},grid:{display:false},min:0,max:100}}}});
-}
+    const states=Object.keys(r.stateChurn).sort();
+    dc('st');charts.st=new Chart(document.getElementById('stateChart'),{type:'bar',data:{labels:states,datasets:[{label:'Expired',data:states.map(s=>r.stateChurn[s].expired),backgroundColor:'rgba(244,92,67,0.55)',borderColor:'#f45c43',borderWidth:1},{label:'Active',data:states.map(s=>r.stateChurn[s].active),backgroundColor:'rgba(56,239,125,0.55)',borderColor:'#38ef7d',borderWidth:1},{label:'Churn %',data:states.map(s=>{const t=r.stateChurn[s].expired+r.stateChurn[s].active;return t>0?((r.stateChurn[s].expired/t)*100).toFixed(1):0;}),type:'line',borderColor:'#ffd200',borderWidth:2,pointBackgroundColor:'#ffd200',pointRadius:3,yAxisID:'y1',tension:0.3}]},options:{responsive:true,maintainAspectRatio:false,onClick:(e,el)=>{if(el.length)drillByState(states[el[0].index]);},plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{ticks:{color:'#888',maxRotation:45},grid:{color:'rgba(255,255,255,0.03)'}},y:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,0.03)'}},y1:{position:'right',ticks:{color:'#ffd200'},grid:{display:false},min:0,max:100}}}});
 
-function renderRadarChart(){
-    const r=analysisResults;dc('rd');
-    charts.rd=new Chart(document.getElementById('radarChart'),{type:'radar',data:{labels:['Churn%','Partial%','At-Risk%','No GST%','Multi-Sub%'],datasets:[{label:'Current',data:[parseFloat(r.churnRate),parseFloat(r.partialChurnRate),r.totalActive>0?((r.atRisk/r.totalActive)*100):0,((r.expiredNoGST+r.activeNoGST)/(r.totalExpired+r.totalActive)*100),(((Object.values(r.densityDist).reduce((a,b)=>a+b,0)-(r.densityDist['1']||0))/Math.max(Object.values(r.densityDist).reduce((a,b)=>a+b,0),1))*100)].map(v=>parseFloat(v.toFixed(1))),backgroundColor:'rgba(244,92,67,0.12)',borderColor:'#f45c43',borderWidth:2,pointBackgroundColor:'#f45c43',pointRadius:3.5},{label:'Benchmark',data:[15,10,5,20,30],backgroundColor:'rgba(56,239,125,0.06)',borderColor:'#38ef7d',borderWidth:1.5,borderDash:[5,5],pointRadius:2.5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa',font:{size:10}}}},scales:{r:{ticks:{color:'#888',backdropColor:'transparent',stepSize:20},grid:{color:'rgba(255,255,255,0.06)'},pointLabels:{color:'#aaa',font:{size:9}},suggestedMax:100}}}});
-}
+    dc('rd');charts.rd=new Chart(document.getElementById('radarChart'),{type:'radar',data:{labels:['Churn%','Partial%','At-Risk%','No GST%','Multi-Sub%'],datasets:[{label:'Current',data:[parseFloat(r.churnRate),parseFloat(r.partialChurnRate),r.totalActive>0?((r.atRisk/r.totalActive)*100):0,((r.expiredNoGST+r.activeNoGST)/(r.totalExpired+r.totalActive)*100),(((Object.values(r.densityDist).reduce((a,b)=>a+b,0)-(r.densityDist['1']||0))/Math.max(Object.values(r.densityDist).reduce((a,b)=>a+b,0),1))*100)].map(v=>parseFloat(v.toFixed(1))),backgroundColor:'rgba(244,92,67,0.12)',borderColor:'#f45c43',borderWidth:2,pointBackgroundColor:'#f45c43',pointRadius:3.5},{label:'Benchmark',data:[15,10,5,20,30],backgroundColor:'rgba(56,239,125,0.06)',borderColor:'#38ef7d',borderWidth:1.5,borderDash:[5,5],pointRadius:2.5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa',font:{size:10}}}},scales:{r:{ticks:{color:'#888',backdropColor:'transparent',stepSize:20},grid:{color:'rgba(255,255,255,0.06)'},pointLabels:{color:'#aaa',font:{size:9}},suggestedMax:100}}}});
 
-function renderDensityChart(){
-    const r=analysisResults,labels=['1','2','3','4','5','6+'];
-    dc('dn');
-    charts.dn=new Chart(document.getElementById('densityChart'),{type:'bar',data:{labels:labels.map(l=>l+' subs'),datasets:[{label:'Companies',data:labels.map(l=>r.densityDist[l]||0),backgroundColor:'rgba(102,126,234,0.5)',borderColor:'#667eea',borderWidth:1,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,0.03)'}},y:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,0.03)'}}}}});
+    const labels=['1','2','3','4','5','6+'];
+    dc('dn');charts.dn=new Chart(document.getElementById('densityChart'),{type:'bar',data:{labels:labels.map(l=>l+' subs'),datasets:[{label:'Companies',data:labels.map(l=>r.densityDist[l]||0),backgroundColor:'rgba(102,126,234,0.5)',borderColor:'#667eea',borderWidth:1,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,0.03)'}},y:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,0.03)'}}}}});
 }
 
 function renderDataTable(filter='all'){
@@ -1096,32 +960,27 @@ function showTable(f,btn){renderDataTable(f);document.querySelectorAll('.table-t
 
 // ==================== DOWNLOADS ====================
 function dlFile(c,n,t){const b=new Blob([c],{type:t});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=n;a.click();URL.revokeObjectURL(u);}
-
 function downloadCSV(){
     const r=analysisResults,today=new Date(),rd=parseInt(document.getElementById('riskDays').value),rDate=new Date(today.getTime()+rd*86400000);
     let csv='Subscription ID,CompGUID,GSTIN,BLS Expiry,Source,Status,Category\n';
     [...expiredData,...activeData].forEach(d=>{const o=r.overlappingCompGUIDSet.has(d.compGUID);const ar=d.source==='active'&&d.currentBlsExpiry<=rDate&&d.currentBlsExpiry>=today;csv+=`"${d.subscriptionId}","${d.compGUID}","${d.gstin||''}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}","${d.source==='expired'?'Expired':(ar?'At Risk':'Active')}","${o?'Partial Churn':(d.source==='expired'?'Full Churn':(ar?'Renewal Due':'Healthy'))}"\n`;});
     dlFile(csv,'churn_analysis.csv','text/csv');
 }
-
 function downloadExcel(){
     const r=analysisResults,today=new Date(),rd=parseInt(document.getElementById('riskDays').value),rDate=new Date(today.getTime()+rd*86400000);
-    const ws1=[['Subscription ID','CompGUID','GSTIN','BLS Expiry','Source','Status','Category']];
+    const ws1=[['Sub ID','CompGUID','GSTIN','BLS Expiry','Source','Status','Category']];
     [...expiredData,...activeData].forEach(d=>{const o=r.overlappingCompGUIDSet.has(d.compGUID);const ar=d.source==='active'&&d.currentBlsExpiry<=rDate&&d.currentBlsExpiry>=today;ws1.push([d.subscriptionId,d.compGUID,d.gstin||'',d.currentBlsExpiry.toISOString().slice(0,10),d.source,d.source==='expired'?'Expired':(ar?'At Risk':'Active'),o?'Partial Churn':(d.source==='expired'?'Full Churn':(ar?'Renewal Due':'Healthy'))]);});
     const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(ws1),'Analysis');
     XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['Metric','Value'],['Expired',r.totalExpired],['Active',r.totalActive],['Full Churn',r.fullChurn],['Healthy',r.healthy],['Overlap',r.overlappingCompGUIDs],['Churn%',r.churnRate],['Retention%',r.retentionRate],['At-Risk',r.atRisk]]),'Summary');
     XLSX.writeFile(wb,'churn_analysis.xlsx');
 }
-
 function downloadOverlap(){
     const r=analysisResults;let csv='Subscription ID,CompGUID,GSTIN,BLS Expiry,Source\n';
     [...expiredData,...activeData].filter(d=>r.overlappingCompGUIDSet.has(d.compGUID)).forEach(d=>{csv+=`"${d.subscriptionId}","${d.compGUID}","${d.gstin||''}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}"\n`;});
     dlFile(csv,'overlap_data.csv','text/csv');
 }
-
 function downloadAtRisk(){
-    let csv='Subscription ID,CompGUID,GSTIN,BLS Expiry,Days Left\n';
-    const today=new Date();
+    let csv='Subscription ID,CompGUID,GSTIN,BLS Expiry,Days Left\n';const today=new Date();
     analysisResults.atRiskData.forEach(d=>{const dl=Math.floor((d.currentBlsExpiry-today)/86400000);csv+=`"${d.subscriptionId}","${d.compGUID}","${d.gstin||''}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${dl}"\n`;});
     dlFile(csv,'at_risk_data.csv','text/csv');
 }
@@ -1132,27 +991,14 @@ function runAnalysis(){
     document.getElementById('loadingText').textContent=`Analyzing ${expiredData.length+activeData.length} records...`;
     setTimeout(()=>{
         analyzeData();renderKPIs();renderInsights();renderVenn();renderFlowDiagram();
-        renderCorrelationBars();renderChurnDoughnut();renderTimelineChart();
-        renderAtRiskChart();renderCumulativeChart();renderStateChart();
-        renderRadarChart();renderDensityChart();renderDataTable('all');
+        renderCorrelationBars();renderCharts();renderDataTable('all');
         document.getElementById('loadingOverlay').classList.remove('show');
     },600);
 }
 
-function generateSimulation(){generateSimulatedData();runAnalysis();}
-function generateSimulatedData(){
-    const ec=parseInt(document.getElementById('expiredCount').value)||350,ac=parseInt(document.getElementById('activeCount').value)||500,op=parseInt(document.getElementById('overlapPct').value)||15;
-    const oc=Math.floor(Math.min(ec,ac)*op/100),sk=Object.keys(stateGSTCodes),sg=[],sgt=[];
-    for(let i=0;i<oc;i++){sg.push(genUUID());sgt.push(Math.random()>0.2?genGSTIN(sk[Math.floor(Math.random()*sk.length)]):null);}
-    expiredData=[];activeData=[];
-    for(let i=0;i<ec;i++){const o=i<oc,s=sk[Math.floor(Math.random()*sk.length)];expiredData.push({subscriptionId:genSubId(),compGUID:o?sg[i]:genUUID(),gstin:o?sgt[i]:(Math.random()>0.25?genGSTIN(s):null),currentBlsExpiry:rndDate(new Date('2023-01-01'),new Date('2024-12-31')),source:'expired'});}
-    for(let i=0;i<ac;i++){const o=i<oc,s=sk[Math.floor(Math.random()*sk.length)];activeData.push({subscriptionId:genSubId(),compGUID:o?sg[i]:genUUID(),gstin:o?sgt[i]:(Math.random()>0.2?genGSTIN(s):null),currentBlsExpiry:rndDate(new Date('2024-06-01'),new Date('2026-06-30')),source:'active'});}
-    dataSource='simulation';setStatus('📌 Simulation mode — upload CSV for real data','info');
-}
-
-// ==================== AUTO-LOAD ON PAGE OPEN ====================
+// AUTO-START
 window.addEventListener('load',()=>{
-    debugLog('Page loaded. Starting auto-load...');
+    debugLog('Page loaded. Running auto-load...');
     autoLoadFromRepo();
 });
 </script>
