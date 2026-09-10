@@ -248,54 +248,59 @@
         .modal-overlay {
             display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(10,10,26,0.92); z-index: 2000;
-            justify-content: center; align-items: center; padding: 30px;
+            justify-content: center; align-items: center; padding: 20px;
         }
         .modal-overlay.show { display: flex; }
         .modal {
             background: #1a1a3e; border: 1px solid rgba(255,255,255,0.12);
-            border-radius: 16px; width: 100%; max-width: 1050px; max-height: 88vh;
+            border-radius: 16px; width: 100%; max-width: 1200px; max-height: 90vh; /* WIDER MODAL */
             overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            display: flex; flex-direction: column;
         }
         .modal-header {
             background: linear-gradient(135deg, #667eea, #764ba2);
-            padding: 18px 24px; display: flex; justify-content: space-between; align-items: center;
+            padding: 16px 24px; display: flex; justify-content: space-between; align-items: center;
         }
         .modal-header h3 { color: #fff; font-size: 1.1rem; }
         .modal-close {
             background: rgba(255,255,255,0.2); border: none; color: #fff;
-            width: 32px; height: 32px; border-radius: 50%; cursor: pointer;
-            font-size: 1.2rem; display: flex; align-items: center; justify-content: center;
+            width: 30px; height: 30px; border-radius: 50%; cursor: pointer;
+            font-size: 1.1rem; display: flex; align-items: center; justify-content: center;
             transition: all 0.3s;
         }
         .modal-close:hover { background: rgba(255,255,255,0.3); }
         .modal-stats {
-            display: flex; gap: 16px; padding: 16px 24px;
+            display: flex; gap: 16px; padding: 12px 24px;
             background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.06);
             flex-wrap: wrap;
         }
         .modal-stat { text-align: center; min-width: 100px; }
-        .modal-stat-value { font-size: 1.5rem; font-weight: 700; }
-        .modal-stat-label { font-size: 0.7rem; color: #999; text-transform: uppercase; }
-        .modal-body { padding: 0; max-height: 58vh; overflow-y: auto; }
-        .modal-body::-webkit-scrollbar { width: 5px; }
-        .modal-body::-webkit-scrollbar-thumb { background: rgba(102,126,234,0.4); border-radius: 3px; }
-        .modal-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
-        .modal-table thead th {
-            background: rgba(255,255,255,0.04); padding: 10px 14px; text-align: left;
-            color: #999; font-weight: 600; text-transform: uppercase; font-size: 0.7rem;
-            position: sticky; top: 0; z-index: 1;
-        }
-        .modal-table tbody td { padding: 8px 14px; border-top: 1px solid rgba(255,255,255,0.03); }
-        .modal-table tbody tr:hover { background: rgba(102,126,234,0.06); }
+        .modal-stat-value { font-size: 1.4rem; font-weight: 700; }
+        .modal-stat-label { font-size: 0.65rem; color: #999; text-transform: uppercase; }
+        
         .modal-search {
-            width: 100%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
-            color: #fff; padding: 10px 16px; font-size: 0.85rem; outline: none;
+            width: 100%; background: rgba(255,255,255,0.06); border: none;
+            color: #fff; padding: 12px 20px; font-size: 0.85rem; outline: none;
             border-bottom: 1px solid rgba(255,255,255,0.06);
         }
-        .modal-search:focus { border-color: #667eea; }
+        .modal-search:focus { border-bottom-color: #667eea; }
+        
+        .modal-body { padding: 0; overflow-y: auto; flex: 1; }
+        .modal-body::-webkit-scrollbar { width: 5px; }
+        .modal-body::-webkit-scrollbar-thumb { background: rgba(102,126,234,0.4); border-radius: 3px; }
+        
+        .modal-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+        .modal-table thead th {
+            background: rgba(30,30,60,0.95); padding: 10px 14px; text-align: left;
+            color: #999; font-weight: 600; text-transform: uppercase; font-size: 0.68rem;
+            position: sticky; top: 0; z-index: 1; border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .modal-table tbody td { padding: 8px 14px; border-bottom: 1px solid rgba(255,255,255,0.03); vertical-align: middle; }
+        .modal-table tbody tr:hover { background: rgba(102,126,234,0.06); }
+        
         .modal-footer {
             padding: 12px 24px; background: rgba(255,255,255,0.03);
-            border-top: 1px solid rgba(255,255,255,0.06); display: flex; gap: 10px;
+            border-top: 1px solid rgba(255,255,255,0.06); display: flex; gap: 10px; align-items: center;
         }
         .modal-btn {
             background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15);
@@ -304,18 +309,23 @@
         }
         .modal-btn:hover { background: rgba(102,126,234,0.15); border-color: #667eea; }
         .modal-btn.primary { background: linear-gradient(135deg, #667eea, #764ba2); border-color: transparent; color: #fff; }
-        .status-badge { padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 600; }
+
+        /* Correlation Table Formatting */
+        .compguid-cell {
+            font-family: monospace; font-size: 0.72rem; color: #a855f7;
+            text-decoration: underline; cursor: pointer; transition: color 0.2s;
+        }
+        .compguid-cell:hover { color: #fff; }
+        
+        .linked-subs { display: flex; flex-direction: column; gap: 3px; min-width: 180px; }
+        .linked-act { color: #38ef7d; background: rgba(56,239,125,0.08); padding: 3px 6px; border-radius: 4px; border: 1px solid rgba(56,239,125,0.2); font-size: 0.7rem; font-family: monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px; }
+        .linked-exp { color: #f45c43; background: rgba(244,92,67,0.08); padding: 3px 6px; border-radius: 4px; border: 1px solid rgba(244,92,67,0.2); font-size: 0.7rem; font-family: monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px; }
+
+        .status-badge { padding: 3px 8px; border-radius: 10px; font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
         .status-active { background: rgba(56,239,125,0.12); color: #38ef7d; }
         .status-expired { background: rgba(244,92,67,0.12); color: #f45c43; }
-        .status-atrisk { background: rgba(255,210,0,0.12); color: #ffd200; }
-        .status-overlap { background: rgba(168,85,247,0.12); color: #a855f7; }
 
-        .compguid-cell {
-            font-family: monospace; font-size: 0.72rem; color: #22d3ee;
-            word-break: break-all; max-width: 280px; user-select: all;
-        }
-
-        /* Data Table */
+        /* Data Table (Bottom) */
         .data-table-container {
             margin: 16px 30px; background: rgba(255,255,255,0.04);
             border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; overflow: hidden;
@@ -331,14 +341,6 @@
         }
         .table-tab.active { background: linear-gradient(135deg, #667eea, #764ba2); border-color: transparent; color: #fff; }
         .table-tab:hover:not(.active) { border-color: #667eea; color: #667eea; }
-        .main-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
-        .main-table thead th {
-            background: rgba(255,255,255,0.04); padding: 10px 14px; text-align: left;
-            color: #999; font-weight: 600; font-size: 0.7rem; position: sticky; top: 0;
-        }
-        .main-table tbody td { padding: 8px 14px; border-top: 1px solid rgba(255,255,255,0.03); }
-        .main-table tbody tr { cursor: pointer; transition: all 0.2s; }
-        .main-table tbody tr:hover { background: rgba(102,126,234,0.08); }
         .table-scroll { max-height: 400px; overflow-y: auto; }
         .table-scroll::-webkit-scrollbar { width: 5px; }
         .table-scroll::-webkit-scrollbar-thumb { background: rgba(102,126,234,0.4); border-radius: 3px; }
@@ -411,6 +413,7 @@
         </div>
         <div class="modal-footer">
             <button class="modal-btn primary" onclick="downloadModalData()">📥 Download This Data</button>
+            <button class="modal-btn" onclick="document.getElementById('modalSearch').value=''; filterModalTable();">Clear Filter</button>
             <button class="modal-btn" onclick="closeModal()">Close</button>
             <span id="modalRecordCount" style="color:#888;font-size:0.78rem;margin-left:auto;"></span>
         </div>
@@ -420,7 +423,7 @@
 <div class="header">
     <h1>📊 Customer Churn & Retention Dashboard</h1>
     <p>Click any KPI, chart or number for drill-down analysis</p>
-    <div class="header-badge">v6.1 — Format-Agnostic CompGUID Search & Full Display</div>
+    <div class="header-badge">v6.2 — Linked Co-Subscriptions Engine & Click-to-Filter</div>
 </div>
 
 <!-- Status Bar -->
@@ -463,15 +466,6 @@
         </div>
         <button class="file-btn repo-btn" onclick="loadFromRepo()">🔄 Retry Auto-Load</button>
     </div>
-</div>
-
-<!-- Controls -->
-<div class="controls-panel" id="simControls">
-    <div class="control-group"><label>Expired Count</label><input type="number" id="expiredCount" value="350" min="50" max="5000"></div>
-    <div class="control-group"><label>Active Count</label><input type="number" id="activeCount" value="500" min="50" max="5000"></div>
-    <div class="control-group"><label>Overlap %</label><input type="number" id="overlapPct" value="15" min="0" max="50"></div>
-    <div class="control-group"><label>At-Risk Days</label><input type="number" id="riskDays" value="30" min="7" max="90"></div>
-    <button class="btn-generate" onclick="generateSimulation()">🔄 Run Simulation</button>
 </div>
 
 <!-- KPIs -->
@@ -567,19 +561,20 @@
         </div>
     </div>
     <div class="table-scroll">
-        <table class="main-table">
-            <thead><tr><th>CompGUID</th><th>Subscription No</th><th>GSTIN</th><th>BLS Expiry</th><th>Status</th><th>Category</th></tr></thead>
+        <table class="modal-table">
+            <thead><tr><th>CompGUID</th><th>Sub No</th><th>GSTIN</th><th>BLS Expiry</th><th>Status</th><th>Linked Co-Subscriptions (Same CompGUID)</th></tr></thead>
             <tbody id="tableBody"></tbody>
         </table>
     </div>
 </div>
 
-<footer>Customer Churn Dashboard v6.1 | GitHub API Engine | GitHub Pages</footer>
+<footer>Customer Churn Dashboard v6.2 | GitHub API Engine | GitHub Pages</footer>
 
 <script>
 // ==================== STATE ====================
 let expiredData=[],activeData=[],analysisResults={},charts={},currentModalData=[];
 let dataSource='none';
+window.compNetwork = {}; // GLOBAL NETWORK MAP
 const stateGSTCodes={'01':'Jammu & Kashmir','02':'Himachal Pradesh','03':'Punjab','04':'Chandigarh','05':'Uttarakhand','06':'Haryana','07':'Delhi','08':'Rajasthan','09':'Uttar Pradesh','10':'Bihar','11':'Sikkim','12':'Arunachal Pradesh','13':'Nagaland','14':'Manipur','15':'Mizoram','16':'Tripura','17':'Meghalaya','18':'Assam','19':'West Bengal','20':'Jharkhand','21':'Odisha','22':'Chhattisgarh','23':'Madhya Pradesh','24':'Gujarat','26':'Dadra Nagar Haveli','27':'Maharashtra','29':'Karnataka','30':'Goa','32':'Kerala','33':'Tamil Nadu','34':'Puducherry','36':'Telangana','37':'Andhra Pradesh'};
 
 // ==================== DEBUG LOGGER ====================
@@ -599,104 +594,112 @@ function setStatus(msg, type='info') {
     sb.innerHTML=type==='loading'?`<div class="status-spinner"></div><span>${msg}</span>`:`<span>${msg}</span>`;
 }
 
-// ==================== COLUMN DETECTION & MAPPER ====================
-function autoDetectColumn(headers, keywords) {
-    const lower = headers.map(h => String(h).toLowerCase().replace(/[^a-z0-9]/g, ''));
-    for (const kw of keywords) {
-        const lk = kw.toLowerCase().replace(/[^a-z0-9]/g, '');
-        let idx = lower.findIndex(h => h === lk);
-        if (idx !== -1) return headers[idx];
+// ==================== CSV PARSING ====================
+function parseCSVRobust(csvText) {
+    if(csvText.charCodeAt(0)===0xFEFF) csvText=csvText.slice(1);
+    csvText=csvText.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
+    const lines=csvText.split('\n').filter(l=>l.trim());
+    if(lines.length<2) return {headers:[],rows:[]};
+    
+    const firstLine=lines[0];
+    const commaCount=(firstLine.match(/,/g)||[]).length;
+    const semiCount=(firstLine.match(/;/g)||[]).length;
+    const tabCount=(firstLine.match(/\t/g)||[]).length;
+    let delimiter=',';
+    if(semiCount>commaCount) delimiter=';';
+    if(tabCount>commaCount&&tabCount>semiCount) delimiter='\t';
+    
+    const parseRow=(line)=>{
+        const result=[]; let current=''; let inQuotes=false;
+        for(let i=0;i<line.length;i++){
+            const ch=line[i];
+            if(ch==='"'){inQuotes=!inQuotes;continue;}
+            if(ch===delimiter&&!inQuotes){result.push(current.trim());current='';continue;}
+            current+=ch;
+        }
+        result.push(current.trim());
+        return result;
+    };
+    
+    const headers=parseRow(lines[0]);
+    const rows=[];
+    for(let i=1;i<lines.length;i++){
+        const cols=parseRow(lines[i]);
+        if(cols.length>=2){
+            const row={}; headers.forEach((h,j)=>{row[h]=cols[j]||'';}); rows.push(row);
+        }
     }
-    for (const kw of keywords) {
-        const lk = kw.toLowerCase().replace(/[^a-z0-9]/g, '');
-        let idx = lower.findIndex(h => h.includes(lk) || lk.includes(h));
-        if (idx !== -1) return headers[idx];
+    return {headers,rows};
+}
+
+// ==================== COLUMN DETECTION ====================
+function autoDetectColumn(headers,keywords){
+    const lower=headers.map(h=>String(h).toLowerCase().replace(/[^a-z0-9]/g,''));
+    for(const kw of keywords){
+        const lk=kw.toLowerCase().replace(/[^a-z0-9]/g,'');
+        let idx=lower.findIndex(h=>h===lk);
+        if(idx!==-1) return headers[idx];
+    }
+    for(const kw of keywords){
+        const lk=kw.toLowerCase().replace(/[^a-z0-9]/g,'');
+        let idx=lower.findIndex(h=>h.includes(lk)||lk.includes(h));
+        if(idx!==-1) return headers[idx];
     }
     return null;
 }
 
-function detectMappings(headers) {
-    debugLog(`Raw Spreadsheet Headers: [${headers.map(h => `"${h}"`).join(', ')}]`);
-
+function detectMappings(headers){
     let comp = autoDetectColumn(headers, ['compguid','comp_guid','companyguid','company_guid','database reference','db ref','company','guid','comp']);
     let sub  = autoDetectColumn(headers, ['subscription_number','subscription number','subscription id','subscriptionid','subscription_id','sub_id','subid','serial','subscription','sub']);
     let gst  = autoDetectColumn(headers, ['gstin','gst_number','gstnumber','gst no','gstno','gst']);
     let exp  = autoDetectColumn(headers, ['current_bls_expiry','current bls expiry','bls_expiry','blsexpiry','expiry_date','expiry date','expiry','bls','date']);
 
-    // Positional Fallback (Col 1 = CompGUID, Col 2 = subscription_number, Col 3 = GSTIN, Col 4 = current_bls_expiry)
     if (!comp && headers.length >= 1) { comp = headers[0]; debugLog(`Positional Fallback: Col 1 -> CompGUID ("${headers[0]}")`, 'warn'); }
-    if (!sub  && headers.length >= 2) { sub  = headers[1]; debugLog(`Positional Fallback: Col 2 -> Subscription No ("${headers[1]}")`, 'warn'); }
+    if (!sub  && headers.length >= 2) { sub  = headers[1]; debugLog(`Positional Fallback: Col 2 -> Sub No ("${headers[1]}")`, 'warn'); }
     if (!gst  && headers.length >= 3) { gst  = headers[2]; debugLog(`Positional Fallback: Col 3 -> GSTIN ("${headers[2]}")`, 'warn'); }
     if (!exp  && headers.length >= 4) { exp  = headers[3]; debugLog(`Positional Fallback: Col 4 -> Expiry Date ("${headers[3]}")`, 'warn'); }
 
-    debugLog(`Resolved Column Mapping -> CompGUID:"${comp}", SubNo:"${sub}", GSTIN:"${gst}", Expiry:"${exp}"`, 'success');
     return { compGUID: comp, subscriptionId: sub, gstin: gst, expiry: exp };
 }
 
-function parseWithMapping(rows, mapping, source) {
-    return rows.map(row => {
-        let ev = mapping.expiry ? row[mapping.expiry] : null, pd;
-        if (ev instanceof Date) pd = ev;
-        else if (typeof ev === 'number') pd = new Date((ev - 25569) * 86400000);
-        else if (typeof ev === 'string' && ev.trim()) {
-            const str = ev.trim();
-            pd = new Date(str);
-            if (isNaN(pd.getTime())) {
-                const parts = str.split(/[\/\-\.]/);
-                if (parts.length === 3) {
-                    const p0 = parseInt(parts[0], 10);
-                    const p1 = parseInt(parts[1], 10);
-                    const p2 = parseInt(parts[2], 10);
-                    const year = p2 < 100 ? 2000 + p2 : p2;
-                    if (p0 > 12) pd = new Date(year, p1 - 1, p0);
-                    else pd = new Date(year, p1 - 1, p0);
+function parseWithMapping(rows,mapping,source){
+    return rows.map(row=>{
+        let ev=mapping.expiry?row[mapping.expiry]:null, pd;
+        if(ev instanceof Date) pd=ev;
+        else if(typeof ev==='number') pd=new Date((ev-25569)*86400000);
+        else if(typeof ev==='string'&&ev.trim()){
+            pd=new Date(ev.trim());
+            if(isNaN(pd.getTime())){
+                const parts=ev.trim().split(/[\/\-\.]/);
+                if(parts.length===3){
+                    const p0=parseInt(parts[0],10), p1=parseInt(parts[1],10), p2=parseInt(parts[2],10);
+                    const yr=p2<100?2000+p2:p2;
+                    if(p0>12) pd=new Date(yr,p1-1,p0); else pd=new Date(yr,p0-1,p1);
                 }
             }
-        } else {
-            pd = new Date();
         }
-        if (!pd || isNaN(pd.getTime())) pd = new Date();
+        else pd=new Date();
+        if(!pd||isNaN(pd.getTime())) pd=new Date();
+        
+        const compVal=mapping.compGUID?String(row[mapping.compGUID]||'').trim():'';
+        const subVal=mapping.subscriptionId?String(row[mapping.subscriptionId]||'').trim():'';
+        const gstVal=mapping.gstin?String(row[mapping.gstin]||'').trim():'';
 
-        const compVal = mapping.compGUID ? String(row[mapping.compGUID] || '').trim() : '';
-        const subVal  = mapping.subscriptionId ? String(row[mapping.subscriptionId] || '').trim() : '';
-        const gstVal  = mapping.gstin ? String(row[mapping.gstin] || '').trim() : '';
-
-        return {
-            compGUID: compVal,
-            subscriptionId: subVal,
-            gstin: gstVal && gstVal.length >= 8 ? gstVal : null,
-            currentBlsExpiry: pd,
-            source: source
-        };
-    }).filter(d => d.compGUID || d.subscriptionId);
+        return{compGUID:compVal, subscriptionId:subVal, gstin:gstVal&&gstVal.length>=8?gstVal:null, currentBlsExpiry:pd, source:source};
+    }).filter(d=>d.compGUID||d.subscriptionId);
 }
 
 // ==================== SHEETJS BINARY ENGINE ====================
 function parseFileBuffer(arrayBuffer, source) {
     try {
         const wb = XLSX.read(new Uint8Array(arrayBuffer), { type: 'array', cellDates: true });
-        if (!wb.SheetNames || wb.SheetNames.length === 0) {
-            debugLog(`SheetJS: No sheets found in ${source}`, 'error');
-            return [];
-        }
-        const sheet = wb.Sheets[wb.SheetNames[0]];
-        const json = XLSX.utils.sheet_to_json(sheet, { defval: '' });
-
-        if (!json || json.length === 0) {
-            debugLog(`SheetJS: File ${source} is empty`, 'warn');
-            return [];
-        }
-
-        const rawHeaders = Object.keys(json[0]);
-        debugLog(`SheetJS Engine: Successfully parsed ${json.length} rows for ${source}`, 'success');
-
-        const mapping = detectMappings(rawHeaders);
-        const parsed = parseWithMapping(json, mapping, source);
-        debugLog(`Extracted ${parsed.length} valid records for ${source}`, 'success');
-
-        return parsed;
+        if (!wb.SheetNames || wb.SheetNames.length === 0) return [];
+        const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: '' });
+        if (!json || json.length === 0) return [];
+        const mapping = detectMappings(Object.keys(json[0]));
+        return parseWithMapping(json, mapping, source);
     } catch (err) {
-        debugLog(`SheetJS Binary Engine Error (${source}): ${err.message}`, 'error');
+        debugLog(`SheetJS Engine Error (${source}): ${err.message}`, 'error');
         return [];
     }
 }
@@ -704,8 +707,6 @@ function parseFileBuffer(arrayBuffer, source) {
 // ==================== GITHUB REST API ENGINE ====================
 async function autoLoadFromRepo() {
     setStatus('Connecting to SheetJS Binary Engine & GitHub API...', 'loading');
-    debugLog('🚀 SheetJS Binary Engine Initialized...');
-
     let owner = 'sauravgupta412-oss';
     let repo = 'customer-churn-analysis';
 
@@ -715,14 +716,11 @@ async function autoLoadFromRepo() {
         if (pathParts.length > 0) repo = pathParts[0];
     }
 
-    debugLog(`Target Repository: ${owner}/${repo}`);
-
     try {
         const repoRes = await fetch(`https://api.github.com/repos/${owner}/${repo}`);
         if (!repoRes.ok) throw new Error(`API returned HTTP ${repoRes.status} for repo info.`);
         const repoData = await repoRes.json();
         const branch = repoData.default_branch || 'main';
-        debugLog(`Default Branch: "${branch}"`, 'success');
 
         const treeRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`);
         if (!treeRes.ok) throw new Error(`Git Tree API returned HTTP ${treeRes.status}`);
@@ -732,21 +730,14 @@ async function autoLoadFromRepo() {
         const expFile = files.find(f => f.path.toLowerCase().includes('expired') && (f.path.endsWith('.csv') || f.path.endsWith('.xlsx')));
         const actFile = files.find(f => f.path.toLowerCase().includes('active') && (f.path.endsWith('.csv') || f.path.endsWith('.xlsx')));
 
-        if (!expFile || !actFile) {
-            throw new Error(`Matching files not found in Git tree. Found Expired: ${!!expFile}, Active: ${!!actFile}`);
-        }
-
-        debugLog(`Matched Expired: "${expFile.path}"`, 'success');
-        debugLog(`Matched Active: "${actFile.path}"`, 'success');
+        if (!expFile || !actFile) throw new Error(`Matching files not found in Git tree.`);
 
         const expUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${expFile.path}`;
         const actUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${actFile.path}`;
 
-        debugLog(`Downloading Binary Buffer: ${expUrl}`);
         const expRes = await fetch(expUrl + '?t=' + Date.now());
         const expBuffer = await expRes.arrayBuffer();
 
-        debugLog(`Downloading Binary Buffer: ${actUrl}`);
         const actRes = await fetch(actUrl + '?t=' + Date.now());
         const actBuffer = await actRes.arrayBuffer();
 
@@ -758,11 +749,10 @@ async function autoLoadFromRepo() {
             setStatus(`✅ Real Data Auto-Loaded: ${expiredData.length} expired + ${activeData.length} active records`, 'success');
             runAnalysis();
         } else {
-            throw new Error(`Parsed 0 valid records from files. Check Debug Console for details.`);
+            throw new Error(`Parsed 0 valid records from files.`);
         }
 
     } catch (err) {
-        debugLog(`❌ Engine Error: ${err.message}`, 'error');
         setStatus(`⚠️ Auto-load failed: ${err.message}. Using simulation mode.`, 'error');
         generateSimulation();
     }
@@ -773,7 +763,6 @@ async function handleFileUpload(type, input) {
     const file = input.files[0]; if (!file) return;
     const fn = document.getElementById(type + 'FileName');
     fn.className = 'file-name'; fn.textContent = `⏳ Reading ${file.name}...`;
-    debugLog(`Manual upload: ${file.name}`);
     try {
         const buf = await file.arrayBuffer();
         const parsed = parseFileBuffer(buf, type);
@@ -784,7 +773,7 @@ async function handleFileUpload(type, input) {
             setStatus(`✅ Uploaded Data: ${expiredData.length} expired + ${activeData.length} active`, 'success');
             runAnalysis();
         }
-    } catch (e) { fn.className = 'file-name error'; fn.textContent = `❌ ${e}`; debugLog(`Upload error: ${e}`, 'error'); }
+    } catch (e) { fn.className = 'file-name error'; fn.textContent = `❌ ${e}`; }
 }
 
 function loadFromRepo() { autoLoadFromRepo(); }
@@ -805,15 +794,29 @@ function generateSimulation(){
     dataSource='simulation'; runAnalysis();
 }
 
-// ==================== ANALYSIS ====================
+// ==================== ANALYSIS ENGINE ====================
 function analyzeData(){
-    const eG=new Set(expiredData.map(d=>d.compGUID)),aG=new Set(activeData.map(d=>d.compGUID));
-    const eGST=new Set(expiredData.filter(d=>d.gstin).map(d=>d.gstin)),aGST=new Set(activeData.filter(d=>d.gstin).map(d=>d.gstin));
+    const eG=new Set(), aG=new Set();
+    const eGST=new Set(), aGST=new Set();
+    
+    // BUILD NETWORK MAP FOR CORRELATION
+    window.compNetwork = {};
+    [...expiredData, ...activeData].forEach(d => {
+        if(!window.compNetwork[d.compGUID]) {
+            window.compNetwork[d.compGUID] = { active: new Set(), expired: new Set() };
+        }
+        window.compNetwork[d.compGUID][d.source].add(d.subscriptionId);
+        
+        if(d.source === 'expired') { eG.add(d.compGUID); if(d.gstin) eGST.add(d.gstin); }
+        if(d.source === 'active') { aG.add(d.compGUID); if(d.gstin) aGST.add(d.gstin); }
+    });
+
     const oG=new Set([...eG].filter(x=>aG.has(x))),oGST=new Set([...eGST].filter(x=>aGST.has(x)));
     const fC=new Set([...eG].filter(x=>!aG.has(x))),hG=new Set([...aG].filter(x=>!eG.has(x)));
     const rd=parseInt(document.getElementById('riskDays').value)||30;
     const today=new Date(),riskDate=new Date(today.getTime()+rd*86400000);
     const atRisk=activeData.filter(d=>d.currentBlsExpiry<=riskDate&&d.currentBlsExpiry>=today);
+    
     const mE={},mA={};
     expiredData.forEach(d=>{const k=d.currentBlsExpiry.toISOString().slice(0,7);mE[k]=(mE[k]||0)+1;});
     activeData.forEach(d=>{const k=d.currentBlsExpiry.toISOString().slice(0,7);mA[k]=(mA[k]||0)+1;});
@@ -823,10 +826,11 @@ function analyzeData(){
     const sPC={};[...expiredData,...activeData].forEach(d=>{sPC[d.compGUID]=(sPC[d.compGUID]||0)+1;});
     const dd={};Object.values(sPC).forEach(c=>{const b=c>5?'6+':String(c);dd[b]=(dd[b]||0)+1;});
     const tot=fC.size+hG.size+oG.size;
-    analysisResults={totalExpired:expiredData.length,totalActive:activeData.length,overlappingCompGUIDs:oG.size,overlappingGSTINs:oGST.size,fullChurn:fC.size,healthy:hG.size,atRisk:atRisk.length,atRiskData:atRisk,churnRate:tot>0?((fC.size/tot)*100).toFixed(1):'0.0',retentionRate:tot>0?((healthySetSize=hG.size)/tot*100).toFixed(1):'0.0',partialChurnRate:tot>0?((oG.size/tot)*100).toFixed(1):'0.0',monthlyExpired:mE,monthlyActive:mA,stateChurn:sC,densityDist:dd,overlappingCompGUIDSet:oG,fullChurnSet:fC,healthySet:hG,expiredGSTINCount:eGST.size,activeGSTINCount:aGST.size,gstinOverlap:oGST.size,expiredNoGST:expiredData.filter(d=>!d.gstin).length,activeNoGST:activeData.filter(d=>!d.gstin).length,totalCompanies:tot};
+    
+    analysisResults={totalExpired:expiredData.length,totalActive:activeData.length,overlappingCompGUIDs:oG.size,overlappingGSTINs:oGST.size,fullChurn:fC.size,healthy:hG.size,atRisk:atRisk.length,atRiskData:atRisk,churnRate:tot>0?((fC.size/tot)*100).toFixed(1):'0.0',retentionRate:tot>0?((hG.size/tot)*100).toFixed(1):'0.0',partialChurnRate:tot>0?((oG.size/tot)*100).toFixed(1):'0.0',monthlyExpired:mE,monthlyActive:mA,stateChurn:sC,densityDist:dd,overlappingCompGUIDSet:oG,fullChurnSet:fC,healthySet:hG,expiredGSTINCount:eGST.size,activeGSTINCount:aGST.size,gstinOverlap:oGST.size,expiredNoGST:expiredData.filter(d=>!d.gstin).length,activeNoGST:activeData.filter(d=>!d.gstin).length,totalCompanies:tot};
 }
 
-// ==================== DRILL-DOWN MODAL & SMART SEARCH ====================
+// ==================== DRILL-DOWN & CORRELATION MODAL ====================
 function openDrillDown(title, data, statsArray){
     currentModalData=data; document.getElementById('modalTitle').textContent=title;
     document.getElementById('modalStats').innerHTML=statsArray.map(s=>`<div class="modal-stat"><div class="modal-stat-value" style="color:${s.color||'#667eea'}">${s.value}</div><div class="modal-stat-label">${s.label}</div></div>`).join('');
@@ -835,22 +839,37 @@ function openDrillDown(title, data, statsArray){
 }
 
 function renderModalTable(data){
-    document.getElementById('modalTableHead').innerHTML=`<tr><th>CompGUID</th><th>Sub No</th><th>GSTIN</th><th>BLS Expiry</th><th>Source</th><th>Days</th></tr>`;
+    document.getElementById('modalTableHead').innerHTML=`<tr><th>CompGUID</th><th>Sub No</th><th>GSTIN</th><th>BLS Expiry</th><th>Status</th><th>Linked Co-Subscriptions (Same CompGUID)</th></tr>`;
     const today=new Date();
     document.getElementById('modalTableBody').innerHTML=data.slice(0,500).map(d=>{
         const diff=Math.floor((d.currentBlsExpiry-today)/86400000);
         const diffColor=diff>30?'#38ef7d':diff>0?'#ffd200':'#f45c43';
-        return`<tr><td class="compguid-cell" title="${d.compGUID}">${d.compGUID}</td><td>${d.subscriptionId}</td><td>${d.gstin||'<span style="color:#555">N/A</span>'}</td><td>${d.currentBlsExpiry.toLocaleDateString()}</td><td><span class="status-badge ${d.source==='expired'?'status-expired':'status-active'}">${d.source}</span></td><td style="color:${diffColor}">${diff>0?`${diff} left`:`${Math.abs(diff)} ago`}</td></tr>`;
+        
+        // CORRELATION LOGIC
+        const net = window.compNetwork[d.compGUID] || { active: new Set(), expired: new Set() };
+        const actList = Array.from(net.active).filter(s => s !== d.subscriptionId);
+        const expList = Array.from(net.expired).filter(s => s !== d.subscriptionId);
+        
+        let linksHtml = '';
+        if(actList.length > 0) linksHtml += `<div class="linked-act" title="${actList.join('\n')}">🟢 Act: ${actList.slice(0,2).join(', ')}${actList.length>2?'...':''}</div>`;
+        if(expList.length > 0) linksHtml += `<div class="linked-exp" title="${expList.join('\n')}">🔴 Exp: ${expList.slice(0,2).join(', ')}${expList.length>2?'...':''}</div>`;
+        if(linksHtml === '') linksHtml = `<span style="color:#555;font-size:0.65rem;">No other subs</span>`;
+
+        return`<tr>
+            <td class="compguid-cell" title="Click to filter this company only" onclick="document.getElementById('modalSearch').value='${d.compGUID}'; filterModalTable();">${d.compGUID}</td>
+            <td>${d.subscriptionId}</td>
+            <td>${d.gstin||'<span style="color:#555">N/A</span>'}</td>
+            <td>${d.currentBlsExpiry.toLocaleDateString()}</td>
+            <td><span class="status-badge ${d.source==='expired'?'status-expired':'status-active'}">${d.source}</span></td>
+            <td><div class="linked-subs">${linksHtml}</div></td>
+        </tr>`;
     }).join('');
     document.getElementById('modalRecordCount').textContent=`${data.length} records shown`;
 }
 
 function filterModalTable(){
     const rawQ = document.getElementById('modalSearch').value.trim();
-    if (!rawQ) {
-        renderModalTable(currentModalData);
-        return;
-    }
+    if (!rawQ) { renderModalTable(currentModalData); return; }
 
     const lowerQ = rawQ.toLowerCase();
     const cleanQ = lowerQ.replace(/[^a-z0-9]/g, '');
@@ -860,17 +879,14 @@ function filterModalTable(){
         const sub  = String(d.subscriptionId || '').toLowerCase();
         const gst  = String(d.gstin || '').toLowerCase();
 
-        // 1. Direct Substring Match
         if (comp.includes(lowerQ) || sub.includes(lowerQ) || gst.includes(lowerQ)) return true;
 
-        // 2. Format-Agnostic Clean Match (Ignores hyphens, braces, dashes, spaces)
         if (cleanQ.length >= 2) {
             const cleanComp = comp.replace(/[^a-z0-9]/g, '');
             const cleanSub  = sub.replace(/[^a-z0-9]/g, '');
             const cleanGst  = gst.replace(/[^a-z0-9]/g, '');
             if (cleanComp.includes(cleanQ) || cleanSub.includes(cleanQ) || cleanGst.includes(cleanQ)) return true;
         }
-
         return false;
     });
 
@@ -891,7 +907,6 @@ function runGlobalSearch() {
         const gst  = String(d.gstin || '').toLowerCase();
 
         if (comp.includes(lowerQ) || sub.includes(lowerQ) || gst.includes(lowerQ)) return true;
-
         if (cleanQ.length >= 2) {
             const cleanComp = comp.replace(/[^a-z0-9]/g, '');
             const cleanSub  = sub.replace(/[^a-z0-9]/g, '');
@@ -914,9 +929,14 @@ function runGlobalSearch() {
 function closeModal(){document.getElementById('drillModal').classList.remove('show');}
 
 function downloadModalData(){
-    let csv='CompGUID,Subscription No,GSTIN,BLS Expiry,Source\n';
-    currentModalData.forEach(d=>{csv+=`"${d.compGUID}","${d.subscriptionId}","${d.gstin||''}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}"\n`;});
-    dlFile(csv,'drill_down_data.csv','text/csv');
+    let csv='CompGUID,Subscription No,GSTIN,BLS Expiry,Source,Linked Active Subs,Linked Expired Subs\n';
+    currentModalData.forEach(d=>{
+        const net = window.compNetwork[d.compGUID] || {active:new Set(), expired:new Set()};
+        const actList = Array.from(net.active).filter(s => s !== d.subscriptionId).join('; ');
+        const expList = Array.from(net.expired).filter(s => s !== d.subscriptionId).join('; ');
+        csv+=`"${d.compGUID}","${d.subscriptionId}","${d.gstin||''}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}","${actList}","${expList}"\n`;
+    });
+    dlFile(csv,'drill_down_export.csv','text/csv');
 }
 
 // ==================== DRILL-DOWN HELPERS ====================
@@ -947,7 +967,7 @@ function drillByMonth(m,t){
 
 function drillByCompGUID(guid){
     const data=[...expiredData,...activeData].filter(d=>d.compGUID===guid);
-    openDrillDown(`🔍 Company Drill-Down: ${guid}`,data,[{value:data.length,label:'Subscriptions'},{value:data.filter(d=>d.source==='expired').length,label:'Expired',color:'#f45c43'},{value:data.filter(d=>d.source==='active').length,label:'Active',color:'#38ef7d'}]);
+    openDrillDown(`🔍 Company Drill-Down`,data,[{value:data.length,label:'Subscriptions'},{value:data.filter(d=>d.source==='expired').length,label:'Expired',color:'#f45c43'},{value:data.filter(d=>d.source==='active').length,label:'Active',color:'#38ef7d'}]);
 }
 
 // ==================== RENDER ====================
@@ -1038,8 +1058,27 @@ function renderDataTable(filter='all'){
     else if(filter==='churned')cd=cd.filter(d=>d.cat==='Full Churn');
     else if(filter==='atrisk')cd=cd.filter(d=>d.status==='At Risk');
     else if(filter==='healthy')cd=cd.filter(d=>d.cat==='Healthy');
+    
     document.getElementById('tableCount').textContent=`(${cd.length} records)`;
-    document.getElementById('tableBody').innerHTML=cd.slice(0,300).map(d=>`<tr onclick="drillByCompGUID('${d.compGUID}')"><td class="compguid-cell" title="${d.compGUID}">${d.compGUID}</td><td>${d.subscriptionId}</td><td>${d.gstin||'<span style="color:#555">N/A</span>'}</td><td>${d.currentBlsExpiry.toLocaleDateString()}</td><td><span class="status-badge ${d.sc}">${d.status}</span></td><td><span class="status-badge ${d.cc}">${d.cat}</span></td></tr>`).join('');
+    document.getElementById('tableBody').innerHTML=cd.slice(0,300).map(d=>{
+        const net = window.compNetwork[d.compGUID] || { active: new Set(), expired: new Set() };
+        const actList = Array.from(net.active).filter(s => s !== d.subscriptionId);
+        const expList = Array.from(net.expired).filter(s => s !== d.subscriptionId);
+        
+        let linksHtml = '';
+        if(actList.length > 0) linksHtml += `<div class="linked-act" title="${actList.join('\n')}">🟢 Act: ${actList.slice(0,2).join(', ')}${actList.length>2?'...':''}</div>`;
+        if(expList.length > 0) linksHtml += `<div class="linked-exp" title="${expList.join('\n')}">🔴 Exp: ${expList.slice(0,2).join(', ')}${expList.length>2?'...':''}</div>`;
+        if(linksHtml === '') linksHtml = `<span style="color:#555;font-size:0.65rem;">No other subs</span>`;
+
+        return `<tr>
+            <td class="compguid-cell" title="Click to filter this company" onclick="document.getElementById('modalSearch').value='${d.compGUID}'; filterModalTable();">${d.compGUID.substring(0,16)}...</td>
+            <td>${d.subscriptionId}</td>
+            <td>${d.gstin||'<span style="color:#555">N/A</span>'}</td>
+            <td>${d.currentBlsExpiry.toLocaleDateString()}</td>
+            <td><span class="status-badge ${d.sc}">${d.status}</span></td>
+            <td><div class="linked-subs">${linksHtml}</div></td>
+        </tr>`;
+    }).join('');
 }
 
 function showTable(f,btn){renderDataTable(f);document.querySelectorAll('.table-tab').forEach(t=>t.classList.remove('active'));if(btn)btn.classList.add('active');}
@@ -1048,21 +1087,40 @@ function showTable(f,btn){renderDataTable(f);document.querySelectorAll('.table-t
 function dlFile(c,n,t){const b=new Blob([c],{type:t});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=n;a.click();URL.revokeObjectURL(u);}
 function downloadCSV(){
     const r=analysisResults,today=new Date(),rd=parseInt(document.getElementById('riskDays').value),rDate=new Date(today.getTime()+rd*86400000);
-    let csv='CompGUID,Subscription No,GSTIN,BLS Expiry,Source,Status,Category\n';
-    [...expiredData,...activeData].forEach(d=>{const o=r.overlappingCompGUIDSet.has(d.compGUID);const ar=d.source==='active'&&d.currentBlsExpiry<=rDate&&d.currentBlsExpiry>=today;csv+=`"${d.compGUID}","${d.subscriptionId}","${d.gstin||''}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}","${d.source==='expired'?'Expired':(ar?'At Risk':'Active')}","${o?'Partial Churn':(d.source==='expired'?'Full Churn':(ar?'Renewal Due':'Healthy'))}"\n`;});
+    let csv='CompGUID,Subscription No,GSTIN,BLS Expiry,Source,Status,Category,Linked Active Subs,Linked Expired Subs\n';
+    [...expiredData,...activeData].forEach(d=>{
+        const o=r.overlappingCompGUIDSet.has(d.compGUID);
+        const ar=d.source==='active'&&d.currentBlsExpiry<=rDate&&d.currentBlsExpiry>=today;
+        const net = window.compNetwork[d.compGUID] || {active:new Set(), expired:new Set()};
+        const actList = Array.from(net.active).filter(s => s !== d.subscriptionId).join('; ');
+        const expList = Array.from(net.expired).filter(s => s !== d.subscriptionId).join('; ');
+        csv+=`"${d.compGUID}","${d.subscriptionId}","${d.gstin||''}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}","${d.source==='expired'?'Expired':(ar?'At Risk':'Active')}","${o?'Partial Churn':(d.source==='expired'?'Full Churn':(ar?'Renewal Due':'Healthy'))}","${actList}","${expList}"\n`;
+    });
     dlFile(csv,'churn_analysis.csv','text/csv');
 }
 function downloadExcel(){
     const r=analysisResults,today=new Date(),rd=parseInt(document.getElementById('riskDays').value),rDate=new Date(today.getTime()+rd*86400000);
-    const ws1=[['CompGUID','Sub No','GSTIN','BLS Expiry','Source','Status','Category']];
-    [...expiredData,...activeData].forEach(d=>{const o=r.overlappingCompGUIDSet.has(d.compGUID);const ar=d.source==='active'&&d.currentBlsExpiry<=rDate&&d.currentBlsExpiry>=today;csv+=`"${d.compGUID}","${d.subscriptionId}","${d.gstin||''}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}","${d.source==='expired'?'Expired':(ar?'At Risk':'Active')}","${o?'Partial Churn':(d.source==='expired'?'Full Churn':(ar?'Renewal Due':'Healthy'))}"\n`;ws1.push([d.compGUID,d.subscriptionId,d.gstin||'',d.currentBlsExpiry.toISOString().slice(0,10),d.source,d.source==='expired'?'Expired':(ar?'At Risk':'Active'),o?'Partial Churn':(d.source==='expired'?'Full Churn':(ar?'Renewal Due':'Healthy'))]);});
+    const ws1=[['CompGUID','Sub No','GSTIN','BLS Expiry','Source','Status','Category','Linked Active','Linked Expired']];
+    [...expiredData,...activeData].forEach(d=>{
+        const o=r.overlappingCompGUIDSet.has(d.compGUID);
+        const ar=d.source==='active'&&d.currentBlsExpiry<=rDate&&d.currentBlsExpiry>=today;
+        const net = window.compNetwork[d.compGUID] || {active:new Set(), expired:new Set()};
+        const actList = Array.from(net.active).filter(s => s !== d.subscriptionId).join('; ');
+        const expList = Array.from(net.expired).filter(s => s !== d.subscriptionId).join('; ');
+        ws1.push([d.compGUID,d.subscriptionId,d.gstin||'',d.currentBlsExpiry.toISOString().slice(0,10),d.source,d.source==='expired'?'Expired':(ar?'At Risk':'Active'),o?'Partial Churn':(d.source==='expired'?'Full Churn':(ar?'Renewal Due':'Healthy')),actList,expList]);
+    });
     const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(ws1),'Analysis');
     XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['Metric','Value'],['Expired',r.totalExpired],['Active',r.totalActive],['Full Churn',r.fullChurn],['Healthy',r.healthy],['Overlap',r.overlappingCompGUIDs],['Churn%',r.churnRate],['Retention%',r.retentionRate],['At-Risk',r.atRisk]]),'Summary');
     XLSX.writeFile(wb,'churn_analysis.xlsx');
 }
 function downloadOverlap(){
-    const r=analysisResults;let csv='CompGUID,Subscription No,GSTIN,BLS Expiry,Source\n';
-    [...expiredData,...activeData].filter(d=>r.overlappingCompGUIDSet.has(d.compGUID)).forEach(d=>{csv+=`"${d.compGUID}","${d.subscriptionId}","${d.gstin||''}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}"\n`;});
+    const r=analysisResults;let csv='CompGUID,Subscription No,GSTIN,BLS Expiry,Source,Linked Active,Linked Expired\n';
+    [...expiredData,...activeData].filter(d=>r.overlappingCompGUIDSet.has(d.compGUID)).forEach(d=>{
+        const net = window.compNetwork[d.compGUID] || {active:new Set(), expired:new Set()};
+        const actList = Array.from(net.active).filter(s => s !== d.subscriptionId).join('; ');
+        const expList = Array.from(net.expired).filter(s => s !== d.subscriptionId).join('; ');
+        csv+=`"${d.compGUID}","${d.subscriptionId}","${d.gstin||''}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}","${actList}","${expList}"\n`;
+    });
     dlFile(csv,'overlap_data.csv','text/csv');
 }
 function downloadAtRisk(){
