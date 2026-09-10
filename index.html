@@ -398,13 +398,13 @@
 <div class="header">
     <h1>📊 Customer Churn & Retention Dashboard</h1>
     <p>Click any KPI, chart or number for drill-down analysis</p>
-    <div class="header-badge">v4.5 — Self-Correcting Path Resolver</div>
+    <div class="header-badge">v5.1 — CompGUID (Col 1) & subscription_number (Col 2) Alignment</div>
 </div>
 
 <!-- Status Bar -->
 <div class="status-bar loading" id="statusBar">
     <div class="status-spinner"></div>
-    <span>Auto-detecting and loading CSV files...</span>
+    <span>Connecting to GitHub REST API...</span>
 </div>
 
 <!-- Debug Console -->
@@ -419,7 +419,7 @@
 <div class="upload-section">
     <div class="upload-text">
         <strong>📂 Auto-loads</strong> from <code>data/expired_customers.csv</code> & <code>data/active_customers.csv</code><br>
-        Or upload manually below | Expected columns: <code>Subscription Id</code> <code>CompGUID</code> <code>GSTIN</code> <code>current_bls_expiry</code>
+        Columns: <code>Col 1: CompGUID</code> | <code>Col 2: subscription_number</code> | <code>Col 3: GSTIN</code> | <code>Col 4: current_bls_expiry</code>
     </div>
     <div class="file-inputs">
         <div class="file-input-wrapper">
@@ -539,13 +539,13 @@
     </div>
     <div class="table-scroll">
         <table class="main-table">
-            <thead><tr><th>Subscription ID</th><th>CompGUID</th><th>GSTIN</th><th>BLS Expiry</th><th>Status</th><th>Category</th></tr></thead>
+            <thead><tr><th>CompGUID</th><th>Subscription No</th><th>GSTIN</th><th>BLS Expiry</th><th>Status</th><th>Category</th></tr></thead>
             <tbody id="tableBody"></tbody>
         </table>
     </div>
 </div>
 
-<footer>Customer Churn Dashboard v4.5 | Auto-Load + Clickable Drill-Down | GitHub Pages</footer>
+<footer>Customer Churn Dashboard v5.1 | GitHub API Engine | GitHub Pages</footer>
 
 <script>
 // ==================== STATE ====================
@@ -608,7 +608,7 @@ function parseCSVRobust(csvText) {
     return {headers,rows};
 }
 
-// ==================== COLUMN DETECTION ====================
+// ==================== COLUMN DETECTION (EXPLICIT USER LAYOUT) ====================
 function autoDetectColumn(headers,keywords){
     const lower=headers.map(h=>h.toLowerCase().replace(/[^a-z0-9]/g,''));
     for(const kw of keywords){
@@ -625,17 +625,23 @@ function autoDetectColumn(headers,keywords){
 }
 
 function detectMappings(headers){
-    let sub = autoDetectColumn(headers, ['subscription id','subscriptionid','subscription_id','sub_id','subid','serial','subscription','serial number']);
+    // User Layout Specified:
+    // Col 1 = CompGUID
+    // Col 2 = subscription_number
+    // Col 3 = GSTIN
+    // Col 4 = current_bls_expiry
     let comp = autoDetectColumn(headers, ['compguid','comp_guid','companyguid','company_guid','database reference','db ref','company','guid']);
+    let sub = autoDetectColumn(headers, ['subscription_number','subscription number','subscription id','subscriptionid','subscription_id','sub_id','subid','serial','subscription','serial number']);
     let gst = autoDetectColumn(headers, ['gstin','gst_number','gstnumber','gst no','gstno','gst']);
     let exp = autoDetectColumn(headers, ['current_bls_expiry','current bls expiry','bls_expiry','blsexpiry','expiry_date','expiry date','expiry','bls']);
 
-    if(!sub && headers.length >= 1) { sub = headers[0]; debugLog(`Sub ID fallback: Column 1 (${headers[0]})`,'warn'); }
-    if(!comp && headers.length >= 2) { comp = headers[1]; debugLog(`CompGUID fallback: Column 2 (${headers[1]})`,'warn'); }
-    if(!gst && headers.length >= 3) { gst = headers[2]; debugLog(`GSTIN fallback: Column 3 (${headers[2]})`,'warn'); }
-    if(!exp && headers.length >= 4) { exp = headers[3]; debugLog(`Expiry fallback: Column 4 (${headers[3]})`,'warn'); }
+    // Fallbacks mapped to user's exact column order
+    if(!comp && headers.length >= 1) { comp = headers[0]; debugLog(`CompGUID fallback: Col 1 (${headers[0]})`,'warn'); }
+    if(!sub && headers.length >= 2) { sub = headers[1]; debugLog(`Sub Number fallback: Col 2 (${headers[1]})`,'warn'); }
+    if(!gst && headers.length >= 3) { gst = headers[2]; debugLog(`GSTIN fallback: Col 3 (${headers[2]})`,'warn'); }
+    if(!exp && headers.length >= 4) { exp = headers[3]; debugLog(`Expiry fallback: Col 4 (${headers[3]})`,'warn'); }
 
-    debugLog(`Mapped: Sub=[${sub}], Comp=[${comp}], GST=[${gst}], Expiry=[${exp}]`);
+    debugLog(`Mapped Columns -> CompGUID:[${comp}], SubNo:[${sub}], GST:[${gst}], Expiry:[${exp}]`);
     return { subscriptionId: sub, compGUID: comp, gstin: gst, expiry: exp };
 }
 
@@ -667,93 +673,83 @@ function parseWithMapping(rows,mapping,source){
     }).filter(d => d.subscriptionId || d.compGUID);
 }
 
-// ==================== SELF-CORRECTING PATH RESOLVER ====================
-function getPossibleUrls(filename) {
-    const urls = [];
-    const loc = window.location;
-    
-    // Normalize base URL
-    let basePath = loc.pathname;
-    if (basePath.endsWith('.html') || basePath.endsWith('.htm')) {
-        basePath = basePath.substring(0, basePath.lastIndexOf('/') + 1);
-    } else if (!basePath.endsWith('/')) {
-        basePath += '/';
-    }
-
-    // 1. Direct path relative to current URL
-    urls.push(`${loc.origin}${basePath}data/${filename}`);
-    urls.push(`${loc.origin}${basePath}${filename}`);
-
-    // 2. Relative paths
-    urls.push(`data/${filename}`);
-    urls.push(`./data/${filename}`);
-    urls.push(filename);
-
-    // 3. Raw GitHub CDN fallbacks
-    if (loc.hostname.includes('github.io')) {
-        const user = loc.hostname.split('.')[0];
-        const repo = loc.pathname.split('/').filter(p => p)[0] || '';
-        if (repo) {
-            ['main', 'master'].forEach(branch => {
-                urls.push(`https://raw.githubusercontent.com/${user}/${repo}/${branch}/data/${filename}`);
-                urls.push(`https://raw.githubusercontent.com/${user}/${repo}/${branch}/${filename}`);
-            });
-        }
-    }
-    return [...new Set(urls)]; // Remove duplicates
-}
-
-// ==================== AUTO-LOAD FROM REPO ====================
+// ==================== GITHUB REST API DIRECT DISCOVERY ENGINE ====================
 async function autoLoadFromRepo(){
-    setStatus('Auto-detecting CSV paths...','loading');
-    debugLog('Starting path discovery...');
+    setStatus('Discovering repository files via GitHub REST API...','loading');
+    debugLog('🚀 Starting GitHub REST API Discovery Engine...');
 
-    let expiredLoaded=false, activeLoaded=false;
+    let owner = 'sauravgupta412-oss';
+    let repo = 'customer-churn-analysis';
 
-    // Load Expired Data
-    const expiredUrls = getPossibleUrls('expired_customers.csv');
-    for (const url of expiredUrls) {
-        try {
-            debugLog(`Trying: ${url}`);
-            const resp = await fetch(url + (url.includes('raw.githubusercontent') ? '' : '?t=' + Date.now()));
-            if (!resp.ok) continue;
-            const text = await resp.text();
-            if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) continue;
-
-            const {headers, rows} = parseCSVRobust(text);
-            if (rows.length > 0) {
-                expiredData = parseWithMapping(rows, detectMappings(headers), 'expired');
-                debugLog(`✅ Loaded Expired CSV (${expiredData.length} rows) from: ${url}`, 'success');
-                expiredLoaded = true; break;
-            }
-        } catch(e) { debugLog(`Fetch error for ${url}: ${e.message}`, 'error'); }
+    if (window.location.hostname.includes('github.io')) {
+        owner = window.location.hostname.split('.')[0];
+        const pathParts = window.location.pathname.split('/').filter(p => p);
+        if (pathParts.length > 0) repo = pathParts[0];
     }
 
-    // Load Active Data
-    const activeUrls = getPossibleUrls('active_customers.csv');
-    for (const url of activeUrls) {
-        try {
-            debugLog(`Trying: ${url}`);
-            const resp = await fetch(url + (url.includes('raw.githubusercontent') ? '' : '?t=' + Date.now()));
-            if (!resp.ok) continue;
-            const text = await resp.text();
-            if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) continue;
+    debugLog(`Repository Identified: ${owner}/${repo}`);
 
-            const {headers, rows} = parseCSVRobust(text);
-            if (rows.length > 0) {
-                activeData = parseWithMapping(rows, detectMappings(headers), 'active');
-                debugLog(`✅ Loaded Active CSV (${activeData.length} rows) from: ${url}`, 'success');
-                activeLoaded = true; break;
-            }
-        } catch(e) { debugLog(`Fetch error for ${url}: ${e.message}`, 'error'); }
-    }
+    try {
+        // 1. Get Repo Details
+        const repoRes = await fetch(`https://api.github.com/repos/${owner}/${repo}`);
+        if (!repoRes.ok) throw new Error(`API returned HTTP ${repoRes.status} for repo info.`);
+        const repoData = await repoRes.json();
+        const defaultBranch = repoData.default_branch || 'main';
+        debugLog(`Default Branch identified: "${defaultBranch}"`, 'success');
 
-    if (expiredLoaded && activeLoaded) {
-        dataSource = 'repo';
-        setStatus(`✅ Loaded real data: ${expiredData.length} expired + ${activeData.length} active records`, 'success');
-        runAnalysis();
-    } else {
-        setStatus(`⚠️ Auto-load pending. Ensure '.nojekyll' file exists in your repository root. Fallback to simulation mode.`, 'error');
+        // 2. Fetch Recursive Git Tree
+        const treeUrl = `https://api.github.com/repos/${owner}/${repo}/git/trees/${defaultBranch}?recursive=1`;
+        debugLog(`Fetching Git Tree: ${treeUrl}`);
+        const treeRes = await fetch(treeUrl);
+        if (!treeRes.ok) throw new Error(`Git Tree API returned HTTP ${treeRes.status}`);
+        const treeData = await treeRes.json();
+        const files = treeData.tree || [];
+
+        debugLog(`Total files found in Git tree: ${files.length}`);
+        files.forEach(f => debugLog(` 📄 Git File: "${f.path}"`));
+
+        // 3. Match Files
+        const expFile = files.find(f => f.path.toLowerCase().includes('expired') && (f.path.endsWith('.csv') || f.path.endsWith('.xlsx')));
+        const actFile = files.find(f => f.path.toLowerCase().includes('active') && (f.path.endsWith('.csv') || f.path.endsWith('.xlsx')));
+
+        if (!expFile || !actFile) {
+            throw new Error(`Git Tree matching failed. Found Expired: ${!!expFile}, Active: ${!!actFile}`);
+        }
+
+        debugLog(`Matched Expired File: "${expFile.path}"`, 'success');
+        debugLog(`Matched Active File: "${actFile.path}"`, 'success');
+
+        // 4. Fetch Raw Content Directly via Raw GitHub URL
+        const rawExpUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${defaultBranch}/${expFile.path}`;
+        const rawActUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${defaultBranch}/${actFile.path}`;
+
+        debugLog(`Downloading Expired Data: ${rawExpUrl}`);
+        const expRes = await fetch(rawExpUrl + '?t=' + Date.now());
+        const expText = await expRes.text();
+
+        debugLog(`Downloading Active Data: ${rawActUrl}`);
+        const actRes = await fetch(rawActUrl + '?t=' + Date.now());
+        const actText = await actRes.text();
+
+        // 5. Parse Data
+        const parsedExp = parseCSVRobust(expText);
+        const parsedAct = parseCSVRobust(actText);
+
+        expiredData = parseWithMapping(parsedExp.rows, detectMappings(parsedExp.headers), 'expired');
+        activeData = parseWithMapping(parsedAct.rows, detectMappings(parsedAct.headers), 'active');
+
+        if (expiredData.length > 0 && activeData.length > 0) {
+            dataSource = 'repo';
+            setStatus(`✅ Real Data Loaded: ${expiredData.length} expired + ${activeData.length} active records`, 'success');
+            runAnalysis();
+            return;
+        } else {
+            throw new Error(`Parsed 0 records from matched files.`);
+        }
+
+    } catch (err) {
+        debugLog(`❌ API Engine Error: ${err.message}`, 'error');
+        setStatus(`⚠️ Auto-load failed: ${err.message}. Using simulation mode.`, 'error');
         generateSimulation();
     }
 }
@@ -835,12 +831,12 @@ function openDrillDown(title, data, statsArray){
 }
 
 function renderModalTable(data){
-    document.getElementById('modalTableHead').innerHTML=`<tr><th>Sub ID</th><th>CompGUID</th><th>GSTIN</th><th>BLS Expiry</th><th>Source</th><th>Days</th></tr>`;
+    document.getElementById('modalTableHead').innerHTML=`<tr><th>CompGUID</th><th>Sub No</th><th>GSTIN</th><th>BLS Expiry</th><th>Source</th><th>Days</th></tr>`;
     const today=new Date();
     document.getElementById('modalTableBody').innerHTML=data.slice(0,500).map(d=>{
         const diff=Math.floor((d.currentBlsExpiry-today)/86400000);
         const diffColor=diff>30?'#38ef7d':diff>0?'#ffd200':'#f45c43';
-        return`<tr><td>${d.subscriptionId}</td><td style="font-family:monospace;font-size:0.72rem;">${d.compGUID.substring(0,16)}...</td><td>${d.gstin||'<span style="color:#555">N/A</span>'}</td><td>${d.currentBlsExpiry.toLocaleDateString()}</td><td><span class="status-badge ${d.source==='expired'?'status-expired':'status-active'}">${d.source}</span></td><td style="color:${diffColor}">${diff>0?`${diff} left`:`${Math.abs(diff)} ago`}</td></tr>`;
+        return`<tr><td style="font-family:monospace;font-size:0.72rem;">${d.compGUID.substring(0,16)}...</td><td>${d.subscriptionId}</td><td>${d.gstin||'<span style="color:#555">N/A</span>'}</td><td>${d.currentBlsExpiry.toLocaleDateString()}</td><td><span class="status-badge ${d.source==='expired'?'status-expired':'status-active'}">${d.source}</span></td><td style="color:${diffColor}">${diff>0?`${diff} left`:`${Math.abs(diff)} ago`}</td></tr>`;
     }).join('');
     document.getElementById('modalRecordCount').textContent=`${data.length} records shown`;
 }
@@ -853,8 +849,8 @@ function filterModalTable(){
 function closeModal(){document.getElementById('drillModal').classList.remove('show');}
 
 function downloadModalData(){
-    let csv='Subscription ID,CompGUID,GSTIN,BLS Expiry,Source\n';
-    currentModalData.forEach(d=>{csv+=`"${d.subscriptionId}","${d.compGUID}","${d.gstin||''}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}"\n`;});
+    let csv='CompGUID,Subscription No,GSTIN,BLS Expiry,Source\n';
+    currentModalData.forEach(d=>{csv+=`"${d.compGUID}","${d.subscriptionId}","${d.gstin||''}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}"\n`;});
     dlFile(csv,'drill_down_data.csv','text/csv');
 }
 
@@ -978,7 +974,7 @@ function renderDataTable(filter='all'){
     else if(filter==='atrisk')cd=cd.filter(d=>d.status==='At Risk');
     else if(filter==='healthy')cd=cd.filter(d=>d.cat==='Healthy');
     document.getElementById('tableCount').textContent=`(${cd.length} records)`;
-    document.getElementById('tableBody').innerHTML=cd.slice(0,300).map(d=>`<tr onclick="drillByCompGUID('${d.compGUID}')"><td>${d.subscriptionId}</td><td style="font-family:monospace;font-size:0.7rem;">${d.compGUID.substring(0,14)}...</td><td>${d.gstin||'<span style="color:#555">N/A</span>'}</td><td>${d.currentBlsExpiry.toLocaleDateString()}</td><td><span class="status-badge ${d.sc}">${d.status}</span></td><td><span class="status-badge ${d.cc}">${d.cat}</span></td></tr>`).join('');
+    document.getElementById('tableBody').innerHTML=cd.slice(0,300).map(d=>`<tr onclick="drillByCompGUID('${d.compGUID}')"><td style="font-family:monospace;font-size:0.7rem;">${d.compGUID.substring(0,14)}...</td><td>${d.subscriptionId}</td><td>${d.gstin||'<span style="color:#555">N/A</span>'}</td><td>${d.currentBlsExpiry.toLocaleDateString()}</td><td><span class="status-badge ${d.sc}">${d.status}</span></td><td><span class="status-badge ${d.cc}">${d.cat}</span></td></tr>`).join('');
 }
 
 function showTable(f,btn){renderDataTable(f);document.querySelectorAll('.table-tab').forEach(t=>t.classList.remove('active'));if(btn)btn.classList.add('active');}
@@ -987,26 +983,26 @@ function showTable(f,btn){renderDataTable(f);document.querySelectorAll('.table-t
 function dlFile(c,n,t){const b=new Blob([c],{type:t});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=n;a.click();URL.revokeObjectURL(u);}
 function downloadCSV(){
     const r=analysisResults,today=new Date(),rd=parseInt(document.getElementById('riskDays').value),rDate=new Date(today.getTime()+rd*86400000);
-    let csv='Subscription ID,CompGUID,GSTIN,BLS Expiry,Source,Status,Category\n';
-    [...expiredData,...activeData].forEach(d=>{const o=r.overlappingCompGUIDSet.has(d.compGUID);const ar=d.source==='active'&&d.currentBlsExpiry<=rDate&&d.currentBlsExpiry>=today;csv+=`"${d.subscriptionId}","${d.compGUID}","${d.gstin||''}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}","${d.source==='expired'?'Expired':(ar?'At Risk':'Active')}","${o?'Partial Churn':(d.source==='expired'?'Full Churn':(ar?'Renewal Due':'Healthy'))}"\n`;});
+    let csv='CompGUID,Subscription No,GSTIN,BLS Expiry,Source,Status,Category\n';
+    [...expiredData,...activeData].forEach(d=>{const o=r.overlappingCompGUIDSet.has(d.compGUID);const ar=d.source==='active'&&d.currentBlsExpiry<=rDate&&d.currentBlsExpiry>=today;csv+=`"${d.compGUID}","${d.subscriptionId}","${d.gstin||''}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}","${d.source==='expired'?'Expired':(ar?'At Risk':'Active')}","${o?'Partial Churn':(d.source==='expired'?'Full Churn':(ar?'Renewal Due':'Healthy'))}"\n`;});
     dlFile(csv,'churn_analysis.csv','text/csv');
 }
 function downloadExcel(){
     const r=analysisResults,today=new Date(),rd=parseInt(document.getElementById('riskDays').value),rDate=new Date(today.getTime()+rd*86400000);
-    const ws1=[['Sub ID','CompGUID','GSTIN','BLS Expiry','Source','Status','Category']];
-    [...expiredData,...activeData].forEach(d=>{const o=r.overlappingCompGUIDSet.has(d.compGUID);const ar=d.source==='active'&&d.currentBlsExpiry<=rDate&&d.currentBlsExpiry>=today;ws1.push([d.subscriptionId,d.compGUID,d.gstin||'',d.currentBlsExpiry.toISOString().slice(0,10),d.source,d.source==='expired'?'Expired':(ar?'At Risk':'Active'),o?'Partial Churn':(d.source==='expired'?'Full Churn':(ar?'Renewal Due':'Healthy'))]);});
+    const ws1=[['CompGUID','Sub No','GSTIN','BLS Expiry','Source','Status','Category']];
+    [...expiredData,...activeData].forEach(d=>{const o=r.overlappingCompGUIDSet.has(d.compGUID);const ar=d.source==='active'&&d.currentBlsExpiry<=rDate&&d.currentBlsExpiry>=today;ws1.push([d.compGUID,d.subscriptionId,d.gstin||'',d.currentBlsExpiry.toISOString().slice(0,10),d.source,d.source==='expired'?'Expired':(ar?'At Risk':'Active'),o?'Partial Churn':(d.source==='expired'?'Full Churn':(ar?'Renewal Due':'Healthy'))]);});
     const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(ws1),'Analysis');
     XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['Metric','Value'],['Expired',r.totalExpired],['Active',r.totalActive],['Full Churn',r.fullChurn],['Healthy',r.healthy],['Overlap',r.overlappingCompGUIDs],['Churn%',r.churnRate],['Retention%',r.retentionRate],['At-Risk',r.atRisk]]),'Summary');
     XLSX.writeFile(wb,'churn_analysis.xlsx');
 }
 function downloadOverlap(){
-    const r=analysisResults;let csv='Subscription ID,CompGUID,GSTIN,BLS Expiry,Source\n';
-    [...expiredData,...activeData].filter(d=>r.overlappingCompGUIDSet.has(d.compGUID)).forEach(d=>{csv+=`"${d.subscriptionId}","${d.compGUID}","${d.gstin||''}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}"\n`;});
+    const r=analysisResults;let csv='CompGUID,Subscription No,GSTIN,BLS Expiry,Source\n';
+    [...expiredData,...activeData].filter(d=>r.overlappingCompGUIDSet.has(d.compGUID)).forEach(d=>{csv+=`"${d.compGUID}","${d.subscriptionId}","${d.gstin||''}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}"\n`;});
     dlFile(csv,'overlap_data.csv','text/csv');
 }
 function downloadAtRisk(){
-    let csv='Subscription ID,CompGUID,GSTIN,BLS Expiry,Days Left\n';const today=new Date();
-    analysisResults.atRiskData.forEach(d=>{const dl=Math.floor((d.currentBlsExpiry-today)/86400000);csv+=`"${d.subscriptionId}","${d.compGUID}","${d.gstin||''}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${dl}"\n`;});
+    let csv='CompGUID,Subscription No,GSTIN,BLS Expiry,Days Left\n';const today=new Date();
+    analysisResults.atRiskData.forEach(d=>{const dl=Math.floor((d.currentBlsExpiry-today)/86400000);csv+=`"${d.compGUID}","${d.subscriptionId}","${d.gstin||''}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${dl}"\n`;});
     dlFile(csv,'at_risk_data.csv','text/csv');
 }
 
@@ -1023,7 +1019,7 @@ function runAnalysis(){
 
 // AUTO-START
 window.addEventListener('load',()=>{
-    debugLog('Page loaded. Running self-correcting path resolver...');
+    debugLog('Page loaded. Running GitHub API Direct Engine...');
     autoLoadFromRepo();
 });
 </script>
