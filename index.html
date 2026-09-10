@@ -398,13 +398,13 @@
 <div class="header">
     <h1>📊 Customer Churn & Retention Dashboard</h1>
     <p>Click any KPI, chart or number for drill-down analysis</p>
-    <div class="header-badge">v4.3 — Smart GitHub CDN Fallback</div>
+    <div class="header-badge">v4.5 — Self-Correcting Path Resolver</div>
 </div>
 
 <!-- Status Bar -->
 <div class="status-bar loading" id="statusBar">
     <div class="status-spinner"></div>
-    <span>Attempting to auto-load CSV files...</span>
+    <span>Auto-detecting and loading CSV files...</span>
 </div>
 
 <!-- Debug Console -->
@@ -545,7 +545,7 @@
     </div>
 </div>
 
-<footer>Customer Churn Dashboard v4.3 | Auto-Load + Clickable Drill-Down | GitHub Pages</footer>
+<footer>Customer Churn Dashboard v4.5 | Auto-Load + Clickable Drill-Down | GitHub Pages</footer>
 
 <script>
 // ==================== STATE ====================
@@ -570,7 +570,7 @@ function setStatus(msg, type='info') {
     sb.innerHTML=type==='loading'?`<div class="status-spinner"></div><span>${msg}</span>`:`<span>${msg}</span>`;
 }
 
-// ==================== CSV PARSING (ROBUST) ====================
+// ==================== CSV PARSING ====================
 function parseCSVRobust(csvText) {
     if(csvText.charCodeAt(0)===0xFEFF) csvText=csvText.slice(1);
     csvText=csvText.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
@@ -608,7 +608,7 @@ function parseCSVRobust(csvText) {
     return {headers,rows};
 }
 
-// ==================== COLUMN DETECTION & SMART FALLBACK ====================
+// ==================== COLUMN DETECTION ====================
 function autoDetectColumn(headers,keywords){
     const lower=headers.map(h=>h.toLowerCase().replace(/[^a-z0-9]/g,''));
     for(const kw of keywords){
@@ -635,7 +635,7 @@ function detectMappings(headers){
     if(!gst && headers.length >= 3) { gst = headers[2]; debugLog(`GSTIN fallback: Column 3 (${headers[2]})`,'warn'); }
     if(!exp && headers.length >= 4) { exp = headers[3]; debugLog(`Expiry fallback: Column 4 (${headers[3]})`,'warn'); }
 
-    debugLog(`Headers mapped -> Sub:[${sub}], Comp:[${comp}], GST:[${gst}], Expiry:[${exp}]`);
+    debugLog(`Mapped: Sub=[${sub}], Comp=[${comp}], GST=[${gst}], Expiry=[${exp}]`);
     return { subscriptionId: sub, compGUID: comp, gstin: gst, expiry: exp };
 }
 
@@ -667,88 +667,93 @@ function parseWithMapping(rows,mapping,source){
     }).filter(d => d.subscriptionId || d.compGUID);
 }
 
-// ==================== SMART URL GENERATOR ====================
-function getCandidateUrls(filename) {
+// ==================== SELF-CORRECTING PATH RESOLVER ====================
+function getPossibleUrls(filename) {
     const urls = [];
-    let base = window.location.href.split('?')[0].split('#')[0];
-    if (base.endsWith('.html')) {
-        base = base.substring(0, base.lastIndexOf('/') + 1);
-    } else if (!base.endsWith('/')) {
-        base = base + '/';
+    const loc = window.location;
+    
+    // Normalize base URL
+    let basePath = loc.pathname;
+    if (basePath.endsWith('.html') || basePath.endsWith('.htm')) {
+        basePath = basePath.substring(0, basePath.lastIndexOf('/') + 1);
+    } else if (!basePath.endsWith('/')) {
+        basePath += '/';
     }
 
-    // 1. Relative paths
-    urls.push(base + 'data/' + filename);
-    urls.push(base + filename);
+    // 1. Direct path relative to current URL
+    urls.push(`${loc.origin}${basePath}data/${filename}`);
+    urls.push(`${loc.origin}${basePath}${filename}`);
 
-    // 2. Direct GitHub Raw CDN fallback
-    if (window.location.hostname.includes('github.io')) {
-        const username = window.location.hostname.split('.')[0];
-        const pathParts = window.location.pathname.split('/').filter(p => p);
-        if (pathParts.length > 0) {
-            const repo = pathParts[0];
-            urls.push(`https://raw.githubusercontent.com/${username}/${repo}/main/data/${filename}`);
-            urls.push(`https://raw.githubusercontent.com/${username}/${repo}/main/${filename}`);
-            urls.push(`https://raw.githubusercontent.com/${username}/${repo}/master/data/${filename}`);
-            urls.push(`https://raw.githubusercontent.com/${username}/${repo}/master/${filename}`);
+    // 2. Relative paths
+    urls.push(`data/${filename}`);
+    urls.push(`./data/${filename}`);
+    urls.push(filename);
+
+    // 3. Raw GitHub CDN fallbacks
+    if (loc.hostname.includes('github.io')) {
+        const user = loc.hostname.split('.')[0];
+        const repo = loc.pathname.split('/').filter(p => p)[0] || '';
+        if (repo) {
+            ['main', 'master'].forEach(branch => {
+                urls.push(`https://raw.githubusercontent.com/${user}/${repo}/${branch}/data/${filename}`);
+                urls.push(`https://raw.githubusercontent.com/${user}/${repo}/${branch}/${filename}`);
+            });
         }
     }
-    return urls;
+    return [...new Set(urls)]; // Remove duplicates
 }
 
 // ==================== AUTO-LOAD FROM REPO ====================
 async function autoLoadFromRepo(){
-    setStatus('Auto-loading CSV files...','loading');
-    debugLog('Starting smart auto-load...');
+    setStatus('Auto-detecting CSV paths...','loading');
+    debugLog('Starting path discovery...');
 
     let expiredLoaded=false, activeLoaded=false;
 
-    // Fetch Expired
-    const expiredCandidates = getCandidateUrls('expired_customers.csv');
-    for(const url of expiredCandidates){
+    // Load Expired Data
+    const expiredUrls = getPossibleUrls('expired_customers.csv');
+    for (const url of expiredUrls) {
         try {
-            debugLog(`Fetching Expired: ${url}`);
+            debugLog(`Trying: ${url}`);
             const resp = await fetch(url + (url.includes('raw.githubusercontent') ? '' : '?t=' + Date.now()));
-            if(!resp.ok) { debugLog(`❌ HTTP ${resp.status} for ${url}`, 'warn'); continue; }
+            if (!resp.ok) continue;
             const text = await resp.text();
-            if(text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')){
-                debugLog(`⚠️ Returned HTML page instead of CSV`, 'warn'); continue;
-            }
+            if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) continue;
+
             const {headers, rows} = parseCSVRobust(text);
-            if(rows.length > 0) {
+            if (rows.length > 0) {
                 expiredData = parseWithMapping(rows, detectMappings(headers), 'expired');
                 debugLog(`✅ Loaded Expired CSV (${expiredData.length} rows) from: ${url}`, 'success');
                 expiredLoaded = true; break;
             }
-        } catch(e) { debugLog(`Fetch failed: ${e.message}`, 'error'); }
+        } catch(e) { debugLog(`Fetch error for ${url}: ${e.message}`, 'error'); }
     }
 
-    // Fetch Active
-    const activeCandidates = getCandidateUrls('active_customers.csv');
-    for(const url of activeCandidates){
+    // Load Active Data
+    const activeUrls = getPossibleUrls('active_customers.csv');
+    for (const url of activeUrls) {
         try {
-            debugLog(`Fetching Active: ${url}`);
+            debugLog(`Trying: ${url}`);
             const resp = await fetch(url + (url.includes('raw.githubusercontent') ? '' : '?t=' + Date.now()));
-            if(!resp.ok) { debugLog(`❌ HTTP ${resp.status} for ${url}`, 'warn'); continue; }
+            if (!resp.ok) continue;
             const text = await resp.text();
-            if(text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')){
-                debugLog(`⚠️ Returned HTML page instead of CSV`, 'warn'); continue;
-            }
+            if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) continue;
+
             const {headers, rows} = parseCSVRobust(text);
-            if(rows.length > 0) {
+            if (rows.length > 0) {
                 activeData = parseWithMapping(rows, detectMappings(headers), 'active');
                 debugLog(`✅ Loaded Active CSV (${activeData.length} rows) from: ${url}`, 'success');
                 activeLoaded = true; break;
             }
-        } catch(e) { debugLog(`Fetch failed: ${e.message}`, 'error'); }
+        } catch(e) { debugLog(`Fetch error for ${url}: ${e.message}`, 'error'); }
     }
 
-    if(expiredLoaded && activeLoaded){
-        dataSource='repo';
-        setStatus(`✅ Real Data Loaded: ${expiredData.length} expired + ${activeData.length} active records`,'success');
+    if (expiredLoaded && activeLoaded) {
+        dataSource = 'repo';
+        setStatus(`✅ Loaded real data: ${expiredData.length} expired + ${activeData.length} active records`, 'success');
         runAnalysis();
     } else {
-        setStatus(`⚠️ Auto-load failed. Check Debug Console for details. Fallback to simulation mode.`,'error');
+        setStatus(`⚠️ Auto-load pending. Ensure '.nojekyll' file exists in your repository root. Fallback to simulation mode.`, 'error');
         generateSimulation();
     }
 }
@@ -1018,7 +1023,7 @@ function runAnalysis(){
 
 // AUTO-START
 window.addEventListener('load',()=>{
-    debugLog('Page loaded. Running auto-load...');
+    debugLog('Page loaded. Running self-correcting path resolver...');
     autoLoadFromRepo();
 });
 </script>
