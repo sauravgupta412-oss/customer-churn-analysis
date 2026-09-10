@@ -8,7 +8,7 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-gradient(135deg,#0a0a1a,#1a1a3e,#0d0d2b);color:#e0e0e0;min-height:100vh}
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-gradient(135deg,#0a0a1a,#1a1a3e,#0d0d2b);color:#e0e0e0;min-height:100vh;overflow-x:hidden;}
 .header{background:linear-gradient(135deg,#667eea,#764ba2);padding:24px 40px;text-align:center;box-shadow:0 4px 30px rgba(102,126,234,.3)}
 .header h1{font-size:1.8rem;color:#fff;margin-bottom:4px}
 .header p{color:rgba(255,255,255,.85);font-size:.9rem}
@@ -29,7 +29,7 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-g
 .repo-btn{background:linear-gradient(135deg,#667eea,#764ba2)}
 .file-input-wrapper input[type=file]{display:none}
 .file-name{font-size:.72rem;color:#38ef7d}
-.kpi-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:14px 30px}
+.kpi-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:14px 30px}
 .kpi-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:16px 12px;text-align:center;cursor:pointer;position:relative;overflow:hidden;transition:.2s}
 .kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
 .kpi-card.blue::before{background:linear-gradient(90deg,#667eea,#764ba2)}
@@ -39,112 +39,91 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-g
 .kpi-card.purple::before{background:linear-gradient(90deg,#a855f7,#ec4899)}
 .kpi-card.cyan::before{background:linear-gradient(90deg,#06b6d4,#22d3ee)}
 .kpi-card:hover{transform:translateY(-3px);border-color:rgba(255,255,255,.2)}
-.kpi-value{font-size:1.7rem;font-weight:700;margin:4px 0}
+.kpi-value{font-size:1.6rem;font-weight:700;margin:4px 0}
 .kpi-card.blue .kpi-value{color:#667eea}.kpi-card.green .kpi-value{color:#38ef7d}.kpi-card.red .kpi-value{color:#f45c43}
 .kpi-card.orange .kpi-value{color:#ffd200}.kpi-card.purple .kpi-value{color:#a855f7}.kpi-card.cyan .kpi-value{color:#22d3ee}
 .kpi-label{font-size:.72rem;color:#999;text-transform:uppercase;letter-spacing:1px}
-.kpi-sublabel{font-size:.68rem;color:#666;margin-top:2px}
-.kpi-click-hint{font-size:.62rem;color:#555;margin-top:5px;border-top:1px solid rgba(255,255,255,.06);padding-top:4px}
+.kpi-sublabel{font-size:.65rem;color:#666;margin-top:2px}
 .section-header{margin:22px 30px 4px;display:flex;align-items:center;gap:10px}
 .section-header h2{font-size:1.15rem;color:#ddd}
-.section-info{font-size:.75rem;color:#777;background:rgba(255,255,255,.04);padding:3px 12px;border-radius:14px}
 .section-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(102,126,234,.2),transparent);margin:6px 30px 14px}
 .dashboard{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:0 30px 14px}
+@media(max-width:900px){.dashboard{grid-template-columns:1fr}}
 .chart-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:18px}
 .chart-card.full-width{grid-column:1/-1}
-.chart-title{font-size:.95rem;font-weight:600;margin-bottom:4px;color:#ddd}
-.chart-description{font-size:.72rem;color:#666;margin-bottom:10px;line-height:1.4;background:rgba(255,255,255,.02);padding:6px 10px;border-radius:6px;border-left:3px solid rgba(102,126,234,.2)}
+.chart-title{font-size:.95rem;font-weight:600;margin-bottom:12px;color:#ddd;display:flex;align-items:center;gap:8px}
 .chart-container{position:relative;width:100%;height:280px}
-.chart-container.tall{height:360px}
+.chart-container.tall{height:340px}
 .insight-box{background:rgba(102,126,234,.08);border-left:4px solid #667eea;padding:14px 18px;margin:14px 30px;border-radius:0 10px 10px 0;font-size:.84rem;line-height:1.6}
 .insight-box h4{color:#667eea;margin-bottom:6px}
 .insight-item{padding:4px 0;border-bottom:1px solid rgba(255,255,255,.03)}
-.flow-container{padding:12px}
+.flow-container{padding:8px}
 .flow-row{display:flex;align-items:center;gap:8px;margin:6px 0;padding:8px 12px;border-radius:8px;cursor:pointer}
 .flow-row:hover{background:rgba(255,255,255,.04)}
-.flow-icon{font-size:1.2rem;min-width:28px;text-align:center}
 .flow-bar-container{flex:1}
-.flow-bar{height:24px;border-radius:5px;display:flex;align-items:center;padding-left:8px;font-size:.75rem;font-weight:600}
+.flow-bar{height:22px;border-radius:4px;display:flex;align-items:center;padding-left:8px;font-size:.7rem;font-weight:600}
 .flow-bar.healthy{background:linear-gradient(90deg,rgba(56,239,125,.25),rgba(56,239,125,.55))}
 .flow-bar.partial{background:linear-gradient(90deg,rgba(168,85,247,.25),rgba(168,85,247,.55))}
 .flow-bar.churned{background:linear-gradient(90deg,rgba(244,92,67,.25),rgba(244,92,67,.55))}
-.flow-bar.atrisk{background:linear-gradient(90deg,rgba(255,210,0,.25),rgba(255,210,0,.55))}
 .flow-label{font-size:.72rem;color:#999;min-width:100px}
-.flow-value{font-size:.82rem;font-weight:700;min-width:50px;text-align:right}
-.correlation-container{padding:6px}
-.corr-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.03);cursor:pointer}
-.corr-label{font-size:.75rem;color:#aaa;min-width:140px}
-.corr-bar-bg{flex:1;background:rgba(255,255,255,.05);border-radius:5px;height:18px;overflow:hidden}
-.corr-bar-fill{height:100%;border-radius:5px;display:flex;align-items:center;padding-left:6px;font-size:.7rem;font-weight:600}
-.corr-strength{min-width:55px;text-align:center;padding:2px 6px;border-radius:10px;font-size:.65rem;font-weight:600}
-.strength-high{background:rgba(56,239,125,.12);color:#38ef7d}
-.strength-medium{background:rgba(255,210,0,.12);color:#ffd200}
-.strength-low{background:rgba(244,92,67,.12);color:#f45c43}
-.venn-container{display:flex;justify-content:center;align-items:center;height:280px;position:relative}
-.venn-circle{width:170px;height:170px;border-radius:50%;position:absolute;display:flex;align-items:center;justify-content:center;font-weight:700;cursor:pointer}
-.venn-active{background:rgba(56,239,125,.18);border:2px solid rgba(56,239,125,.45);left:calc(50% - 150px)}
+.venn-container{display:flex;justify-content:center;align-items:center;height:260px;position:relative}
+.venn-circle{width:160px;height:160px;border-radius:50%;position:absolute;display:flex;align-items:center;justify-content:center;font-weight:700;cursor:pointer}
+.venn-active{background:rgba(56,239,125,.18);border:2px solid rgba(56,239,125,.45);left:calc(50% - 140px)}
 .venn-expired{background:rgba(244,92,67,.18);border:2px solid rgba(244,92,67,.45);left:calc(50% - 20px)}
-.venn-overlap-zone{position:absolute;background:rgba(168,85,247,.28);border:2px solid rgba(168,85,247,.55);border-radius:50%;width:80px;height:170px;left:calc(50% - 85px);display:flex;align-items:center;justify-content:center;font-weight:700;color:#a855f7;clip-path:ellipse(50% 50%);cursor:pointer}
-.venn-labels{position:absolute;bottom:4px;display:flex;gap:16px;font-size:.75rem}
-.venn-label{display:flex;align-items:center;gap:5px}
-.venn-dot{width:8px;height:8px;border-radius:50%}
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(10,10,26,.93);z-index:2000;justify-content:center;align-items:center;padding:16px}
+.venn-overlap-zone{position:absolute;background:rgba(168,85,247,.28);border:2px solid rgba(168,85,247,.55);border-radius:50%;width:80px;height:160px;left:calc(50% - 80px);display:flex;align-items:center;justify-content:center;font-weight:700;color:#a855f7;clip-path:ellipse(50% 50%);cursor:pointer}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(10,10,26,.95);z-index:2000;justify-content:center;align-items:center;padding:16px}
 .modal-overlay.show{display:flex}
-.modal{background:#1a1a3e;border:1px solid rgba(255,255,255,.12);border-radius:16px;width:100%;max-width:1280px;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.modal{background:#1a1a3e;border:1px solid rgba(255,255,255,.12);border-radius:12px;width:100%;max-width:1400px;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.5)}
 .modal-header{background:linear-gradient(135deg,#667eea,#764ba2);padding:14px 20px;display:flex;justify-content:space-between;align-items:center}
 .modal-header h3{color:#fff;font-size:1.05rem}
-.modal-close{background:rgba(255,255,255,.2);border:none;color:#fff;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:1.1rem}
+.modal-close{background:rgba(255,255,255,.2);border:none;color:#fff;width:30px;height:30px;border-radius:50%;cursor:pointer}
 .modal-stats{display:flex;gap:14px;padding:10px 20px;background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.06);flex-wrap:wrap}
 .modal-stat{text-align:center;min-width:90px}
 .modal-stat-value{font-size:1.3rem;font-weight:700}
 .modal-stat-label{font-size:.62rem;color:#999;text-transform:uppercase}
 .modal-search{width:100%;background:rgba(255,255,255,.06);border:none;color:#fff;padding:11px 18px;font-size:.85rem;outline:none;border-bottom:1px solid rgba(255,255,255,.06)}
-.modal-body{padding:0;overflow-y:auto;flex:1}
-.modal-table{width:100%;border-collapse:collapse;font-size:.76rem}
-.modal-table thead th{background:rgba(30,30,60,.97);padding:9px 12px;text-align:left;color:#999;font-weight:600;text-transform:uppercase;font-size:.65rem;position:sticky;top:0;z-index:1}
+.modal-body{padding:0;overflow-y:auto;flex:1;overflow-x:auto;}
+.modal-table{width:100%;border-collapse:collapse;font-size:.76rem;min-width:1200px;}
+.modal-table thead th{background:rgba(30,30,60,.97);padding:9px 12px;text-align:left;color:#999;font-weight:600;text-transform:uppercase;font-size:.65rem;position:sticky;top:0;z-index:1;white-space:nowrap;}
 .modal-table tbody td{padding:7px 12px;border-bottom:1px solid rgba(255,255,255,.03);vertical-align:top}
 .modal-table tbody tr:hover{background:rgba(102,126,234,.06)}
-.modal-footer{padding:10px 20px;background:rgba(255,255,255,.03);border-top:1px solid rgba(255,255,255,.06);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.modal-footer{padding:10px 20px;background:rgba(255,255,255,.03);border-top:1px solid rgba(255,255,255,.06);display:flex;gap:8px;align-items:center}
 .modal-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:#ccc;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:.78rem}
 .modal-btn.primary{background:linear-gradient(135deg,#667eea,#764ba2);border-color:transparent;color:#fff}
-.compguid-cell{font-family:monospace;font-size:.7rem;color:#a855f7;text-decoration:underline;cursor:pointer;word-break:break-all;max-width:220px}
-.compguid-cell:hover{color:#fff}
-.chip-wrap{display:flex;flex-wrap:wrap;gap:4px;max-width:340px;max-height:90px;overflow-y:auto}
-.chip-act{color:#38ef7d;background:rgba(56,239,125,.1);border:1px solid rgba(56,239,125,.25);padding:2px 6px;border-radius:4px;font-size:.68rem;font-family:monospace;white-space:nowrap}
-.chip-exp{color:#f45c43;background:rgba(244,92,67,.1);border:1px solid rgba(244,92,67,.25);padding:2px 6px;border-radius:4px;font-size:.68rem;font-family:monospace;white-space:nowrap}
+.compguid-cell{font-family:monospace;font-size:.7rem;color:#a855f7;text-decoration:underline;cursor:pointer;word-break:break-all;}
+.chip-wrap{display:flex;flex-wrap:wrap;gap:4px;max-width:300px;max-height:80px;overflow-y:auto}
+.chip-act{color:#38ef7d;background:rgba(56,239,125,.1);border:1px solid rgba(56,239,125,.25);padding:2px 6px;border-radius:4px;font-size:.68rem;font-family:monospace}
+.chip-exp{color:#f45c43;background:rgba(244,92,67,.1);border:1px solid rgba(244,92,67,.25);padding:2px 6px;border-radius:4px;font-size:.68rem;font-family:monospace}
 .chip-label{font-size:.62rem;color:#888;width:100%;margin-top:2px}
-.status-badge{padding:2px 7px;border-radius:10px;font-size:.65rem;font-weight:600;text-transform:uppercase}
+.status-badge{padding:3px 8px;border-radius:10px;font-size:.65rem;font-weight:600;white-space:nowrap;}
 .status-active{background:rgba(56,239,125,.12);color:#38ef7d}
 .status-expired{background:rgba(244,92,67,.12);color:#f45c43}
 .status-atrisk{background:rgba(255,210,0,.12);color:#ffd200}
-.status-overlap{background:rgba(168,85,247,.12);color:#a855f7}
 .data-table-container{margin:14px 30px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;overflow:hidden}
 .table-header{padding:14px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,.06);flex-wrap:wrap;gap:8px}
 .table-tabs{display:flex;gap:5px;flex-wrap:wrap}
 .table-tab{padding:4px 11px;border-radius:16px;border:1px solid rgba(255,255,255,.12);background:transparent;color:#aaa;cursor:pointer;font-size:.75rem}
 .table-tab.active{background:linear-gradient(135deg,#667eea,#764ba2);border-color:transparent;color:#fff}
-.table-scroll{max-height:380px;overflow-y:auto}
+.table-scroll{max-height:400px;overflow:auto}
 .download-section{margin:12px 30px;display:flex;gap:8px;flex-wrap:wrap}
 .btn-download{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#bbb;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.78rem}
-.loading-overlay{display:none;position:fixed;inset:0;background:rgba(10,10,26,.92);z-index:1000;justify-content:center;align-items:center;flex-direction:column;gap:14px}
+.loading-overlay{display:none;position:fixed;inset:0;background:rgba(10,10,26,.92);z-index:3000;justify-content:center;align-items:center;flex-direction:column;gap:14px}
 .loading-overlay.show{display:flex}
-.big-spinner{width:42px;height:42px;border:4px solid rgba(102,126,234,.2);border-top-color:#667eea;border-radius:50%;animation:spin .8s linear infinite}
 footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
-@media(max-width:768px){.dashboard{grid-template-columns:1fr}.kpi-strip{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
 
-<div class="loading-overlay" id="loadingOverlay"><div class="big-spinner"></div><p style="color:#667eea" id="loadingText">Loading...</p></div>
+<div class="loading-overlay" id="loadingOverlay"><div class="status-spinner" style="width:40px;height:40px"></div><p style="color:#667eea" id="loadingText">Processing...</p></div>
 
 <div class="modal-overlay" id="drillModal">
   <div class="modal">
     <div class="modal-header"><h3 id="modalTitle">Drill-Down</h3><button class="modal-close" onclick="closeModal()">✕</button></div>
     <div class="modal-stats" id="modalStats"></div>
-    <input type="text" class="modal-search" id="modalSearch" placeholder="🔍 Search CompGUID / Subscription / GSTIN..." oninput="onModalSearchInput()">
+    <input type="text" class="modal-search" id="modalSearch" placeholder="🔍 Search Partner, Category, Sub ID, CompGUID, GSTIN..." oninput="onModalSearchInput()">
     <div class="modal-body"><table class="modal-table"><thead id="modalTableHead"></thead><tbody id="modalTableBody"></tbody></table></div>
     <div class="modal-footer">
-      <button class="modal-btn primary" onclick="downloadModalData()">📥 Download</button>
+      <button class="modal-btn primary" onclick="downloadModalData()">📥 Download Modal Data</button>
       <button class="modal-btn" onclick="document.getElementById('modalSearch').value='';filterModalTable()">Clear Filter</button>
       <button class="modal-btn" onclick="closeModal()">Close</button>
       <span id="modalRecordCount" style="color:#888;font-size:.75rem;margin-left:auto"></span>
@@ -153,112 +132,107 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
 </div>
 
 <div class="header">
-  <h1>📊 Customer Churn & Retention Dashboard</h1>
-  <p>Click KPIs / charts for drill-down · All linked subscriptions by CompGUID & GSTIN</p>
-  <div class="header-badge">v8.0 — Stable · Full Linked Subs · No Freeze</div>
+  <h1>📊 Partner & Product Churn Dashboard</h1>
+  <p>Enriched single-window view with Owner Partner, Categories, and Tenure</p>
+  <div class="header-badge">v9.0 — Enriched Data Columns & Advanced Correlations</div>
 </div>
 
 <div class="status-bar loading" id="statusBar"><div class="status-spinner"></div><span>Loading data...</span></div>
 
 <div class="global-search-container">
   <span>🔍</span>
-  <input type="text" id="globalSearchInput" placeholder="Global Search: CompGUID, Subscription Number, or GSTIN..." onkeydown="if(event.key==='Enter')runGlobalSearch()">
+  <input type="text" id="globalSearchInput" placeholder="Global Search: Partner, Category, CompGUID, Sub ID, or GSTIN..." onkeydown="if(event.key==='Enter')runGlobalSearch()">
   <button class="global-search-btn" onclick="runGlobalSearch()">Search All</button>
 </div>
 
 <div class="upload-mini">
   <div class="file-input-wrapper">
-    <input type="file" id="expiredFile" accept=".xlsx,.xls,.csv" onchange="handleFileUpload('expired',this)">
-    <button class="file-btn expired-btn" onclick="document.getElementById('expiredFile').click()">📤 Expired</button>
+    <input type="file" id="expiredFile" accept=".csv" onchange="handleFileUpload('expired',this)">
+    <button class="file-btn expired-btn" onclick="document.getElementById('expiredFile').click()">📤 Upload Expired</button>
     <span class="file-name" id="expiredFileName"></span>
   </div>
   <div class="file-input-wrapper">
-    <input type="file" id="activeFile" accept=".xlsx,.xls,.csv" onchange="handleFileUpload('active',this)">
-    <button class="file-btn active-btn" onclick="document.getElementById('activeFile').click()">📤 Active</button>
+    <input type="file" id="activeFile" accept=".csv" onchange="handleFileUpload('active',this)">
+    <button class="file-btn active-btn" onclick="document.getElementById('activeFile').click()">📤 Upload Active</button>
     <span class="file-name" id="activeFileName"></span>
   </div>
-  <button class="file-btn repo-btn" onclick="loadFromRepo()">🔄 Reload</button>
-  <label style="font-size:.75rem;color:#888;margin-left:8px">At-Risk Days <input type="number" id="riskDays" value="30" min="7" max="90" style="width:60px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#fff;padding:4px 8px;border-radius:6px"></label>
+  <button class="file-btn repo-btn" onclick="autoLoadFromRepo()">🔄 Reload Repo</button>
+  <label style="font-size:.75rem;color:#888;margin-left:8px">Risk Window <input type="number" id="riskDays" value="30" min="7" style="width:50px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#fff;padding:2px 6px;border-radius:4px"> days</label>
 </div>
 
 <div class="kpi-strip" id="kpiStrip"></div>
-<div class="insight-box" id="insightBox"></div>
-<div class="download-section">
-  <button class="btn-download" onclick="downloadCSV()">📥 Full CSV</button>
-  <button class="btn-download" onclick="downloadExcel()">📥 Full Excel</button>
-  <button class="btn-download" onclick="downloadOverlap()">📥 Overlap Data</button>
-  <button class="btn-download" onclick="downloadAtRisk()">📥 At-Risk Data</button>
-</div>
 
-<div class="section-header"><h2>🔗 Overlap & Correlation</h2><span class="section-info">Click for drill-down</span></div>
+<!-- SECTION: CORRELATION -->
+<div class="section-header"><h2>🔗 Health & Co-Subscriptions</h2></div>
 <div class="section-divider"></div>
 <div class="dashboard">
-  <div class="chart-card"><div class="chart-title">⭕ CompGUID Overlap</div><div class="chart-description">Click circle for customers</div><div class="venn-container" id="vennDiagram"></div></div>
-  <div class="chart-card"><div class="chart-title">📊 Customer Flow</div><div class="chart-description">Click row for category</div><div class="flow-container" id="flowDiagram"></div></div>
-  <div class="chart-card"><div class="chart-title">🍩 Status Distribution</div><div class="chart-container"><canvas id="churnDoughnut"></canvas></div></div>
-  <div class="chart-card"><div class="chart-title">🔗 Correlation Strength</div><div class="correlation-container" id="correlationBars"></div></div>
+  <div class="chart-card"><div class="chart-title">⭕ CompGUID Retention</div><div class="venn-container" id="vennDiagram"></div></div>
+  <div class="chart-card"><div class="chart-title">📊 Account Health Flow</div><div class="flow-container" id="flowDiagram"></div></div>
 </div>
 
-<div class="section-header"><h2>📅 Timeline & Trends</h2></div>
+<!-- SECTION: ENRICHED DATA (PARTNERS & PRODUCTS) -->
+<div class="section-header"><h2>🤝 Partner & Product Category Performance</h2></div>
 <div class="section-divider"></div>
 <div class="dashboard">
-  <div class="chart-card full-width"><div class="chart-title">📈 Monthly Expiry vs Active</div><div class="chart-container tall"><canvas id="timelineChart"></canvas></div></div>
-  <div class="chart-card"><div class="chart-title">⚠️ At-Risk</div><div class="chart-container"><canvas id="atRiskChart"></canvas></div></div>
-  <div class="chart-card"><div class="chart-title">📉 Cumulative Churn</div><div class="chart-container"><canvas id="cumulativeChart"></canvas></div></div>
+  <div class="chart-card full-width"><div class="chart-title">🏆 Top 10 Owner_Partners (Active vs Expired)</div><div class="chart-container"><canvas id="partnerChart"></canvas></div></div>
+  <div class="chart-card"><div class="chart-title">📦 Churn by Category_Name</div><div class="chart-container"><canvas id="categoryChart"></canvas></div></div>
+  <div class="chart-card"><div class="chart-title">⏳ Customer Tenure (Install Date to Expiry)</div><div class="chart-container"><canvas id="tenureChart"></canvas></div></div>
 </div>
 
-<div class="section-header"><h2>🗺️ Geographic Analysis</h2></div>
+<!-- SECTION: GEOGRAPHY & TIMELINE -->
+<div class="section-header"><h2>📅 Geography & Timeline</h2></div>
 <div class="section-divider"></div>
 <div class="dashboard">
-  <div class="chart-card full-width"><div class="chart-title">🗺️ State-wise Churn</div><div class="chart-container tall"><canvas id="stateChart"></canvas></div></div>
-  <div class="chart-card"><div class="chart-title">🎯 Risk Radar</div><div class="chart-container"><canvas id="radarChart"></canvas></div></div>
-  <div class="chart-card"><div class="chart-title">📊 Subs per Company</div><div class="chart-container"><canvas id="densityChart"></canvas></div></div>
+  <div class="chart-card full-width"><div class="chart-title">🗺️ State-wise Churn (from GSTIN)</div><div class="chart-container tall"><canvas id="stateChart"></canvas></div></div>
+  <div class="chart-card full-width"><div class="chart-title">📈 Monthly Expiry Trend</div><div class="chart-container"><canvas id="timelineChart"></canvas></div></div>
 </div>
 
-<div class="section-header"><h2>📋 Records Preview</h2></div>
+<!-- DATA TABLE -->
+<div class="section-header"><h2>📋 Full Enriched Records Preview</h2></div>
 <div class="section-divider"></div>
+<div class="download-section" style="margin-top:0">
+  <button class="btn-download" onclick="downloadCSV()">📥 Export Full CSV</button>
+  <button class="btn-download" onclick="downloadOverlap()">📥 Export Partial Churn Only</button>
+</div>
 <div class="data-table-container">
   <div class="table-header">
-    <h3>Data <span id="tableCount" style="color:#888;font-size:.75rem"></span></h3>
+    <h3>Live Data <span id="tableCount" style="color:#888;font-size:.75rem"></span></h3>
     <div class="table-tabs">
       <button class="table-tab active" onclick="showTable('all',this)">All</button>
-      <button class="table-tab" onclick="showTable('overlap',this)">🟡 Overlap</button>
-      <button class="table-tab" onclick="showTable('churned',this)">🔴 Churned</button>
+      <button class="table-tab" onclick="showTable('overlap',this)">🟡 Partial Churn</button>
+      <button class="table-tab" onclick="showTable('churned',this)">🔴 Full Churn</button>
       <button class="table-tab" onclick="showTable('atrisk',this)">⚠️ At Risk</button>
       <button class="table-tab" onclick="showTable('healthy',this)">🟢 Healthy</button>
     </div>
   </div>
   <div class="table-scroll">
     <table class="modal-table">
-      <thead><tr><th>CompGUID</th><th>Sub No</th><th>GSTIN</th><th>Expiry</th><th>Status</th><th>Linked by CompGUID</th><th>Linked by GSTIN</th></tr></thead>
+      <thead><tr><th>Partner</th><th>Category</th><th>Tenure</th><th>CompGUID</th><th>Sub No</th><th>GSTIN</th><th>Expiry</th><th>Status</th><th>Linked Co-Subs</th></tr></thead>
       <tbody id="tableBody"></tbody>
     </table>
   </div>
 </div>
-<footer>Customer Churn Dashboard v8.0 · Full linked subscriptions · Stable UI</footer>
+<br>
 
 <script>
 let expiredData=[],activeData=[],analysisResults={},charts={},currentModalData=[],currentModalAll=[];
-let modalSearchTimer=null;
-const ROW_CAP=150;
+let modalSearchTimer=null; const ROW_CAP=200;
 window.compNet={}; window.gstNet={};
 const stateGST={'01':'J&K','02':'HP','03':'Punjab','04':'CHD','05':'UK','06':'Haryana','07':'Delhi','08':'Rajasthan','09':'UP','10':'Bihar','11':'Sikkim','18':'Assam','19':'WB','20':'JH','21':'Odisha','22':'CG','23':'MP','24':'Gujarat','27':'Maharashtra','29':'Karnataka','30':'Goa','32':'Kerala','33':'TN','36':'Telangana','37':'AP'};
 
 function setStatus(msg,type='info'){
-  const sb=document.getElementById('statusBar');
-  sb.className='status-bar '+type;
+  const sb=document.getElementById('statusBar'); sb.className='status-bar '+type;
   sb.innerHTML=type==='loading'?`<div class="status-spinner"></div><span>${msg}</span>`:`<span>${msg}</span>`;
 }
 
 function fastParseDate(str){
-  if(!str)return new Date();
-  if(str instanceof Date)return str;
+  if(!str)return null; if(str instanceof Date)return str;
   if(typeof str==='number')return new Date((str-25569)*86400000);
-  const s=String(str).trim(); if(!s)return new Date();
+  const s=String(str).trim(); if(!s)return null;
   if(s.length>=10&&s[4]==='-'&&s[7]==='-')return new Date(+s.slice(0,4),+s.slice(5,7)-1,+s.slice(8,10));
   const d=new Date(s); if(!isNaN(d))return d;
   const p=s.split(/[\/\-\.]/); if(p.length===3){const a=+p[0],b=+p[1],c=+p[2],y=c<100?2000+c:c;return a>12?new Date(y,b-1,a):new Date(y,a-1,b);}
-  return new Date();
+  return null;
 }
 
 function parseCSVFast(text,source){
@@ -266,23 +240,36 @@ function parseCSVFast(text,source){
   const lines=text.split(/\r?\n/); if(lines.length<2)return[];
   const fl=lines[0]; let del=',';
   if((fl.match(/;/g)||[]).length>(fl.match(/,/g)||[]).length)del=';';
-  if((fl.match(/\t/g)||[]).length>(fl.match(/,/g)||[]).length)del='\t';
   const parseRow=line=>{const r=[];let c='',q=false;for(let i=0;i<line.length;i++){const ch=line[i];if(ch==='"'){q=!q;continue;}if(ch===del&&!q){r.push(c.trim());c='';continue;}c+=ch;}r.push(c.trim());return r;};
   const headers=parseRow(lines[0]);
-  let ci=0,si=1,gi=2,ei=3;
+  let ci=-1,si=-1,gi=-1,ei=-1,pi=-1,ii=-1,cati=-1;
   headers.forEach((h,i)=>{const l=h.toLowerCase().replace(/[^a-z0-9]/g,'');
     if(l.includes('guid')||l.includes('comp'))ci=i;
-    else if(l.includes('sub')||l.includes('serial')||l.includes('number'))si=i;
+    else if(l.includes('sub')||l.includes('number'))si=i;
     else if(l.includes('gst'))gi=i;
-    else if(l.includes('expiry')||l.includes('bls')||l.includes('date'))ei=i;
+    else if(l.includes('expiry')||l.includes('bls')||l.includes('date')&&!l.includes('install'))ei=i;
+    else if(l.includes('owner')||l.includes('partner'))pi=i;
+    else if(l.includes('install'))ii=i;
+    else if(l.includes('category')||l.includes('product'))cati=i;
   });
+  // Fallbacks
+  if(ci===-1)ci=0; if(si===-1)si=1; if(gi===-1)gi=2; if(ei===-1)ei=3;
+
   const out=[];
   for(let i=1;i<lines.length;i++){
     if(!lines[i].trim())continue;
     const cols=parseRow(lines[i]);
     const comp=cols[ci]||'',sub=cols[si]||'',gst=cols[gi]||'';
     if(!comp&&!sub)continue;
-    out.push({compGUID:comp,subscriptionId:sub,gstin:gst.length>=8?gst:null,currentBlsExpiry:fastParseDate(cols[ei]||''),source});
+    let installD = ii!==-1 ? fastParseDate(cols[ii]) : null;
+    let expD = fastParseDate(cols[ei]) || new Date();
+    out.push({
+      compGUID:comp, subscriptionId:sub, gstin:gst.length>=8?gst:null, currentBlsExpiry:expD,
+      ownerPartner: pi!==-1&&cols[pi]?cols[pi]:'Unknown',
+      installDate: installD,
+      categoryName: cati!==-1&&cols[cati]?cols[cati]:'Uncategorized',
+      source
+    });
   }
   return out;
 }
@@ -292,143 +279,146 @@ function parseExcelBuffer(buf,source){
     const wb=XLSX.read(new Uint8Array(buf),{type:'array',cellDates:true});
     const json=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''});
     if(!json.length)return[];
-    const headers=Object.keys(json[0]);
-    let ck=headers[0],sk=headers[1],gk=headers[2],ek=headers[3];
-    headers.forEach(h=>{const l=h.toLowerCase().replace(/[^a-z0-9]/g,'');
-      if(l.includes('guid')||l.includes('comp'))ck=h; else if(l.includes('sub')||l.includes('number'))sk=h;
-      else if(l.includes('gst'))gk=h; else if(l.includes('expiry')||l.includes('bls'))ek=h;});
-    return json.map(row=>({
-      compGUID:String(row[ck]||'').trim(),subscriptionId:String(row[sk]||'').trim(),
-      gstin:String(row[gk]||'').trim().length>=8?String(row[gk]||'').trim():null,
-      currentBlsExpiry:fastParseDate(row[ek]),source
-    })).filter(d=>d.compGUID||d.subscriptionId);
+    const h=Object.keys(json[0]);
+    let ck=h[0],sk=h[1],gk=h[2],ek=h[3],pk=null,ik=null,catk=null;
+    h.forEach(x=>{const l=x.toLowerCase().replace(/[^a-z0-9]/g,'');
+      if(l.includes('guid')||l.includes('comp'))ck=x; else if(l.includes('sub')||l.includes('number'))sk=x;
+      else if(l.includes('gst'))gk=x; else if(l.includes('expiry')||l.includes('bls')&&!l.includes('install'))ek=x;
+      else if(l.includes('owner')||l.includes('partner'))pk=x; else if(l.includes('install'))ik=x; else if(l.includes('category')||l.includes('product'))catk=x;
+    });
+    return json.map(r=>{
+      let iD = ik ? fastParseDate(r[ik]) : null;
+      let eD = fastParseDate(r[ek]) || new Date();
+      return{compGUID:String(r[ck]||'').trim(),subscriptionId:String(r[sk]||'').trim(),gstin:String(r[gk]||'').trim().length>=8?String(r[gk]||'').trim():null,currentBlsExpiry:eD,ownerPartner:pk&&r[pk]?String(r[pk]):'Unknown',installDate:iD,categoryName:catk&&r[catk]?String(r[catk]):'Uncategorized',source};
+    }).filter(d=>d.compGUID||d.subscriptionId);
   }catch(e){return[];}
 }
 
 async function autoLoadFromRepo(){
-  setStatus('Loading data from GitHub...','loading');
+  setStatus('Auto-loading from GitHub API...','loading');
   let owner='sauravgupta412-oss',repo='customer-churn-analysis';
-  if(location.hostname.includes('github.io')){
-    owner=location.hostname.split('.')[0];
-    const pp=location.pathname.split('/').filter(Boolean); if(pp[0])repo=pp[0];
-  }
+  if(location.hostname.includes('github.io')){owner=location.hostname.split('.')[0];const pp=location.pathname.split('/').filter(Boolean);if(pp[0])repo=pp[0];}
   try{
     const repoRes=await fetch(`https://api.github.com/repos/${owner}/${repo}`);
-    if(!repoRes.ok)throw new Error('Repo HTTP '+repoRes.status);
+    if(!repoRes.ok)throw new Error('API HTTP '+repoRes.status);
     const branch=(await repoRes.json()).default_branch||'main';
     const treeRes=await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`);
-    if(!treeRes.ok)throw new Error('Tree HTTP '+treeRes.status);
     const files=(await treeRes.json()).tree||[];
     const expF=files.find(f=>f.path.toLowerCase().includes('expired')&&(f.path.endsWith('.csv')||f.path.endsWith('.xlsx')));
     const actF=files.find(f=>f.path.toLowerCase().includes('active')&&(f.path.endsWith('.csv')||f.path.endsWith('.xlsx')));
-    if(!expF||!actF)throw new Error('CSV files not found');
-    const expUrl=`https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${expF.path}`;
-    const actUrl=`https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${actF.path}`;
-    const expRes=await fetch(expUrl+'?t='+Date.now());
-    expiredData=expF.path.endsWith('.xlsx')?parseExcelBuffer(await expRes.arrayBuffer(),'expired'):parseCSVFast(await expRes.text(),'expired');
-    const actRes=await fetch(actUrl+'?t='+Date.now());
-    activeData=actF.path.endsWith('.xlsx')?parseExcelBuffer(await actRes.arrayBuffer(),'active'):parseCSVFast(await actRes.text(),'active');
-    if(!expiredData.length||!activeData.length)throw new Error('0 records parsed');
+    if(!expF||!actF)throw new Error('CSV files not found in repo');
+    const eu=`https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${expF.path}?t=${Date.now()}`;
+    const au=`https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${actF.path}?t=${Date.now()}`;
+    
+    if(expF.path.endsWith('.xlsx')){ expiredData=parseExcelBuffer(await (await fetch(eu)).arrayBuffer(),'expired'); }
+    else { expiredData=parseCSVFast(await (await fetch(eu)).text(),'expired'); }
+    
+    if(actF.path.endsWith('.xlsx')){ activeData=parseExcelBuffer(await (await fetch(au)).arrayBuffer(),'active'); }
+    else { activeData=parseCSVFast(await (await fetch(au)).text(),'active'); }
+    
+    if(!expiredData.length||!activeData.length)throw new Error('Parsed 0 records');
     setStatus(`✅ Loaded: ${expiredData.length.toLocaleString()} expired + ${activeData.length.toLocaleString()} active`,'success');
     runAnalysis();
-  }catch(err){
-    setStatus('⚠️ Auto-load failed: '+err.message+'. Upload CSVs manually.','error');
-  }
+  }catch(err){setStatus('⚠️ Auto-load failed: '+err.message,'error');}
 }
 
 async function handleFileUpload(type,input){
-  const file=input.files[0]; if(!file)return;
-  const fn=document.getElementById(type+'FileName');
-  fn.textContent='⏳ ...';
+  const f=input.files[0]; if(!f)return;
+  document.getElementById(type+'FileName').textContent='⏳ ...';
   try{
-    const parsed=file.name.endsWith('.csv')?parseCSVFast(await file.text(),type):parseExcelBuffer(await file.arrayBuffer(),type);
-    if(type==='expired')expiredData=parsed; else activeData=parsed;
-    fn.textContent=`✅ ${parsed.length.toLocaleString()}`;
-    if(expiredData.length&&activeData.length){setStatus(`✅ Uploaded: ${expiredData.length.toLocaleString()} + ${activeData.length.toLocaleString()}`,'success');runAnalysis();}
-  }catch(e){fn.textContent='❌ '+e.message;}
+    const pd=f.name.endsWith('.csv')?parseCSVFast(await f.text(),type):parseExcelBuffer(await f.arrayBuffer(),type);
+    if(type==='expired')expiredData=pd; else activeData=pd;
+    document.getElementById(type+'FileName').textContent=`✅ ${pd.length.toLocaleString()}`;
+    if(expiredData.length&&activeData.length){setStatus(`✅ Uploaded Data`,'success');runAnalysis();}
+  }catch(e){document.getElementById(type+'FileName').textContent='❌ Error';}
 }
-function loadFromRepo(){autoLoadFromRepo();}
 
 function analyzeData(){
-  const eG=new Set(),aG=new Set(),eGST=new Set(),aGST=new Set();
-  const mE={},mA={},sC={},sPC={};
-  let expiredNoGST=0,activeNoGST=0;
+  const eG=new Set(),aG=new Set();
+  const mE={},mA={},sC={},sPC={}, partStats={}, catStats={}, tenStats={'< 1 Year':0,'1-3 Years':0,'3-5 Years':0,'5+ Years':0};
   window.compNet={}; window.gstNet={};
 
-  for(let i=0;i<expiredData.length;i++){
-    const d=expiredData[i];
-    eG.add(d.compGUID); sPC[d.compGUID]=(sPC[d.compGUID]||0)+1;
+  const processRecord = (d) => {
+    // Networks
     if(!window.compNet[d.compGUID])window.compNet[d.compGUID]={a:[],e:[]};
-    window.compNet[d.compGUID].e.push(d.subscriptionId);
+    window.compNet[d.compGUID][d.source==='active'?'a':'e'].push(d.subscriptionId);
     if(d.gstin){
-      eGST.add(d.gstin);
       if(!window.gstNet[d.gstin])window.gstNet[d.gstin]={a:[],e:[]};
-      window.gstNet[d.gstin].e.push(d.subscriptionId);
-      if(d.gstin.length>=2){const s=stateGST[d.gstin.slice(0,2)]||'Other';if(!sC[s])sC[s]={expired:0,active:0};sC[s].expired++;}
-    }else expiredNoGST++;
-    const m=d.currentBlsExpiry.toISOString().slice(0,7); mE[m]=(mE[m]||0)+1;
-  }
+      window.gstNet[d.gstin][d.source==='active'?'a':'e'].push(d.subscriptionId);
+    }
+    
+    // Aggregations
+    sPC[d.compGUID]=(sPC[d.compGUID]||0)+1;
+    if(d.source==='expired') eG.add(d.compGUID); else aG.add(d.compGUID);
+    const mon=d.currentBlsExpiry.toISOString().slice(0,7);
+    if(d.source==='expired') mE[mon]=(mE[mon]||0)+1; else mA[mon]=(mA[mon]||0)+1;
+
+    // Geo
+    if(d.gstin&&d.gstin.length>=2){const st=stateGST[d.gstin.slice(0,2)]||'Other';if(!sC[st])sC[st]={expired:0,active:0};sC[st][d.source]++;}
+
+    // Partner
+    if(!partStats[d.ownerPartner])partStats[d.ownerPartner]={expired:0,active:0};
+    partStats[d.ownerPartner][d.source]++;
+
+    // Category
+    if(!catStats[d.categoryName])catStats[d.categoryName]={expired:0,active:0};
+    catStats[d.categoryName][d.source]++;
+
+    // Tenure (Years)
+    if(d.installDate && d.source==='expired'){
+        const yrs = (d.currentBlsExpiry - d.installDate)/(1000*60*60*24*365.25);
+        if(yrs<1) tenStats['< 1 Year']++;
+        else if(yrs<3) tenStats['1-3 Years']++;
+        else if(yrs<5) tenStats['3-5 Years']++;
+        else tenStats['5+ Years']++;
+    }
+  };
+
+  expiredData.forEach(processRecord);
+  activeData.forEach(processRecord);
 
   const rd=+document.getElementById('riskDays').value||30;
   const today=new Date(), riskDate=new Date(today.getTime()+rd*86400000);
-  const atRiskData=[];
+  const atRiskData=activeData.filter(d=>d.currentBlsExpiry<=riskDate&&d.currentBlsExpiry>=today);
 
-  for(let i=0;i<activeData.length;i++){
-    const d=activeData[i];
-    aG.add(d.compGUID); sPC[d.compGUID]=(sPC[d.compGUID]||0)+1;
-    if(!window.compNet[d.compGUID])window.compNet[d.compGUID]={a:[],e:[]};
-    window.compNet[d.compGUID].a.push(d.subscriptionId);
-    if(d.gstin){
-      aGST.add(d.gstin);
-      if(!window.gstNet[d.gstin])window.gstNet[d.gstin]={a:[],e:[]};
-      window.gstNet[d.gstin].a.push(d.subscriptionId);
-      if(d.gstin.length>=2){const s=stateGST[d.gstin.slice(0,2)]||'Other';if(!sC[s])sC[s]={expired:0,active:0};sC[s].active++;}
-    }else activeNoGST++;
-    if(d.currentBlsExpiry<=riskDate&&d.currentBlsExpiry>=today)atRiskData.push(d);
-    const m=d.currentBlsExpiry.toISOString().slice(0,7); mA[m]=(mA[m]||0)+1;
-  }
-
-  const oG=new Set(),fC=new Set(),hG=new Set();
-  eG.forEach(x=>{if(aG.has(x))oG.add(x);else fC.add(x);});
-  aG.forEach(x=>{if(!eG.has(x))hG.add(x);});
-  const oGST=new Set(); eGST.forEach(x=>{if(aGST.has(x))oGST.add(x);});
-
-  const dd={}; Object.values(sPC).forEach(c=>{const b=c>5?'6+':String(c);dd[b]=(dd[b]||0)+1;});
+  const oG=new Set(); eG.forEach(x=>{if(aG.has(x))oG.add(x);});
+  const fC=new Set(); eG.forEach(x=>{if(!aG.has(x))fC.add(x);});
+  const hG=new Set(); aG.forEach(x=>{if(!eG.has(x))hG.add(x);});
   const tot=fC.size+hG.size+oG.size;
 
   analysisResults={
     totalExpired:expiredData.length,totalActive:activeData.length,
-    overlappingCompGUIDs:oG.size,overlappingGSTINs:oGST.size,
-    fullChurn:fC.size,healthy:hG.size,atRisk:atRiskData.length,atRiskData,
-    churnRate:tot?((fC.size/tot)*100).toFixed(1):'0.0',
-    retentionRate:tot?((hG.size/tot)*100).toFixed(1):'0.0',
-    partialChurnRate:tot?((oG.size/tot)*100).toFixed(1):'0.0',
-    monthlyExpired:mE,monthlyActive:mA,stateChurn:sC,densityDist:dd,
+    overlappingCompGUIDs:oG.size,fullChurn:fC.size,healthy:hG.size,
+    atRisk:atRiskData.length,atRiskData,
+    churnRate:tot?((fC.size/tot)*100).toFixed(1):'0',
+    retentionRate:tot?((hG.size/tot)*100).toFixed(1):'0',
+    partialChurnRate:tot?((oG.size/tot)*100).toFixed(1):'0',
+    monthlyExpired:mE,monthlyActive:mA,stateChurn:sC,
     overlappingCompGUIDSet:oG,fullChurnSet:fC,healthySet:hG,
-    expiredGSTINCount:eGST.size,activeGSTINCount:aGST.size,gstinOverlap:oGST.size,
-    expiredNoGST,activeNoGST,totalCompanies:tot
+    partStats,catStats,tenStats
   };
 }
 
-function chipsHTML(list,cls){
+function chips(list,cls){
   if(!list||!list.length)return'<span style="color:#555;font-size:.65rem">—</span>';
-  // unique
-  const seen=new Set(); const uniq=[];
-  for(let i=0;i<list.length;i++){const s=list[i];if(!seen.has(s)){seen.add(s);uniq.push(s);}}
-  return `<div class="chip-wrap">${uniq.map(s=>`<span class="${cls}">${s}</span>`).join('')}</div>`;
+  const u=[...new Set(list)];
+  return `<div class="chip-wrap">${u.map(s=>`<span class="${cls}">${s}</span>`).join('')}</div>`;
+}
+function getL(d){
+  const cn=window.compNet[d.compGUID]||{a:[],e:[]}; const gn=d.gstin?(window.gstNet[d.gstin]||{a:[],e:[]}):{a:[],e:[]};
+  const ca=cn.a.filter(s=>s!==d.subscriptionId), ce=cn.e.filter(s=>s!==d.subscriptionId);
+  const ga=gn.a.filter(s=>s!==d.subscriptionId), ge=gn.e.filter(s=>s!==d.subscriptionId);
+  return{
+    c:`${ca.length?`<div class="chip-label">🟢 Active (${ca.length})</div>`+chips(ca,'chip-act'):''}${ce.length?`<div class="chip-label">🔴 Expired (${ce.length})</div>`+chips(ce,'chip-exp'):''}${!ca.length&&!ce.length?'<span style="color:#555;font-size:.6rem">None</span>':''}`,
+    g:d.gstin?(`${ga.length?`<div class="chip-label">🟢 Active (${ga.length})</div>`+chips(ga,'chip-act'):''}${ge.length?`<div class="chip-label">🔴 Expired (${ge.length})</div>`+chips(ge,'chip-exp'):''}${!ga.length&&!ge.length?'<span style="color:#555;font-size:.6rem">None</span>':''}`):'<span style="color:#555;font-size:.6rem">No GSTIN</span>'
+  };
 }
 
-function linkedHTML(d){
-  const cn=window.compNet[d.compGUID]||{a:[],e:[]};
-  const gn=d.gstin?(window.gstNet[d.gstin]||{a:[],e:[]}):{a:[],e:[]};
-  const ca=cn.a.filter(s=>s!==d.subscriptionId);
-  const ce=cn.e.filter(s=>s!==d.subscriptionId);
-  const ga=gn.a.filter(s=>s!==d.subscriptionId);
-  const ge=gn.e.filter(s=>s!==d.subscriptionId);
-  return {
-    byComp:`${ca.length?`<div class="chip-label">🟢 Active (${ca.length})</div>`+chipsHTML(ca,'chip-act'):''}${ce.length?`<div class="chip-label">🔴 Expired (${ce.length})</div>`+chipsHTML(ce,'chip-exp'):''}${!ca.length&&!ce.length?'<span style="color:#555;font-size:.65rem">No other by CompGUID</span>':''}`,
-    byGst:d.gstin?(`${ga.length?`<div class="chip-label">🟢 Active (${ga.length})</div>`+chipsHTML(ga,'chip-act'):''}${ge.length?`<div class="chip-label">🔴 Expired (${ge.length})</div>`+chipsHTML(ge,'chip-exp'):''}${!ga.length&&!ge.length?'<span style="color:#555;font-size:.65rem">No other by GSTIN</span>':''}`):'<span style="color:#555;font-size:.65rem">No GSTIN</span>'
-  };
+function getTenureText(d){
+    if(!d.installDate)return '<span style="color:#555">Unknown</span>';
+    const yrs = (d.currentBlsExpiry - d.installDate)/(1000*60*60*24*365.25);
+    if(yrs<0)return '0.0 yrs';
+    return `<span style="color:#22d3ee;font-weight:600">${yrs.toFixed(1)} yrs</span>`;
 }
 
 function openDrillDown(title,data,stats){
@@ -441,131 +431,80 @@ function openDrillDown(title,data,stats){
 }
 
 function renderModalTable(data){
-  document.getElementById('modalTableHead').innerHTML=`<tr><th>CompGUID</th><th>Sub No</th><th>GSTIN</th><th>Expiry</th><th>Source</th><th>Linked by CompGUID (ALL)</th><th>Linked by GSTIN (ALL)</th></tr>`;
-  const n=Math.min(data.length,ROW_CAP);
-  let html='';
+  document.getElementById('modalTableHead').innerHTML=`<tr><th>Partner / Category</th><th>CompGUID</th><th>Sub No</th><th>GSTIN</th><th>Expiry</th><th>Status</th><th>Linked by CompGUID</th><th>Linked by GSTIN</th></tr>`;
+  const n=Math.min(data.length,ROW_CAP); let html='';
   for(let i=0;i<n;i++){
-    const d=data[i];
-    const L=linkedHTML(d);
-    const esc=(d.compGUID||'').replace(/'/g,"\\'");
+    const d=data[i], l=getL(d);
     html+=`<tr>
-      <td class="compguid-cell" title="Click to filter" onclick="document.getElementById('modalSearch').value='${esc}';filterModalTable()">${d.compGUID||''}</td>
-      <td>${d.subscriptionId||''}</td>
-      <td>${d.gstin||'<span style="color:#555">N/A</span>'}</td>
-      <td>${d.currentBlsExpiry.toLocaleDateString()}</td>
+      <td style="font-size:0.7rem"><b style="color:#fff">${d.ownerPartner}</b><br><span style="color:#ffd200">${d.categoryName}</span><br>Tenure: ${getTenureText(d)}</td>
+      <td class="compguid-cell" onclick="document.getElementById('modalSearch').value='${d.compGUID}';filterModalTable()">${d.compGUID}</td>
+      <td>${d.subscriptionId}</td><td>${d.gstin||'<span style="color:#555">N/A</span>'}</td><td>${d.currentBlsExpiry.toLocaleDateString()}</td>
       <td><span class="status-badge ${d.source==='expired'?'status-expired':'status-active'}">${d.source}</span></td>
-      <td>${L.byComp}</td>
-      <td>${L.byGst}</td>
+      <td>${l.c}</td><td>${l.g}</td>
     </tr>`;
   }
   document.getElementById('modalTableBody').innerHTML=html;
-  document.getElementById('modalRecordCount').textContent=`Showing ${n.toLocaleString()} of ${data.length.toLocaleString()} (capped for speed)`;
+  document.getElementById('modalRecordCount').textContent=`Showing ${n.toLocaleString()} of ${data.length.toLocaleString()}`;
 }
 
-function onModalSearchInput(){
-  clearTimeout(modalSearchTimer);
-  modalSearchTimer=setTimeout(filterModalTable,250);
-}
-
+function onModalSearchInput(){clearTimeout(modalSearchTimer);modalSearchTimer=setTimeout(filterModalTable,250);}
 function filterModalTable(){
   const raw=document.getElementById('modalSearch').value.trim();
   if(!raw){currentModalData=currentModalAll;renderModalTable(currentModalData);return;}
   const q=raw.toLowerCase(), cq=q.replace(/[^a-z0-9]/g,'');
   const out=[];
-  const src=currentModalAll;
-  for(let i=0;i<src.length;i++){
-    const d=src[i];
-    const comp=(d.compGUID||'').toLowerCase(), sub=(d.subscriptionId||'').toLowerCase(), gst=(d.gstin||'').toLowerCase();
-    if(comp.includes(q)||sub.includes(q)||gst.includes(q)){out.push(d);continue;}
-    if(cq.length>=2){
-      if(comp.replace(/[^a-z0-9]/g,'').includes(cq)||sub.replace(/[^a-z0-9]/g,'').includes(cq)||gst.replace(/[^a-z0-9]/g,'').includes(cq))out.push(d);
-    }
+  for(let i=0;i<currentModalAll.length;i++){
+    const d=currentModalAll[i];
+    const str = `${d.compGUID} ${d.subscriptionId} ${d.gstin} ${d.ownerPartner} ${d.categoryName}`.toLowerCase();
+    if(str.includes(q)) out.push(d);
+    else if(cq.length>=2 && str.replace(/[^a-z0-9]/g,'').includes(cq)) out.push(d);
   }
-  currentModalData=out;
-  renderModalTable(out);
+  currentModalData=out; renderModalTable(out);
 }
 
 function runGlobalSearch(){
   const raw=document.getElementById('globalSearchInput').value.trim();
-  if(!raw){alert('Enter CompGUID / Sub / GSTIN');return;}
+  if(!raw){alert('Enter search term');return;}
   const q=raw.toLowerCase(), cq=q.replace(/[^a-z0-9]/g,'');
   const matches=[];
-  const scan=arr=>{for(let i=0;i<arr.length;i++){const d=arr[i];const comp=(d.compGUID||'').toLowerCase(),sub=(d.subscriptionId||'').toLowerCase(),gst=(d.gstin||'').toLowerCase();
-    if(comp.includes(q)||sub.includes(q)||gst.includes(q)){matches.push(d);continue;}
-    if(cq.length>=2&&(comp.replace(/[^a-z0-9]/g,'').includes(cq)||sub.replace(/[^a-z0-9]/g,'').includes(cq)||gst.replace(/[^a-z0-9]/g,'').includes(cq)))matches.push(d);
+  const scan=arr=>{for(let i=0;i<arr.length;i++){const d=arr[i],str=`${d.compGUID} ${d.subscriptionId} ${d.gstin} ${d.ownerPartner} ${d.categoryName}`.toLowerCase();
+    if(str.includes(q)){matches.push(d);continue;}
+    if(cq.length>=2&&str.replace(/[^a-z0-9]/g,'').includes(cq))matches.push(d);
   }};
   scan(expiredData);scan(activeData);
-  openDrillDown(`🔍 Search: "${raw}"`,matches,[
-    {value:matches.length.toLocaleString(),label:'Matches',color:'#667eea'},
-    {value:matches.filter(d=>d.source==='expired').length.toLocaleString(),label:'Expired',color:'#f45c43'},
-    {value:matches.filter(d=>d.source==='active').length.toLocaleString(),label:'Active',color:'#38ef7d'}
-  ]);
+  openDrillDown(`🔍 Search: "${raw}"`,matches,[{value:matches.length,label:'Matches',color:'#667eea'},{value:matches.filter(d=>d.source==='expired').length,label:'Expired',color:'#f45c43'},{value:matches.filter(d=>d.source==='active').length,label:'Active',color:'#38ef7d'}]);
 }
 
 function closeModal(){document.getElementById('drillModal').classList.remove('show');}
-
 function downloadModalData(){
-  let csv='CompGUID,Subscription No,GSTIN,BLS Expiry,Source,Linked Active by CompGUID,Linked Expired by CompGUID,Linked Active by GSTIN,Linked Expired by GSTIN\n';
-  const rows=currentModalData;
-  for(let i=0;i<rows.length;i++){
-    const d=rows[i];
-    const cn=window.compNet[d.compGUID]||{a:[],e:[]};
-    const gn=d.gstin?(window.gstNet[d.gstin]||{a:[],e:[]}):{a:[],e:[]};
-    const ca=[...new Set(cn.a.filter(s=>s!==d.subscriptionId))].join('; ');
-    const ce=[...new Set(cn.e.filter(s=>s!==d.subscriptionId))].join('; ');
-    const ga=[...new Set(gn.a.filter(s=>s!==d.subscriptionId))].join('; ');
-    const ge=[...new Set(gn.e.filter(s=>s!==d.subscriptionId))].join('; ');
-    csv+=`"${d.compGUID}","${d.subscriptionId}","${d.gstin||''}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}","${ca}","${ce}","${ga}","${ge}"\n`;
-  }
-  dlFile(csv,'drill_down_full_links.csv','text/csv');
+  let csv='Partner,Category,Install Date,Tenure (Yrs),CompGUID,Sub No,GSTIN,Expiry,Source,Linked Active by Comp,Linked Expired by Comp,Linked Active by GST,Linked Expired by GST\n';
+  currentModalData.forEach(d=>{
+    const cn=window.compNet[d.compGUID]||{a:[],e:[]}, gn=d.gstin?(window.gstNet[d.gstin]||{a:[],e:[]}):{a:[],e:[]};
+    const ca=[...new Set(cn.a.filter(s=>s!==d.subscriptionId))].join('; '), ce=[...new Set(cn.e.filter(s=>s!==d.subscriptionId))].join('; ');
+    const ga=[...new Set(gn.a.filter(s=>s!==d.subscriptionId))].join('; '), ge=[...new Set(gn.e.filter(s=>s!==d.subscriptionId))].join('; ');
+    const ten = d.installDate ? ((d.currentBlsExpiry-d.installDate)/(1000*60*60*24*365.25)).toFixed(2) : '';
+    const inst = d.installDate ? d.installDate.toISOString().slice(0,10) : '';
+    csv+=`"${d.ownerPartner}","${d.categoryName}","${inst}","${ten}","${d.compGUID}","${d.subscriptionId}","${d.gstin||''}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}","${ca}","${ce}","${ga}","${ge}"\n`;
+  });
+  dlFile(csv,'drill_down_export.csv','text/csv');
 }
 
 function drillByCategory(cat){
-  const r=analysisResults; let data=[],title='',stats=[];
-  if(cat==='total'){data=expiredData.concat(activeData);title='📊 All';stats=[{value:(r.totalExpired+r.totalActive).toLocaleString(),label:'Total'},{value:r.totalExpired.toLocaleString(),label:'Expired',color:'#f45c43'},{value:r.totalActive.toLocaleString(),label:'Active',color:'#38ef7d'}];}
-  else if(cat==='churned'){data=expiredData.filter(d=>r.fullChurnSet.has(d.compGUID));title='🔴 Full Churn';stats=[{value:data.length.toLocaleString(),label:'Records',color:'#f45c43'},{value:r.churnRate+'%',label:'Rate',color:'#f45c43'}];}
-  else if(cat==='healthy'){data=activeData.filter(d=>r.healthySet.has(d.compGUID));title='🟢 Healthy';stats=[{value:data.length.toLocaleString(),label:'Records',color:'#38ef7d'},{value:r.retentionRate+'%',label:'Rate',color:'#38ef7d'}];}
-  else if(cat==='overlap'){data=expiredData.concat(activeData).filter(d=>r.overlappingCompGUIDSet.has(d.compGUID));title='🟡 Partial Churn (Overlap)';stats=[{value:data.length.toLocaleString(),label:'Records',color:'#a855f7'},{value:r.overlappingCompGUIDs.toLocaleString(),label:'Companies',color:'#a855f7'}];}
-  else if(cat==='atrisk'){data=r.atRiskData;title='⚠️ At-Risk';stats=[{value:data.length.toLocaleString(),label:'Records',color:'#ffd200'}];}
-  else if(cat==='gstin_overlap'){
-    const set=new Set(); expiredData.forEach(d=>{if(d.gstin){let ok=false;for(const a of activeData){if(a.gstin===d.gstin){ok=true;break;}}if(ok)set.add(d.gstin);}});
-    // faster gst overlap using analysisResults
-    data=expiredData.concat(activeData).filter(d=>d.gstin&&window.gstNet[d.gstin]&&window.gstNet[d.gstin].a.length&&window.gstNet[d.gstin].e.length);
-    title='🏢 GSTIN Overlap';stats=[{value:data.length.toLocaleString(),label:'Records',color:'#22d3ee'},{value:r.gstinOverlap.toLocaleString(),label:'GSTINs',color:'#22d3ee'}];
-  }
-  openDrillDown(title,data,stats);
-}
-
-function drillByState(st){
-  const data=expiredData.concat(activeData).filter(d=>d.gstin&&d.gstin.length>=2&&(stateGST[d.gstin.slice(0,2)]||'Other')===st);
-  const e=data.filter(d=>d.source==='expired').length,a=data.filter(d=>d.source==='active').length;
-  openDrillDown('🗺️ '+st,data,[{value:data.length.toLocaleString(),label:'Records'},{value:e.toLocaleString(),label:'Expired',color:'#f45c43'},{value:a.toLocaleString(),label:'Active',color:'#38ef7d'}]);
-}
-function drillByMonth(m,t){
-  const ad=t==='expired'?expiredData:activeData;
-  const data=ad.filter(d=>d.currentBlsExpiry.toISOString().slice(0,7)===m);
-  openDrillDown('📅 '+m+' '+t,data,[{value:data.length.toLocaleString(),label:'Records',color:t==='expired'?'#f45c43':'#38ef7d'}]);
+  const r=analysisResults; let d=[],t='',s=[];
+  if(cat==='total'){d=expiredData.concat(activeData);t='📊 All';s=[{value:(r.totalExpired+r.totalActive).toLocaleString(),label:'Total'},{value:r.totalExpired.toLocaleString(),label:'Expired',color:'#f45c43'},{value:r.totalActive.toLocaleString(),label:'Active',color:'#38ef7d'}];}
+  else if(cat==='churned'){d=expiredData.filter(x=>r.fullChurnSet.has(x.compGUID));t='🔴 Full Churn';s=[{value:d.length.toLocaleString(),label:'Records',color:'#f45c43'}];}
+  else if(cat==='healthy'){d=activeData.filter(x=>r.healthySet.has(x.compGUID));t='🟢 Healthy';s=[{value:d.length.toLocaleString(),label:'Records',color:'#38ef7d'}];}
+  else if(cat==='overlap'){d=expiredData.concat(activeData).filter(x=>r.overlappingCompGUIDSet.has(x.compGUID));t='🟡 Partial Churn';s=[{value:d.length.toLocaleString(),label:'Records',color:'#a855f7'}];}
+  openDrillDown(t,d,s);
 }
 
 function renderKPIs(){
   const r=analysisResults;
   document.getElementById('kpiStrip').innerHTML=`
-    <div class="kpi-card blue" onclick="drillByCategory('total')"><div class="kpi-label">Total</div><div class="kpi-value">${(r.totalExpired+r.totalActive).toLocaleString()}</div><div class="kpi-sublabel">${r.totalExpired.toLocaleString()} exp + ${r.totalActive.toLocaleString()} act</div><div class="kpi-click-hint">👆 Click</div></div>
-    <div class="kpi-card red" onclick="drillByCategory('churned')"><div class="kpi-label">Full Churn</div><div class="kpi-value">${r.churnRate}%</div><div class="kpi-sublabel">${r.fullChurn.toLocaleString()} companies</div><div class="kpi-click-hint">👆 Click</div></div>
-    <div class="kpi-card green" onclick="drillByCategory('healthy')"><div class="kpi-label">Retention</div><div class="kpi-value">${r.retentionRate}%</div><div class="kpi-sublabel">${r.healthy.toLocaleString()} healthy</div><div class="kpi-click-hint">👆 Click</div></div>
-    <div class="kpi-card purple" onclick="drillByCategory('overlap')"><div class="kpi-label">Partial Churn</div><div class="kpi-value">${r.overlappingCompGUIDs.toLocaleString()}</div><div class="kpi-sublabel">${r.partialChurnRate}% overlap</div><div class="kpi-click-hint">👆 Click</div></div>
-    <div class="kpi-card orange" onclick="drillByCategory('atrisk')"><div class="kpi-label">At-Risk</div><div class="kpi-value">${r.atRisk.toLocaleString()}</div><div class="kpi-sublabel">within ${document.getElementById('riskDays').value} days</div><div class="kpi-click-hint">👆 Click</div></div>
-    <div class="kpi-card cyan" onclick="drillByCategory('gstin_overlap')"><div class="kpi-label">GSTIN Overlap</div><div class="kpi-value">${r.gstinOverlap.toLocaleString()}</div><div class="kpi-sublabel">same entity both</div><div class="kpi-click-hint">👆 Click</div></div>`;
-}
-
-function renderInsights(){
-  const r=analysisResults,cr=+r.churnRate,ins=[];
-  if(cr>40)ins.push('🔴 <strong>HIGH CHURN:</strong> '+r.churnRate+'%');
-  else if(cr>20)ins.push('🟡 <strong>MODERATE CHURN:</strong> '+r.churnRate+'%');
-  else ins.push('🟢 <strong>HEALTHY:</strong> '+r.churnRate+'% churn');
-  if(r.overlappingCompGUIDs)ins.push('🔗 <strong>OVERLAP:</strong> '+r.overlappingCompGUIDs.toLocaleString()+' companies partial churn — see ALL linked active/expired subs in drill-down');
-  if(r.atRisk)ins.push('⚠️ <strong>AT-RISK:</strong> '+r.atRisk.toLocaleString()+' expiring soon');
-  document.getElementById('insightBox').innerHTML='<h4>💡 Insights</h4>'+ins.map(t=>'<div class="insight-item">'+t+'</div>').join('');
+    <div class="kpi-card blue" onclick="drillByCategory('total')"><div class="kpi-label">Total</div><div class="kpi-value">${(r.totalExpired+r.totalActive).toLocaleString()}</div><div class="kpi-sublabel">${r.totalExpired.toLocaleString()} exp + ${r.totalActive.toLocaleString()} act</div></div>
+    <div class="kpi-card red" onclick="drillByCategory('churned')"><div class="kpi-label">Full Churn</div><div class="kpi-value">${r.churnRate}%</div><div class="kpi-sublabel">${r.fullChurn.toLocaleString()} companies</div></div>
+    <div class="kpi-card green" onclick="drillByCategory('healthy')"><div class="kpi-label">Retention</div><div class="kpi-value">${r.retentionRate}%</div><div class="kpi-sublabel">${r.healthy.toLocaleString()} healthy</div></div>
+    <div class="kpi-card purple" onclick="drillByCategory('overlap')"><div class="kpi-label">Partial Churn</div><div class="kpi-value">${r.overlappingCompGUIDs.toLocaleString()}</div><div class="kpi-sublabel">${r.partialChurnRate}% overlap</div></div>`;
 }
 
 function renderVenn(){
@@ -573,157 +512,94 @@ function renderVenn(){
   document.getElementById('vennDiagram').innerHTML=`
     <div class="venn-circle venn-active" onclick="drillByCategory('healthy')"><div style="margin-left:-24px"><div style="font-size:1.2rem;color:#38ef7d">${r.healthy.toLocaleString()}</div><div style="font-size:.6rem;color:#999">Active Only</div></div></div>
     <div class="venn-circle venn-expired" onclick="drillByCategory('churned')"><div style="margin-left:24px"><div style="font-size:1.2rem;color:#f45c43">${r.fullChurn.toLocaleString()}</div><div style="font-size:.6rem;color:#999">Expired Only</div></div></div>
-    <div class="venn-overlap-zone" onclick="drillByCategory('overlap')"><div><div>${r.overlappingCompGUIDs.toLocaleString()}</div><div style="font-size:.55rem;color:#ccc">Both</div></div></div>
-    <div class="venn-labels"><div class="venn-label"><div class="venn-dot" style="background:#38ef7d"></div>Healthy</div><div class="venn-label"><div class="venn-dot" style="background:#a855f7"></div>Overlap</div><div class="venn-label"><div class="venn-dot" style="background:#f45c43"></div>Churned</div></div>`;
+    <div class="venn-overlap-zone" onclick="drillByCategory('overlap')"><div><div>${r.overlappingCompGUIDs.toLocaleString()}</div><div style="font-size:.55rem;color:#ccc">Both</div></div></div>`;
 }
 
 function renderFlowDiagram(){
-  const r=analysisResults,tot=r.totalCompanies||1;
-  const hp=((r.healthy/tot)*100).toFixed(1),pp=((r.overlappingCompGUIDs/tot)*100).toFixed(1),fp=((r.fullChurn/tot)*100).toFixed(1),ap=r.totalActive?((r.atRisk/r.totalActive)*100).toFixed(1):'0';
+  const r=analysisResults,tot=r.totalCompanies||1,hp=((r.healthy/tot)*100).toFixed(1),pp=((r.overlappingCompGUIDs/tot)*100).toFixed(1),fp=((r.fullChurn/tot)*100).toFixed(1);
   document.getElementById('flowDiagram').innerHTML=`
-    <div class="flow-row" onclick="drillByCategory('healthy')"><div class="flow-icon">🟢</div><div class="flow-label">Healthy</div><div class="flow-bar-container"><div class="flow-bar healthy" style="width:${Math.max(+hp,5)}%">${r.healthy.toLocaleString()} (${hp}%)</div></div><div class="flow-value" style="color:#38ef7d">${hp}%</div></div>
-    <div class="flow-row" onclick="drillByCategory('overlap')"><div class="flow-icon">🟡</div><div class="flow-label">Partial</div><div class="flow-bar-container"><div class="flow-bar partial" style="width:${Math.max(+pp,5)}%">${r.overlappingCompGUIDs.toLocaleString()} (${pp}%)</div></div><div class="flow-value" style="color:#a855f7">${pp}%</div></div>
-    <div class="flow-row" onclick="drillByCategory('churned')"><div class="flow-icon">🔴</div><div class="flow-label">Full Churn</div><div class="flow-bar-container"><div class="flow-bar churned" style="width:${Math.max(+fp,5)}%">${r.fullChurn.toLocaleString()} (${fp}%)</div></div><div class="flow-value" style="color:#f45c43">${fp}%</div></div>
-    <div class="flow-row" onclick="drillByCategory('atrisk')"><div class="flow-icon">⚠️</div><div class="flow-label">At-Risk</div><div class="flow-bar-container"><div class="flow-bar atrisk" style="width:${Math.max(+ap,3)}%">${r.atRisk.toLocaleString()} (${ap}%)</div></div><div class="flow-value" style="color:#ffd200">${ap}%</div></div>`;
-}
-
-function renderCorrelationBars(){
-  const r=analysisResults,tot=r.totalCompanies||1;
-  const bars=[
-    {l:'CompGUID Overlap',v:(r.overlappingCompGUIDs/tot)*100,c:'#a855f7',cat:'overlap'},
-    {l:'GSTIN Overlap',v:r.expiredGSTINCount?(r.gstinOverlap/r.expiredGSTINCount)*100:0,c:'#22d3ee',cat:'gstin_overlap'},
-    {l:'Full Churn',v:(r.fullChurn/tot)*100,c:'#f45c43',cat:'churned'},
-    {l:'At-Risk',v:r.totalActive?(r.atRisk/r.totalActive)*100:0,c:'#ffd200',cat:'atrisk'}
-  ];
-  const gs=v=>v>=30?{c:'strength-high',t:'HIGH'}:v>=10?{c:'strength-medium',t:'MEDIUM'}:{c:'strength-low',t:'LOW'};
-  document.getElementById('correlationBars').innerHTML=bars.map(b=>{const s=gs(b.v);return`<div class="corr-row" onclick="drillByCategory('${b.cat}')"><div class="corr-label">${b.l}</div><div class="corr-bar-bg"><div class="corr-bar-fill" style="width:${Math.min(b.v,100)}%;background:${b.c}">${b.v.toFixed(1)}%</div></div><div class="corr-strength ${s.c}">${s.t}</div></div>`;}).join('');
+    <div class="flow-row" onclick="drillByCategory('healthy')"><div class="flow-label">🟢 Healthy</div><div class="flow-bar-container"><div class="flow-bar healthy" style="width:${Math.max(+hp,5)}%">${r.healthy.toLocaleString()}</div></div><div class="flow-value" style="color:#38ef7d">${hp}%</div></div>
+    <div class="flow-row" onclick="drillByCategory('overlap')"><div class="flow-label">🟡 Partial</div><div class="flow-bar-container"><div class="flow-bar partial" style="width:${Math.max(+pp,5)}%">${r.overlappingCompGUIDs.toLocaleString()}</div></div><div class="flow-value" style="color:#a855f7">${pp}%</div></div>
+    <div class="flow-row" onclick="drillByCategory('churned')"><div class="flow-label">🔴 Full Churn</div><div class="flow-bar-container"><div class="flow-bar churned" style="width:${Math.max(+fp,5)}%">${r.fullChurn.toLocaleString()}</div></div><div class="flow-value" style="color:#f45c43">${fp}%</div></div>`;
 }
 
 function dc(n){if(charts[n]){charts[n].destroy();charts[n]=null;}}
-
 function renderCharts(){
-  const r=analysisResults,months=[...new Set([...Object.keys(r.monthlyExpired),...Object.keys(r.monthlyActive)])].sort();
-  const rd=+document.getElementById('riskDays').value||30,today=new Date();
-  dc('cd');charts.cd=new Chart(document.getElementById('churnDoughnut'),{type:'doughnut',data:{labels:['Healthy','Partial','Full Churn'],datasets:[{data:[r.healthy,r.overlappingCompGUIDs,r.fullChurn],backgroundColor:['rgba(56,239,125,.7)','rgba(168,85,247,.7)','rgba(244,92,67,.7)'],borderColor:['#38ef7d','#a855f7','#f45c43'],borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,onClick:(e,el)=>{if(el.length)drillByCategory(['healthy','overlap','churned'][el[0].index]);},plugins:{legend:{position:'bottom',labels:{color:'#aaa',font:{size:10}}}},cutout:'60%'}});
-  dc('tl');charts.tl=new Chart(document.getElementById('timelineChart'),{type:'bar',data:{labels:months,datasets:[{label:'Expired',data:months.map(m=>r.monthlyExpired[m]||0),backgroundColor:'rgba(244,92,67,.55)',borderColor:'#f45c43',borderWidth:1},{label:'Active',data:months.map(m=>r.monthlyActive[m]||0),backgroundColor:'rgba(56,239,125,.55)',borderColor:'#38ef7d',borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,onClick:(e,el)=>{if(el.length)drillByMonth(months[el[0].index],el[0].datasetIndex===0?'expired':'active');},plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{ticks:{color:'#888',maxRotation:45},grid:{color:'rgba(255,255,255,.03)'}},y:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,.03)'}}}}});
-  const bk={};for(let i=0;i<rd;i+=7)bk[`D${i+1}-${Math.min(i+7,rd)}`]=0;
-  r.atRiskData.forEach(d=>{const dl=Math.floor((d.currentBlsExpiry-today)/86400000);const ks=Object.keys(bk);const idx=Math.min(Math.floor(dl/7),ks.length-1);if(idx>=0)bk[ks[idx]]++;});
-  dc('ar');charts.ar=new Chart(document.getElementById('atRiskChart'),{type:'bar',data:{labels:Object.keys(bk),datasets:[{label:'At-Risk',data:Object.values(bk),backgroundColor:'rgba(255,180,0,.6)',borderColor:'#ffd200',borderWidth:1,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,onClick:()=>drillByCategory('atrisk'),plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,.03)'}},y:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,.03)'}}}}});
-  let cum=0;const cd=months.map(m=>{cum+=(r.monthlyExpired[m]||0);return cum;});
-  dc('cm');charts.cm=new Chart(document.getElementById('cumulativeChart'),{type:'line',data:{labels:months,datasets:[{label:'Cumulative Expired',data:cd,borderColor:'#f45c43',backgroundColor:'rgba(244,92,67,.08)',borderWidth:2,fill:true,tension:.3,pointRadius:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{ticks:{color:'#888',maxRotation:45},grid:{color:'rgba(255,255,255,.03)'}},y:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,.03)'}}}}});
+  const r=analysisResults;
+  
+  // PARTNER CHART (Top 10 by Total Volume)
+  const pArr = Object.entries(r.partStats).map(([k,v])=>({p:k, a:v.active, e:v.expired, t:v.active+v.expired})).sort((a,b)=>b.t-a.t).slice(0,10);
+  dc('pc');charts.pc=new Chart(document.getElementById('partnerChart'),{type:'bar',data:{labels:pArr.map(x=>x.p.substring(0,20)),datasets:[{label:'Expired',data:pArr.map(x=>x.e),backgroundColor:'rgba(244,92,67,.7)'},{label:'Active',data:pArr.map(x=>x.a),backgroundColor:'rgba(56,239,125,.7)'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{stacked:true,ticks:{color:'#888'}},y:{stacked:true,ticks:{color:'#888'},grid:{color:'rgba(255,255,255,.05)'}}}}});
+
+  // CATEGORY CHART
+  const cArr = Object.entries(r.catStats).sort((a,b)=>(b[1].active+b[1].expired)-(a[1].active+a[1].expired)).slice(0,8);
+  dc('cc');charts.cc=new Chart(document.getElementById('categoryChart'),{type:'doughnut',data:{labels:cArr.map(x=>x[0]),datasets:[{data:cArr.map(x=>x[1].expired+x[1].active),backgroundColor:['#667eea','#764ba2','#f45c43','#ffd200','#38ef7d','#a855f7','#22d3ee','#eb3349'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#aaa',font:{size:10}}}}}});
+
+  // TENURE CHART
+  dc('tc');charts.tc=new Chart(document.getElementById('tenureChart'),{type:'bar',data:{labels:Object.keys(r.tenStats),datasets:[{label:'Expired Subs (Churned)',data:Object.values(r.tenStats),backgroundColor:'rgba(168,85,247,.6)',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{ticks:{color:'#888'}},y:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,.05)'}}}}});
+
+  // TIMELINE
+  const months=[...new Set([...Object.keys(r.monthlyExpired),...Object.keys(r.monthlyActive)])].sort();
+  dc('tl');charts.tl=new Chart(document.getElementById('timelineChart'),{type:'line',data:{labels:months,datasets:[{label:'Expired',data:months.map(m=>r.monthlyExpired[m]||0),borderColor:'#f45c43',backgroundColor:'rgba(244,92,67,.1)',fill:true,tension:.3},{label:'Active',data:months.map(m=>r.monthlyActive[m]||0),borderColor:'#38ef7d',backgroundColor:'rgba(56,239,125,.1)',fill:true,tension:.3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{ticks:{color:'#888',maxRotation:45}},y:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#888'}}}}});
+
+  // GEO
   const states=Object.keys(r.stateChurn).sort();
-  dc('st');charts.st=new Chart(document.getElementById('stateChart'),{type:'bar',data:{labels:states,datasets:[{label:'Expired',data:states.map(s=>r.stateChurn[s].expired),backgroundColor:'rgba(244,92,67,.55)',borderColor:'#f45c43',borderWidth:1},{label:'Active',data:states.map(s=>r.stateChurn[s].active),backgroundColor:'rgba(56,239,125,.55)',borderColor:'#38ef7d',borderWidth:1},{label:'Churn%',data:states.map(s=>{const t=r.stateChurn[s].expired+r.stateChurn[s].active;return t?((r.stateChurn[s].expired/t)*100).toFixed(1):0;}),type:'line',borderColor:'#ffd200',borderWidth:2,pointRadius:3,yAxisID:'y1',tension:.3}]},options:{responsive:true,maintainAspectRatio:false,onClick:(e,el)=>{if(el.length)drillByState(states[el[0].index]);},plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{ticks:{color:'#888',maxRotation:45},grid:{color:'rgba(255,255,255,.03)'}},y:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,.03)'}},y1:{position:'right',ticks:{color:'#ffd200'},grid:{display:false},min:0,max:100}}}});
-  dc('rd');charts.rd=new Chart(document.getElementById('radarChart'),{type:'radar',data:{labels:['Churn%','Partial%','At-Risk%','NoGST%','MultiSub%'],datasets:[{label:'Current',data:[+r.churnRate,+r.partialChurnRate,r.totalActive?(r.atRisk/r.totalActive*100):0,((r.expiredNoGST+r.activeNoGST)/(r.totalExpired+r.totalActive)*100),(((Object.values(r.densityDist).reduce((a,b)=>a+b,0)-(r.densityDist['1']||0))/Math.max(Object.values(r.densityDist).reduce((a,b)=>a+b,0),1))*100)].map(v=>+v.toFixed(1)),backgroundColor:'rgba(244,92,67,.12)',borderColor:'#f45c43',borderWidth:2,pointRadius:3},{label:'Benchmark',data:[15,10,5,20,30],backgroundColor:'rgba(56,239,125,.06)',borderColor:'#38ef7d',borderWidth:1.5,borderDash:[5,5],pointRadius:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa',font:{size:10}}}},scales:{r:{ticks:{color:'#888',backdropColor:'transparent',stepSize:20},grid:{color:'rgba(255,255,255,.06)'},pointLabels:{color:'#aaa',font:{size:9}},suggestedMax:100}}}});
-  const labels=['1','2','3','4','5','6+'];
-  dc('dn');charts.dn=new Chart(document.getElementById('densityChart'),{type:'bar',data:{labels:labels.map(l=>l+' subs'),datasets:[{label:'Companies',data:labels.map(l=>r.densityDist[l]||0),backgroundColor:'rgba(102,126,234,.5)',borderColor:'#667eea',borderWidth:1,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,.03)'}},y:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,.03)'}}}}});
+  dc('st');charts.st=new Chart(document.getElementById('stateChart'),{type:'bar',data:{labels:states,datasets:[{label:'Expired',data:states.map(s=>r.stateChurn[s].expired),backgroundColor:'rgba(244,92,67,.6)'},{label:'Active',data:states.map(s=>r.stateChurn[s].active),backgroundColor:'rgba(56,239,125,.6)'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{stacked:true,ticks:{color:'#888',maxRotation:45}},y:{stacked:true,grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#888'}}}}});
 }
 
 function renderDataTable(filter='all'){
-  const r=analysisResults,rd=+document.getElementById('riskDays').value||30;
-  const riskDate=new Date(Date.now()+rd*86400000),today=new Date();
-  let count=0,html='',shown=0;
+  const r=analysisResults; let count=0,html='',shown=0;
   const tryAdd=d=>{
-    const o=r.overlappingCompGUIDSet.has(d.compGUID);
-    const ar=d.source==='active'&&d.currentBlsExpiry<=riskDate&&d.currentBlsExpiry>=today;
-    const status=d.source==='expired'?'Expired':(ar?'At Risk':'Active');
-    const cat=o?'Partial Churn':(d.source==='expired'?'Full Churn':(ar?'Renewal Due':'Healthy'));
+    const o=r.overlappingCompGUIDSet.has(d.compGUID), cat=o?'Partial Churn':(d.source==='expired'?'Full Churn':'Healthy');
     if(filter==='overlap'&&cat!=='Partial Churn')return;
     if(filter==='churned'&&cat!=='Full Churn')return;
-    if(filter==='atrisk'&&status!=='At Risk')return;
     if(filter==='healthy'&&cat!=='Healthy')return;
-    count++;
-    if(shown>=ROW_CAP)return;
-    shown++;
-    const L=linkedHTML(d);
-    const sc=status==='At Risk'?'status-atrisk':(d.source==='expired'?'status-expired':'status-active');
-    const esc=(d.compGUID||'').replace(/'/g,"\\'");
+    count++; if(shown>=150)return; shown++;
+    const L=linkedHTML(d); const esc=(d.compGUID||'').replace(/'/g,"\\'");
     html+=`<tr>
+      <td style="font-size:0.7rem"><b style="color:#fff">${d.ownerPartner}</b><br><span style="color:#ffd200">${d.categoryName}</span><br>Tenure: ${getTenureText(d)}</td>
       <td class="compguid-cell" onclick="document.getElementById('globalSearchInput').value='${esc}';runGlobalSearch()">${(d.compGUID||'').slice(0,18)}...</td>
-      <td>${d.subscriptionId||''}</td>
-      <td>${d.gstin||'<span style="color:#555">N/A</span>'}</td>
-      <td>${d.currentBlsExpiry.toLocaleDateString()}</td>
-      <td><span class="status-badge ${sc}">${status}</span></td>
+      <td>${d.subscriptionId||''}</td><td>${d.gstin||'<span style="color:#555">N/A</span>'}</td><td>${d.currentBlsExpiry.toLocaleDateString()}</td>
+      <td><span class="status-badge ${d.source==='expired'?'status-expired':'status-active'}">${d.source}</span></td>
       <td>${L.byComp}</td>
-      <td>${L.byGst}</td>
     </tr>`;
   };
   if(filter==='churned'||filter==='all'||filter==='overlap')for(let i=0;i<expiredData.length;i++)tryAdd(expiredData[i]);
-  if(filter==='healthy'||filter==='all'||filter==='overlap'||filter==='atrisk')for(let i=0;i<activeData.length;i++)tryAdd(activeData[i]);
+  if(filter==='healthy'||filter==='all'||filter==='overlap')for(let i=0;i<activeData.length;i++)tryAdd(activeData[i]);
   document.getElementById('tableCount').textContent=`(${count.toLocaleString()} match · showing ${shown})`;
   document.getElementById('tableBody').innerHTML=html;
 }
 function showTable(f,btn){renderDataTable(f);document.querySelectorAll('.table-tab').forEach(t=>t.classList.remove('active'));if(btn)btn.classList.add('active');}
 
 function dlFile(c,n,t){const b=new Blob([c],{type:t});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=n;a.click();URL.revokeObjectURL(u);}
-
 function downloadCSV(){
-  const r=analysisResults,rd=+document.getElementById('riskDays').value||30,rDate=new Date(Date.now()+rd*86400000);
-  let csv='CompGUID,Sub No,GSTIN,Expiry,Source,Status,Category,Linked Active CompGUID,Linked Expired CompGUID,Linked Active GSTIN,Linked Expired GSTIN\n';
+  let csv='Partner,Category,Install Date,Tenure (Yrs),CompGUID,Sub No,GSTIN,Expiry,Source,Linked Active by Comp,Linked Expired by Comp,Linked Active by GST,Linked Expired by GST\n';
   const w=d=>{
-    const o=r.overlappingCompGUIDSet.has(d.compGUID);
-    const ar=d.source==='active'&&d.currentBlsExpiry<=rDate&&d.currentBlsExpiry>=new Date();
-    const cn=window.compNet[d.compGUID]||{a:[],e:[]};
-    const gn=d.gstin?(window.gstNet[d.gstin]||{a:[],e:[]}):{a:[],e:[]};
-    const ca=[...new Set(cn.a.filter(s=>s!==d.subscriptionId))].join('; ');
-    const ce=[...new Set(cn.e.filter(s=>s!==d.subscriptionId))].join('; ');
-    const ga=[...new Set(gn.a.filter(s=>s!==d.subscriptionId))].join('; ');
-    const ge=[...new Set(gn.e.filter(s=>s!==d.subscriptionId))].join('; ');
-    csv+=`"${d.compGUID}","${d.subscriptionId}","${d.gstin||''}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}","${d.source==='expired'?'Expired':(ar?'At Risk':'Active')}","${o?'Partial Churn':(d.source==='expired'?'Full Churn':(ar?'Renewal Due':'Healthy'))}","${ca}","${ce}","${ga}","${ge}"\n`;
+    const cn=window.compNet[d.compGUID]||{a:[],e:[]}, gn=d.gstin?(window.gstNet[d.gstin]||{a:[],e:[]}):{a:[],e:[]};
+    const ca=[...new Set(cn.a.filter(s=>s!==d.subscriptionId))].join('; '), ce=[...new Set(cn.e.filter(s=>s!==d.subscriptionId))].join('; ');
+    const ga=[...new Set(gn.a.filter(s=>s!==d.subscriptionId))].join('; '), ge=[...new Set(gn.e.filter(s=>s!==d.subscriptionId))].join('; ');
+    const ten=d.installDate?((d.currentBlsExpiry-d.installDate)/31557600000).toFixed(2):'', inst=d.installDate?d.installDate.toISOString().slice(0,10):'';
+    csv+=`"${d.ownerPartner}","${d.categoryName}","${inst}","${ten}","${d.compGUID}","${d.subscriptionId}","${d.gstin||''}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}","${ca}","${ce}","${ga}","${ge}"\n`;
   };
-  expiredData.forEach(w);activeData.forEach(w);
-  dlFile(csv,'churn_full_links.csv','text/csv');
+  expiredData.forEach(w);activeData.forEach(w); dlFile(csv,'churn_full_export.csv','text/csv');
 }
-
-function downloadExcel(){
-  const r=analysisResults,rd=+document.getElementById('riskDays').value||30,rDate=new Date(Date.now()+rd*86400000);
-  const ws1=[['CompGUID','Sub No','GSTIN','Expiry','Source','Status','Category','Linked Act Comp','Linked Exp Comp','Linked Act GST','Linked Exp GST']];
-  const w=d=>{
-    const o=r.overlappingCompGUIDSet.has(d.compGUID);
-    const ar=d.source==='active'&&d.currentBlsExpiry<=rDate&&d.currentBlsExpiry>=new Date();
-    const cn=window.compNet[d.compGUID]||{a:[],e:[]};
-    const gn=d.gstin?(window.gstNet[d.gstin]||{a:[],e:[]}):{a:[],e:[]};
-    ws1.push([d.compGUID,d.subscriptionId,d.gstin||'',d.currentBlsExpiry.toISOString().slice(0,10),d.source,d.source==='expired'?'Expired':(ar?'At Risk':'Active'),o?'Partial Churn':(d.source==='expired'?'Full Churn':(ar?'Renewal Due':'Healthy')),
-      [...new Set(cn.a.filter(s=>s!==d.subscriptionId))].join('; '),
-      [...new Set(cn.e.filter(s=>s!==d.subscriptionId))].join('; '),
-      [...new Set(gn.a.filter(s=>s!==d.subscriptionId))].join('; '),
-      [...new Set(gn.e.filter(s=>s!==d.subscriptionId))].join('; ')]);
-  };
-  expiredData.forEach(w);activeData.forEach(w);
-  const wb=XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(ws1),'Analysis');
-  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['Metric','Value'],['Expired',r.totalExpired],['Active',r.totalActive],['Full Churn',r.fullChurn],['Healthy',r.healthy],['Overlap',r.overlappingCompGUIDs],['Churn%',r.churnRate],['Retention%',r.retentionRate],['At-Risk',r.atRisk]]),'Summary');
-  XLSX.writeFile(wb,'churn_full_links.xlsx');
-}
-
 function downloadOverlap(){
-  const r=analysisResults; let csv='CompGUID,Sub No,GSTIN,Expiry,Source,Linked Act Comp,Linked Exp Comp,Linked Act GST,Linked Exp GST\n';
-  const w=d=>{
-    if(!r.overlappingCompGUIDSet.has(d.compGUID))return;
+  const r=analysisResults; let csv='Partner,Category,Install Date,Tenure (Yrs),CompGUID,Sub No,GSTIN,Expiry,Source,Linked Active,Linked Expired\n';
+  const w=d=>{if(!r.overlappingCompGUIDSet.has(d.compGUID))return;
     const cn=window.compNet[d.compGUID]||{a:[],e:[]};
-    const gn=d.gstin?(window.gstNet[d.gstin]||{a:[],e:[]}):{a:[],e:[]};
-    csv+=`"${d.compGUID}","${d.subscriptionId}","${d.gstin||''}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}","${[...new Set(cn.a.filter(s=>s!==d.subscriptionId))].join('; ')}","${[...new Set(cn.e.filter(s=>s!==d.subscriptionId))].join('; ')}","${[...new Set(gn.a.filter(s=>s!==d.subscriptionId))].join('; ')}","${[...new Set(gn.e.filter(s=>s!==d.subscriptionId))].join('; ')}"\n`;
+    const ten=d.installDate?((d.currentBlsExpiry-d.installDate)/31557600000).toFixed(2):'', inst=d.installDate?d.installDate.toISOString().slice(0,10):'';
+    csv+=`"${d.ownerPartner}","${d.categoryName}","${inst}","${ten}","${d.compGUID}","${d.subscriptionId}","${d.gstin||''}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}","${[...new Set(cn.a.filter(s=>s!==d.subscriptionId))].join('; ')}","${[...new Set(cn.e.filter(s=>s!==d.subscriptionId))].join('; ')}"\n`;
   };
-  expiredData.forEach(w);activeData.forEach(w);
-  dlFile(csv,'overlap_full_links.csv','text/csv');
-}
-
-function downloadAtRisk(){
-  let csv='CompGUID,Sub No,GSTIN,Expiry,Days Left\n'; const today=new Date();
-  analysisResults.atRiskData.forEach(d=>{csv+=`"${d.compGUID}","${d.subscriptionId}","${d.gstin||''}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${Math.floor((d.currentBlsExpiry-today)/86400000)}"\n`;});
-  dlFile(csv,'at_risk.csv','text/csv');
+  expiredData.forEach(w);activeData.forEach(w); dlFile(csv,'overlap_export.csv','text/csv');
 }
 
 function runAnalysis(){
   document.getElementById('loadingOverlay').classList.add('show');
-  document.getElementById('loadingText').textContent=`Analyzing ${(expiredData.length+activeData.length).toLocaleString()} records...`;
   setTimeout(()=>{
-    analyzeData();
-    renderKPIs(); renderInsights(); renderVenn(); renderFlowDiagram();
-    renderCorrelationBars(); renderCharts(); renderDataTable('all');
+    analyzeData(); renderKPIs(); renderVenn(); renderFlowDiagram(); renderCharts(); renderDataTable('all');
     document.getElementById('loadingOverlay').classList.remove('show');
   },40);
 }
-
 window.addEventListener('load',autoLoadFromRepo);
 </script>
 </body>
