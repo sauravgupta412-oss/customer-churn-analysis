@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -186,10 +186,10 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:var(--bg
 footer{text-align:center;padding:20px;color:var(--text-muted);font-size:.72rem}
 
 /* Specific text color classes to map properly in Light/Dark mode */
-.txt-red { color: #e11d48; } [data-theme="dark"] .txt-red { color: #f45c43; }
-.txt-green { color: #059669; } [data-theme="dark"] .txt-green { color: #38ef7d; }
+.txt-red { color: #e11d48; font-weight: bold; } [data-theme="dark"] .txt-red { color: #f45c43; font-weight: bold; }
+.txt-green { color: #059669; font-weight: bold; } [data-theme="dark"] .txt-green { color: #38ef7d; font-weight: bold; }
 .txt-cyan { color: #0284c7; } [data-theme="dark"] .txt-cyan { color: #22d3ee; }
-.txt-purple { color: #7e22ce; } [data-theme="dark"] .txt-purple { color: #a855f7; }
+.txt-purple { color: #7e22ce; font-weight: bold;} [data-theme="dark"] .txt-purple { color: #a855f7; font-weight: bold;}
 .txt-yellow { color: #d97706; } [data-theme="dark"] .txt-yellow { color: #ffd200; }
 </style>
 </head>
@@ -207,6 +207,14 @@ footer{text-align:center;padding:20px;color:var(--text-muted);font-size:.72rem}
     
     <div class="table-controls">
       <input type="text" class="ctrl-input" style="flex:1" id="modalSearch" placeholder="🔍 Search GSTIN+CompGUID, Sub ID, Partner, RDP..." oninput="triggerModalUpdate()">
+      
+      <!-- NEW: Base Filter to easily toggle visual row duplicates -->
+      <select class="ctrl-input" id="modalBaseFilter" onchange="triggerModalUpdate()">
+        <option value="EXPIRED">Show: Expired Base Rows</option>
+        <option value="ACTIVE">Show: Active Base Rows</option>
+        <option value="ALL">Show: Both (Raw Portfolio)</option>
+      </select>
+
       <select class="ctrl-input" id="modalRdpFilter" onchange="triggerModalUpdate()">
         <option value="ALL">All Licenses (RDP + Non-RDP)</option>
         <option value="RDP_ONLY">RDP Cases Only</option>
@@ -267,8 +275,8 @@ footer{text-align:center;padding:20px;color:var(--text-muted);font-size:.72rem}
 <div class="header">
   <h1>📊 Enterprise Customer Churn & Retention Dashboard</h1>
   <p>Deduplicated Precision Engine · Partner Churn Rankings · Interactive Data Labels</p>
-  <div class="header-badge">v46.0 — Math Synced Omni-Click & Light/Dark Mode</div>
-  <button id="themeToggleBtn" class="theme-toggle" onclick="toggleTheme()">☀️ Light Mode</button>
+  <div class="header-badge">v47.0 — Expired Base Sync & Light Mode Default</div>
+  <button id="themeToggleBtn" class="theme-toggle" onclick="toggleTheme()">🌙 Dark Mode</button>
 </div>
 
 <div class="status-bar loading" id="statusBar">
@@ -352,7 +360,7 @@ footer{text-align:center;padding:20px;color:var(--text-muted);font-size:.72rem}
 <div class="data-table-container">
   <div class="table-header">
     <div class="table-tabs" id="mainTabs">
-      <button class="table-tab active" onclick="setMainTab('all',this)">All</button>
+      <button class="table-tab active" onclick="setMainTab('all',this)">All (Expired Base)</button>
       <button class="table-tab" onclick="setMainTab('overlap',this)">🟡 Partial</button>
       <button class="table-tab" onclick="setMainTab('churned',this)">🔴 Full Churn</button>
       <button class="table-tab" onclick="setMainTab('newsales',this)">🔵 New Sales</button>
@@ -415,7 +423,7 @@ footer{text-align:center;padding:20px;color:var(--text-muted);font-size:.72rem}
   </div>
 </div>
 
-<footer>Customer Churn Dashboard v46.0 · Math-Synced Omni-Click Engine & Light Mode</footer>
+<footer>Customer Churn Dashboard v47.0 · Math-Synced Omni-Click Engine & Light Mode Default</footer>
 
 <script>
 Chart.register(ChartDataLabels);
@@ -451,7 +459,7 @@ function toggleTheme() {
         root.setAttribute('data-theme', 'dark');
         btn.innerHTML = '☀️ Light Mode';
     }
-    renderCharts(); // Re-render charts with new theme colors
+    renderCharts(); 
 }
 
 function getStateName(gstin) {
@@ -812,7 +820,7 @@ function chipsWithExpiry(list, cls){
       const item = list[i];
       html += `<span class="${cls}" title="Sub: ${item.sub} | Expiry: ${item.expStr}">${item.sub} (Exp: ${item.expStr})</span>`;
   }
-  if(list.length > limit) html += `<span style="font-size:0.6rem;color:#888">+${list.length - limit} more</span>`;
+  if(list.length > limit) html += `<span style="font-size:0.6rem;color:var(--text-muted)">+${list.length - limit} more</span>`;
   html += '</div>';
   return html;
 }
@@ -828,7 +836,6 @@ function rowHtml(d) {
     const escGst = (d.gstin || '').replace(/'/g, "\\'");
     const escCombo = (d.comboKey || '').replace(/'/g, "\\'");
     const lastUseStr = d.lastUseDate ? formatDateFast(d.lastUseDate) : '<span style="color:#555">N/A</span>';
-    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
     
     return `<tr>
       <td style="font-size:.7rem;"><b>${d.ownerPartner}</b><br><span class="txt-yellow">${d.categoryName}</span><br>Tenure: ${getTenureText(d)}</td>
@@ -915,15 +922,22 @@ function downloadAcc360Data() {
 
 function closeModal(modalId) { const el = document.getElementById(modalId || 'drillModal'); if(el) el.classList.remove('show'); }
 
-function applyFiltersAndSort(sourceData, searchId, tenureId, sortId, rdpId) {
+function applyFiltersAndSort(sourceData, searchId, tenureId, sortId, rdpId, baseFilterId) {
     const rawQ = document.getElementById(searchId).value.trim();
     const tenureF = document.getElementById(tenureId) ? document.getElementById(tenureId).value : 'ALL';
     const sortF = document.getElementById(sortId) ? document.getElementById(sortId).value : 'exp_desc';
     const rdpF = document.getElementById(rdpId) ? document.getElementById(rdpId).value : 'ALL';
+    const baseF = document.getElementById(baseFilterId) ? document.getElementById(baseFilterId).value : 'ALL';
+    
     const q = rawQ.toLowerCase(), cq = q.replace(/[^a-z0-9]/g, '');
     let res = [];
     for (let i = 0; i < sourceData.length; i++) {
         const d = sourceData[i];
+        
+        // BASE FILTER LOGIC (To prevent visual duplicates)
+        if (baseF === 'EXPIRED' && d.source !== 'expired') continue;
+        if (baseF === 'ACTIVE' && d.source !== 'active') continue;
+
         if (tenureF !== 'ALL') { if (getTenureLabel(d) !== tenureF) continue; }
         if (rdpF === 'RDP_ONLY') {
             if (d.source === 'active' && !hasRDP(d)) continue;
@@ -954,27 +968,29 @@ function setMainTab(f,btn){
     document.querySelectorAll('.table-tab').forEach(t => t.classList.remove('active'));
     if(btn) btn.classList.add('active');
     const r = analysisResults, rd = 30, today = new Date(), riskDate = new Date(today.getTime() + rd * 86400000);
-    const all = expiredData.concat(activeData);
+    
     mainBaseData = [];
-    for(let i=0; i<all.length; i++){
-        const d = all[i];
-        const o = r.overlappingCompGUIDSet.has(d.compGUID);
-        const cat = o ? 'Partial Churn' : (d.source === 'expired' ? 'Full Churn' : 'Healthy');
-        if(f === 'overlap' && !o) continue;
-        if(f === 'churned' && cat !== 'Full Churn') continue;
-        if(f === 'newsales') {
-            if(d.source === 'active' && !d.isNewSales) continue;
-            if(d.source === 'expired' && !d.shiftedToNewSales) continue;
+    
+    // STRICTLY EXPIRED BASE FOR MAIN TABLES TO PREVENT DUPLICATES
+    if (f === 'ghost') {
+        mainBaseData = activeData.filter(d => d.isGhost);
+    } else if (f === 'atrisk') {
+        mainBaseData = activeData.filter(d => d.currentBlsExpiry && d.currentBlsExpiry.getTime() >= today.getTime() && d.currentBlsExpiry.getTime() <= riskDate.getTime());
+    } else {
+        for(let i=0; i<expiredData.length; i++){
+            const d = expiredData[i];
+            const o = r.overlappingCompGUIDSet.has(d.compGUID);
+            if(f === 'overlap' && !o) continue;
+            if(f === 'churned' && o) continue; 
+            if(f === 'newsales' && !d.shiftedToNewSales) continue;
+            mainBaseData.push(d);
         }
-        if(f === 'ghost' && !d.isGhost) continue;
-        if(f === 'atrisk') { if(!(d.source === 'active' && d.currentBlsExpiry <= riskDate && d.currentBlsExpiry >= today)) continue; }
-        mainBaseData.push(d);
     }
     document.getElementById('mainSearch').value = '';
     triggerMainUpdate();
 }
 
-function triggerMainUpdate() { clearTimeout(uiTimer); uiTimer = setTimeout(() => { mainFilteredData = applyFiltersAndSort(mainBaseData, 'mainSearch', 'mainTenureFilter', 'mainSort', 'mainRdpFilter'); mainPage = 1; renderMainTablePage(); }, 100); }
+function triggerMainUpdate() { clearTimeout(uiTimer); uiTimer = setTimeout(() => { mainFilteredData = applyFiltersAndSort(mainBaseData, 'mainSearch', 'mainTenureFilter', 'mainSort', 'mainRdpFilter', null); mainPage = 1; renderMainTablePage(); }, 100); }
 function mainChangePage(dir) { mainPage += dir; renderMainTablePage(); }
 function renderMainTablePage() {
     const total = mainFilteredData.length;
@@ -983,7 +999,7 @@ function renderMainTablePage() {
     const start = (mainPage - 1) * PAGE_SIZE, end = Math.min(start + PAGE_SIZE, total);
     let html = ''; for(let i=start; i<end; i++) html += rowHtml(mainFilteredData[i]);
     safeSetHTML('mainTableBody', html);
-    safeSetText('mainTableCount', `(${total.toLocaleString()} records)`);
+    safeSetText('mainTableCount', `(${total.toLocaleString()} unique row entries)`);
     safeSetText('mainPageInfo', `Page ${mainPage} of ${totalPages}`);
     const p = document.getElementById('mainPrevBtn'), n = document.getElementById('mainNextBtn');
     if(p) p.disabled = (mainPage === 1); if(n) n.disabled = (mainPage === totalPages);
@@ -991,14 +1007,13 @@ function renderMainTablePage() {
 
 // OMNI-CLICK DRILL DOWN LOGIC
 function drillByPartnerChart(partner) {
-    // ALWAYS load the entire portfolio for the partner to populate the dynamic table correctly!
     const matches = expiredData.filter(d => d.ownerPartner === partner)
                     .concat(activeData.filter(d => d.ownerPartner === partner));
     const title = `🏢 Complete Portfolio View: ${partner}`;
-    openDrillDown(title, matches);
+    openDrillDown(title, matches, 'EXPIRED');
 }
 
-function openDrillDown(title, data) {
+function openDrillDown(title, data, defaultBase = 'EXPIRED') {
     modalBaseData = data; 
     safeSetText('modalTitle', title);
     
@@ -1093,10 +1108,12 @@ function openDrillDown(title, data) {
     document.getElementById('modalSearch').value = '';
     if(document.getElementById('modalTenureFilter')) document.getElementById('modalTenureFilter').value = 'ALL';
     if(document.getElementById('modalRdpFilter')) document.getElementById('modalRdpFilter').value = 'ALL';
+    if(document.getElementById('modalBaseFilter')) document.getElementById('modalBaseFilter').value = defaultBase;
+
     triggerModalUpdate(); document.getElementById('drillModal').classList.add('show');
 }
 
-function triggerModalUpdate() { clearTimeout(uiTimer); uiTimer = setTimeout(() => { modalFilteredData = applyFiltersAndSort(modalBaseData, 'modalSearch', 'modalTenureFilter', 'modalSort', 'modalRdpFilter'); modalPage = 1; renderModalTablePage(); }, 100); }
+function triggerModalUpdate() { clearTimeout(uiTimer); uiTimer = setTimeout(() => { modalFilteredData = applyFiltersAndSort(modalBaseData, 'modalSearch', 'modalTenureFilter', 'modalSort', 'modalRdpFilter', 'modalBaseFilter'); modalPage = 1; renderModalTablePage(); }, 100); }
 function modChangePage(dir) { modalPage += dir; renderModalTablePage(); }
 function renderModalTablePage() {
     const total = modalFilteredData.length, totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
@@ -1104,7 +1121,7 @@ function renderModalTablePage() {
     const start = (modalPage - 1) * PAGE_SIZE, end = Math.min(start + PAGE_SIZE, total);
     let html = ''; for(let i=start; i<end; i++) html += rowHtml(modalFilteredData[i]);
     safeSetHTML('modalTableBody', html);
-    safeSetText('modalRecordCount', `Total: ${total.toLocaleString()}`);
+    safeSetText('modalRecordCount', `Table Rows: ${total.toLocaleString()}`);
     safeSetText('modPageInfo', `Page ${modalPage} of ${totalPages}`);
     const p = document.getElementById('modPrevBtn'), n = document.getElementById('modNextBtn');
     if(p) p.disabled = (modalPage === 1); if(n) n.disabled = (modalPage === totalPages);
@@ -1123,7 +1140,7 @@ function runGlobalSearch(){
       }
   };
   scan(expiredData); scan(activeData);
-  openDrillDown(`🔍 Search: "${raw}"`, matches);
+  openDrillDown(`🔍 Search: "${raw}"`, matches, 'ALL');
 }
 
 function dc(n) { if (charts[n]) { charts[n].destroy(); charts[n] = null; } }
@@ -1131,7 +1148,7 @@ function renderCharts(){
   const r = analysisResults;
   const tc = getThemeColors();
   
-  // CHART 1: MASTER OMNI-CHART (Expired Base + Pure Churn % + RDP % + NS %)
+  // CHART 1: MASTER OMNI-CHART
   const pcEl1 = document.getElementById('partnerChurnChart');
   if(pcEl1){
       const pArr = Object.entries(r.partStats).map(([k, v]) => {
@@ -1384,10 +1401,10 @@ function renderKPIs() {
 
 function renderInsights(){
   const r = analysisResults, cr = +r.churnRate, ins = [];
-  if (cr > 40) ins.push('🔴 <strong>HIGH FULL CHURN:</strong> ' + r.churnRate + '%');
-  else ins.push('✅ <strong>FULL CHURN:</strong> ' + r.churnRate + '%');
-  if (r.overlappingCompGUIDs) ins.push('🟣 <strong>PARTIAL CHURN:</strong> ' + r.overlappingCompGUIDs.toLocaleString() + ' companies in both datasets — click any company for 360° view');
-  if (r.ghostCount) ins.push('👻 <strong>GHOST CHURN WARNING:</strong> ' + r.ghostCount.toLocaleString() + ' active subscriptions unused 90+ days.');
+  if (cr > 40) ins.push('🔴 <strong class="txt-red">HIGH FULL CHURN:</strong> ' + r.churnRate + '%');
+  else ins.push('✅ <strong class="txt-green">FULL CHURN:</strong> ' + r.churnRate + '%');
+  if (r.overlappingCompGUIDs) ins.push('🟣 <strong class="txt-purple">PARTIAL CHURN:</strong> ' + r.overlappingCompGUIDs.toLocaleString() + ' companies in both datasets — click any company for 360° view');
+  if (r.ghostCount) ins.push('👻 <strong class="txt-red">GHOST CHURN WARNING:</strong> ' + r.ghostCount.toLocaleString() + ' active subscriptions unused 90+ days.');
   safeSetHTML('insightBox', '<h4>💡 Insights</h4>' + ins.map(t => '<div class="insight-item" style="margin-bottom:6px; padding-left:14px; position:relative">' + t + '</div>').join(''));
 }
 
@@ -1408,16 +1425,18 @@ function renderFlowDiagram(){
 }
 
 function drillByCategory(cat){
-  const r = analysisResults; let d = [], t = '';
-  if(cat === 'total'){ d = expiredData.concat(activeData); t = '📊 All Subscriptions'; }
-  else if(cat === 'churned'){ d = expiredData.filter(x => r.fullChurnSet.has(x.compGUID)); t = '🔴 Full Churn'; }
-  else if(cat === 'overlap'){ d = expiredData.concat(activeData).filter(x => r.overlappingCompGUIDSet.has(x.compGUID)); t = '🟡 Partial Churn'; }
-  else if(cat === 'rdp'){ d = expiredData.concat(activeData).filter(x => x.shiftedToRDP || (x.source === 'active' && hasRDP(x))); t = '🖥️ Shifted to RDP (Expired shifted + Active RDP)'; }
-  else if(cat === 'newsales'){ d = expiredData.concat(activeData).filter(x => x.isNewSales || x.shiftedToNewSales); t = '🔵 New Sales'; }
-  else if(cat === 'ghost'){ d = activeData.filter(x => x.isGhost); t = '👻 Ghost Churn (Active but Unused >90 days)'; }
-  else if(cat === 'atrisk'){ d = r.atRiskData; t = '⚠️ At-Risk Active'; }
-  else if(cat === 'healthy'){ d = activeData.filter(x => r.healthySet.has(x.compGUID)); t = '🟢 Healthy (Active Only)'; }
-  openDrillDown(t, d);
+  const r = analysisResults; let d = [], t = '', b = 'EXPIRED';
+  
+  if(cat === 'total'){ d = expiredData.concat(activeData); t = '📊 All Subscriptions (Entire Portfolio)'; b = 'ALL'; }
+  else if(cat === 'churned'){ d = expiredData.concat(activeData).filter(x => r.fullChurnSet.has(x.compGUID)); t = '🔴 Full Churn (Expired Base)'; b = 'EXPIRED'; }
+  else if(cat === 'overlap'){ d = expiredData.concat(activeData).filter(x => r.overlappingCompGUIDSet.has(x.compGUID)); t = '🟡 Partial Churn (Expired Base)'; b = 'EXPIRED'; }
+  else if(cat === 'rdp'){ d = expiredData.concat(activeData).filter(x => x.shiftedToRDP || (x.source === 'active' && hasRDP(x))); t = '🖥️ Shifted to RDP'; b = 'EXPIRED'; }
+  else if(cat === 'newsales'){ d = expiredData.concat(activeData).filter(x => x.isNewSales || x.shiftedToNewSales); t = '🔵 New Sales'; b = 'EXPIRED'; }
+  else if(cat === 'ghost'){ d = activeData.filter(x => x.isGhost); t = '👻 Ghost Churn (Active but Unused >90 days)'; b = 'ACTIVE'; }
+  else if(cat === 'atrisk'){ d = r.atRiskData; t = '⚠️ At-Risk Active'; b = 'ACTIVE'; }
+  else if(cat === 'healthy'){ d = activeData.filter(x => r.healthySet.has(x.compGUID)); t = '🟢 Healthy (Active Only)'; b = 'ACTIVE'; }
+  
+  openDrillDown(t, d, b);
 }
 
 function runAnalysis(){
