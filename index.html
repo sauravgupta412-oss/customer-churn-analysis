@@ -251,7 +251,7 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
 <div class="header">
   <h1>📊 Enterprise Customer Churn & Retention Dashboard</h1>
   <p>Deduplicated Precision Engine · Partner Churn Rankings · Interactive Data Labels</p>
-  <div class="header-badge">v42.0 — Dynamic Contextual Summary Tables in Popups</div>
+  <div class="header-badge">v44.0 — Unified Expired Base Synergy Across All Charts</div>
 </div>
 
 <div class="status-bar loading" id="statusBar">
@@ -286,29 +286,32 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
 <div class="section-header"><h2>🤝 Partner Performance & Migration Analytics</h2></div>
 <div class="section-divider"></div>
 <div class="dashboard">
+  <!-- CHART 1 -->
   <div class="chart-card full-width">
-    <div class="chart-title" style="cursor:pointer" title="Click to interact">🏆 Top Partners by Pure Churn Count</div>
+    <div class="chart-title" style="cursor:pointer" title="Click to interact">🏆 Top Partners by Pure Churn (vs Expired Base)</div>
     <div style="font-size: 0.75rem; color: #aaa; margin-bottom: 10px;">
-        <strong>Red:</strong> Pure Churn Count &nbsp;|&nbsp; <strong>Line:</strong> Pure Churn Count out of Total Subscriptions (%)<br>
-        <strong>Click a bar</strong> to drill-down into that partner's pure churn base.
+        <strong>Red:</strong> Total Expired Subscriptions &nbsp;|&nbsp; <strong>Line:</strong> Pure Churn % (Pure Churn / Total Expired)<br>
+        <strong>Click a bar</strong> to drill-down and see the exact breakdown in the popup summary table.
     </div>
     <div class="chart-container"><canvas id="partnerChurnChart"></canvas></div>
   </div>
   
+  <!-- CHART 2 -->
   <div class="chart-card">
-    <div class="chart-title" style="cursor:pointer" title="Click to interact">🔄 Top Partners by Churn + RDP Shift (%)</div>
+    <div class="chart-title" style="cursor:pointer" title="Click to interact">🔄 Top Partners by RDP Shift (vs Expired Base)</div>
     <div style="font-size: 0.7rem; color: #aaa; margin-bottom: 8px;">
-        <strong>Red:</strong> Pure Churn &nbsp;|&nbsp; <strong>Cyan:</strong> Shifted to RDP &nbsp;|&nbsp; <strong>Line:</strong> RDP Conversion %<br>
-        <strong>Click a bar</strong> to drill-down.
+        <strong>Red:</strong> Pure Churn (Expired) &nbsp;|&nbsp; <strong>Cyan:</strong> Shifted to RDP (Expired) &nbsp;|&nbsp; <strong>Line:</strong> RDP Shift %<br>
+        <strong>Click a bar or line</strong> to drill-down.
     </div>
     <div class="chart-container"><canvas id="partnerRdpChart"></canvas></div>
   </div>
 
+  <!-- CHART 3 -->
   <div class="chart-card">
-    <div class="chart-title" style="cursor:pointer" title="Click to interact">🆕 Top Partners by Churn + New Sales (%)</div>
+    <div class="chart-title" style="cursor:pointer" title="Click to interact">🆕 Top Partners by New Sales Shift (vs Expired Base)</div>
     <div style="font-size: 0.7rem; color: #aaa; margin-bottom: 8px;">
-        <strong>Red:</strong> Pure Churn &nbsp;|&nbsp; <strong>Purple:</strong> Shift to New Sale (≤ 90 days) &nbsp;|&nbsp; <strong>Line:</strong> NS Conversion %<br>
-        <strong>Click a bar</strong> to drill-down.
+        <strong>Red:</strong> Pure Churn (Expired) &nbsp;|&nbsp; <strong>Purple:</strong> Shifted to New Sale (Expired) &nbsp;|&nbsp; <strong>Line:</strong> NS Shift %<br>
+        <strong>Click a bar or line</strong> to drill-down.
     </div>
     <div class="chart-container"><canvas id="partnerNsChart"></canvas></div>
   </div>
@@ -394,7 +397,7 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
   </div>
 </div>
 
-<footer>Customer Churn Dashboard v42.0 · Contextual Pivot Summaries</footer>
+<footer>Customer Churn Dashboard v44.0 · Contextual Pivot Summaries & Logic Engine</footer>
 
 <script>
 Chart.register(ChartDataLabels);
@@ -944,31 +947,26 @@ function renderMainTablePage() {
 }
 
 function drillByPartnerChart(partner, context) {
-    const allData = expiredData.concat(activeData);
     let matches = []; let title = '';
 
-    if(context === 'PURE_CHURN') {
-        matches = expiredData.filter(d => d.ownerPartner === partner && analysisResults.fullChurnSet.has(d.compGUID));
-        title = `🔴 Pure Churn Drill-Down: ${partner}`;
+    if(context === 'PARTNER_EXPIRED') {
+        matches = expiredData.filter(d => d.ownerPartner === partner);
+        title = `🔴 Total Expired Base: ${partner}`;
     } 
     else if(context === 'RDP_SHIFT') {
-        const shiftedComps = new Set(expiredData.filter(d => d.ownerPartner === partner && d.shiftedToRDP).map(d => d.compGUID));
-        matches = allData.filter(d => shiftedComps.has(d.compGUID));
-        title = `🔄 RDP Shift Drill-Down: ${partner} (Shows Expired + Active RDP subs)`;
+        matches = expiredData.filter(d => d.ownerPartner === partner && d.shiftedToRDP);
+        title = `🔄 RDP Shift Drill-Down: ${partner} (Expired Base Only)`;
     }
     else if(context === 'PURE_CHURN_RDP') {
-        const shiftedComps = new Set(expiredData.filter(d => d.ownerPartner === partner && d.shiftedToRDP).map(d => d.compGUID));
-        matches = expiredData.filter(d => d.ownerPartner === partner && !shiftedComps.has(d.compGUID));
+        matches = expiredData.filter(d => d.ownerPartner === partner && !d.shiftedToRDP);
         title = `🔴 Pure Churn (No RDP) Drill-Down: ${partner}`;
     }
     else if(context === 'NS_SHIFT') {
-        const shiftedComps = new Set(expiredData.filter(d => d.ownerPartner === partner && d.shiftedToNewSales).map(d => d.compGUID));
-        matches = allData.filter(d => shiftedComps.has(d.compGUID));
-        title = `🆕 New Sales Shift Drill-Down: ${partner} (Shows Expired + Renewed subs)`;
+        matches = expiredData.filter(d => d.ownerPartner === partner && d.shiftedToNewSales);
+        title = `🆕 New Sales Shift Drill-Down: ${partner} (Expired Base Only)`;
     }
     else if(context === 'PURE_CHURN_NS') {
-        const shiftedComps = new Set(expiredData.filter(d => d.ownerPartner === partner && d.shiftedToNewSales).map(d => d.compGUID));
-        matches = expiredData.filter(d => d.ownerPartner === partner && !shiftedComps.has(d.compGUID));
+        matches = expiredData.filter(d => d.ownerPartner === partner && !d.shiftedToNewSales);
         title = `🔴 Pure Churn (No New Sales) Drill-Down: ${partner}`;
     }
 
@@ -1100,18 +1098,19 @@ function dc(n) { if (charts[n]) { charts[n].destroy(); charts[n] = null; } }
 function renderCharts(){
   const r = analysisResults;
   
+  // CHART 1: TOP PARTNERS BY PURE CHURN VS EXPIRED
   const pcEl1 = document.getElementById('partnerChurnChart');
   if(pcEl1){
       const pArr = Object.entries(r.partStats).map(([k, v]) => {
           const pureChurn = v.pureChurnCount || 0;
-          const totSubs = v.totalExpired + (v.totalActive || 0);
+          const totExpired = v.totalExpired || 0; 
           return { 
               p: k, 
               pureChurn: pureChurn, 
-              totSubs: totSubs,
-              rate: totSubs > 0 ? (pureChurn / totSubs) * 100 : 0 
+              totExpired: totExpired,
+              rate: totExpired > 0 ? (pureChurn / totExpired) * 100 : 0 
           };
-      }).filter(x => x.pureChurn >= 5 && x.p !== 'Direct / Unassigned' && x.p !== 'Direct')
+      }).filter(x => x.totExpired >= 5 && x.p !== 'Direct / Unassigned' && x.p !== 'Direct')
         .sort((a, b) => b.pureChurn - a.pureChurn).slice(0, 10);
 
       dc('pc1'); charts.pc1 = new Chart(pcEl1,{
@@ -1120,12 +1119,12 @@ function renderCharts(){
               labels: pArr.map(x=>x.p.substring(0,25) + (x.p.length>25?'...':'')),
               datasets:[
                   {
-                      label:'Pure Churn Count', data:pArr.map(x=>x.pureChurn), 
+                      label:'Total Expired Subs', data:pArr.map(x=>x.totExpired), 
                       backgroundColor:'rgba(244,92,67,.75)', borderColor: '#f45c43', borderWidth: 1,
                       datalabels: { display: false }
                   },
                   {
-                      label:'% of Partner\'s Total Subs', data:pArr.map(x=>x.rate.toFixed(1)), 
+                      label:'Pure Churn % (of Expired)', data:pArr.map(x=>x.rate.toFixed(1)), 
                       type: 'line', borderColor:'#ffd200', backgroundColor:'rgba(255,210,0,.1)',
                       borderWidth:2, pointBackgroundColor:'#ffd200', pointRadius:3, yAxisID:'y1', tension:0.3,
                       datalabels: { display: true, color: '#fff', align: 'top', anchor: 'end', formatter: v => v + '%' }
@@ -1134,17 +1133,20 @@ function renderCharts(){
           },
           options:{
               responsive:true, maintainAspectRatio:false,
-              onClick: (e, elements) => { if(elements.length) drillByPartnerChart(pArr[elements[0].index].p, 'PURE_CHURN'); },
+              onClick: (e, elements) => { 
+                  if(elements.length) drillByPartnerChart(pArr[elements[0].index].p, 'PARTNER_EXPIRED'); 
+              },
               plugins:{ legend:{display:true, labels:{color:'#aaa', font:{size:10}}} },
               scales:{ 
                   x:{ticks:{color:'#888'}}, 
-                  y:{ticks:{color:'#888'}, grid:{color:'rgba(255,255,255,.05)'}, title:{display:true, text:'Pure Churn Subs', color:'#888'}},
+                  y:{ticks:{color:'#888'}, grid:{color:'rgba(255,255,255,.05)'}, title:{display:true, text:'Total Expired Subs', color:'#888'}},
                   y1:{position:'right', ticks:{color:'#ffd200'}, grid:{display:false}, max:100}
               }
           }
       }); 
   }
   
+  // CHART 2: RDP SHIFT VS EXPIRED
   const pcEl2 = document.getElementById('partnerRdpChart');
   if(pcEl2){
       const pArr = Object.entries(r.partStats).map(([k, v]) => {
@@ -1164,17 +1166,17 @@ function renderCharts(){
               labels: pArr.map(x=>x.p.substring(0,25) + (x.p.length>25?'...':'')),
               datasets:[
                   {
-                      label:'Pure Churn (No RDP)', data:pArr.map(x=>x.pureChurn), 
+                      label:'Pure Churn (Expired)', data:pArr.map(x=>x.pureChurn), 
                       backgroundColor:'rgba(244,92,67,.75)', borderColor: '#f45c43', borderWidth: 1, stack: 'churn',
                       datalabels: { display: false }
                   },
                   {
-                      label:'Shifted to RDP (RDP = Yes)', data:pArr.map(x=>x.rdpShifted), 
+                      label:'Shifted to RDP (Expired)', data:pArr.map(x=>x.rdpShifted), 
                       backgroundColor:'rgba(56,189,248,.8)', borderColor: '#38bdf8', borderWidth: 1, stack: 'churn',
                       datalabels: { display: false }
                   },
                   {
-                      label:'RDP Shift Rate %', data:pArr.map(x=>x.rdpRate.toFixed(1)), 
+                      label:'RDP Shift %', data:pArr.map(x=>x.rdpRate.toFixed(1)), 
                       type: 'line', borderColor:'#ffd200', backgroundColor:'rgba(255,210,0,.1)',
                       borderWidth:2, pointBackgroundColor:'#ffd200', pointRadius:3, yAxisID:'y1', tension:0.3,
                       datalabels: { display: true, color: '#fff', align: 'top', anchor: 'end', formatter: v => v + '%' }
@@ -1186,19 +1188,22 @@ function renderCharts(){
               onClick: (e, elements) => { 
                   if(elements.length) {
                       const idx = elements[0].index, datasetIdx = elements[0].datasetIndex, partnerName = pArr[idx].p;
-                      if(datasetIdx === 0) drillByPartnerChart(partnerName, 'PURE_CHURN_RDP'); else drillByPartnerChart(partnerName, 'RDP_SHIFT'); 
+                      if(datasetIdx === 0) drillByPartnerChart(partnerName, 'PURE_CHURN_RDP'); 
+                      else if(datasetIdx === 1) drillByPartnerChart(partnerName, 'RDP_SHIFT'); 
+                      else drillByPartnerChart(partnerName, 'PARTNER_EXPIRED'); // Clicking line shows ALL expired base
                   }
               },
               plugins:{ legend:{display:true, labels:{color:'#aaa', font:{size:10}}} },
               scales:{
                   x:{stacked:true, ticks:{color:'#888'}},
-                  y:{stacked:true, ticks:{color:'#888'}, grid:{color:'rgba(255,255,255,.05)'}, title:{display:true, text:'Churned Subs', color:'#888'}},
+                  y:{stacked:true, ticks:{color:'#888'}, grid:{color:'rgba(255,255,255,.05)'}, title:{display:true, text:'Expired Subs', color:'#888'}},
                   y1:{position:'right', ticks:{color:'#ffd200'}, grid:{display:false}, max:100}
               }
           }
       }); 
   }
 
+  // CHART 3: NEW SALES SHIFT VS EXPIRED
   const pcEl3 = document.getElementById('partnerNsChart');
   if(pcEl3){
       const pArr = Object.entries(r.partStats).map(([k, v]) => {
@@ -1218,17 +1223,17 @@ function renderCharts(){
               labels: pArr.map(x=>x.p.substring(0,25) + (x.p.length>25?'...':'')),
               datasets:[
                   {
-                      label:'Pure Churn (No New Sales)', data:pArr.map(x=>x.pureChurn), 
+                      label:'Pure Churn (Expired)', data:pArr.map(x=>x.pureChurn), 
                       backgroundColor:'rgba(244,92,67,.75)', borderColor: '#f45c43', borderWidth: 1, stack: 'churn',
                       datalabels: { display: false }
                   },
                   {
-                      label:'Shifted to New Sales (<= 90 days)', data:pArr.map(x=>x.nsShifted), 
+                      label:'Shifted to New Sale (Expired)', data:pArr.map(x=>x.nsShifted), 
                       backgroundColor:'rgba(168,85,247,.8)', borderColor: '#a855f7', borderWidth: 1, stack: 'churn',
                       datalabels: { display: false }
                   },
                   {
-                      label:'New Sales Shift Rate %', data:pArr.map(x=>x.nsRate.toFixed(1)), 
+                      label:'New Sales Shift %', data:pArr.map(x=>x.nsRate.toFixed(1)), 
                       type: 'line', borderColor:'#ffd200', backgroundColor:'rgba(255,210,0,.1)',
                       borderWidth:2, pointBackgroundColor:'#ffd200', pointRadius:3, yAxisID:'y1', tension:0.3,
                       datalabels: { display: true, color: '#fff', align: 'top', anchor: 'end', formatter: v => v + '%' }
@@ -1240,13 +1245,15 @@ function renderCharts(){
               onClick: (e, elements) => { 
                   if(elements.length) {
                       const idx = elements[0].index, datasetIdx = elements[0].datasetIndex, partnerName = pArr[idx].p;
-                      if(datasetIdx === 0) drillByPartnerChart(partnerName, 'PURE_CHURN_NS'); else drillByPartnerChart(partnerName, 'NS_SHIFT'); 
+                      if(datasetIdx === 0) drillByPartnerChart(partnerName, 'PURE_CHURN_NS'); 
+                      else if (datasetIdx === 1) drillByPartnerChart(partnerName, 'NS_SHIFT'); 
+                      else drillByPartnerChart(partnerName, 'PARTNER_EXPIRED'); // Clicking line shows ALL expired base
                   }
               },
               plugins:{ legend:{display:true, labels:{color:'#aaa', font:{size:10}}} },
               scales:{
                   x:{stacked:true, ticks:{color:'#888'}},
-                  y:{stacked:true, ticks:{color:'#888'}, grid:{color:'rgba(255,255,255,.05)'}, title:{display:true, text:'Churned Subs', color:'#888'}},
+                  y:{stacked:true, ticks:{color:'#888'}, grid:{color:'rgba(255,255,255,.05)'}, title:{display:true, text:'Expired Subs', color:'#888'}},
                   y1:{position:'right', ticks:{color:'#ffd200'}, grid:{display:false}, max:100}
               }
           }
