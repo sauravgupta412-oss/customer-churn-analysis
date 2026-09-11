@@ -309,6 +309,8 @@ footer{text-align:center;padding:20px;color:var(--text-muted);font-size:.72rem}
 <!-- SECTION 2: TOP PARTNER CHURN & SHIFT CORRELATION -->
 <div class="section-header"><h2>🤝 Partner Performance & Migration Analytics</h2></div>
 <div class="section-divider"></div>
+
+<!-- MAIN 1-COLUMN DASHBOARD FOR OMNI CHART -->
 <div class="dashboard">
   <!-- OMNI-CHART 1 -->
   <div class="chart-card full-width">
@@ -322,7 +324,10 @@ footer{text-align:center;padding:20px;color:var(--text-muted);font-size:.72rem}
     </div>
     <div class="chart-container" style="height:320px;"><canvas id="partnerChurnChart"></canvas></div>
   </div>
-  
+</div>
+
+<!-- NEW 2-COLUMN DASHBOARD FOR BOTTOM CHARTS -->
+<div class="dashboard" style="grid-template-columns: 1fr 1fr;">
   <div class="chart-card">
     <div class="chart-title" style="cursor:pointer" title="Click to interact">🔄 Top Partners by RDP Shift (vs Expired Base)</div>
     <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 8px;">
@@ -422,7 +427,7 @@ footer{text-align:center;padding:20px;color:var(--text-muted);font-size:.72rem}
   </div>
 </div>
 
-<footer>Expired base Churn Analysis · Light / Dark Mode</footer>
+<footer>Expired base Churn Analysis · v49.0</footer>
 
 <script>
 Chart.register(ChartDataLabels);
@@ -1144,7 +1149,7 @@ function renderCharts(){
   const r = analysisResults;
   const tc = getThemeColors();
   
-  // CHART 1: MASTER OMNI-CHART (Expired Base + Pure Churn % + RDP % + NS %)
+  // CHART 1: MASTER OMNI-CHART
   const pcEl1 = document.getElementById('partnerChurnChart');
   if(pcEl1){
       const pArr = Object.entries(r.partStats).map(([k, v]) => {
@@ -1234,12 +1239,12 @@ function renderCharts(){
               datasets:[
                   {
                       label:'Pure Churn (Expired)', data:pArr.map(x=>x.pureChurn), 
-                      backgroundColor:'rgba(244,92,67,.75)', borderColor: '#e11d48', borderWidth: 1,
+                      backgroundColor:'rgba(244,92,67,.75)', borderColor: '#e11d48', borderWidth: 1, stack: 'churn',
                       datalabels: { display: false }
                   },
                   {
                       label:'Shifted to RDP (Expired)', data:pArr.map(x=>x.rdpShifted), 
-                      backgroundColor:'rgba(56,189,248,.8)', borderColor: tc.cyan, borderWidth: 1,
+                      backgroundColor:'rgba(56,189,248,.8)', borderColor: tc.cyan, borderWidth: 1, stack: 'churn',
                       datalabels: { display: false }
                   },
                   {
@@ -1257,8 +1262,8 @@ function renderCharts(){
               },
               plugins:{ legend:{display:true, labels:{color:tc.text, font:{size:10}}} },
               scales:{
-                  x:{ticks:{color:tc.text}},
-                  y:{ticks:{color:tc.text}, grid:{color:tc.grid}, title:{display:true, text:'Expired Subs', color:tc.text}},
+                  x:{stacked:true, ticks:{color:tc.text}},
+                  y:{stacked:true, ticks:{color:tc.text}, grid:{color:tc.grid}, title:{display:true, text:'Expired Subs', color:tc.text}},
                   y1:{position:'right', ticks:{color:tc.yellow}, grid:{display:false}, max:100}
               }
           }
@@ -1290,12 +1295,12 @@ function renderCharts(){
               datasets:[
                   {
                       label:'Pure Churn (Expired)', data:pArr.map(x=>x.pureChurn), 
-                      backgroundColor:'rgba(244,92,67,.75)', borderColor: '#e11d48', borderWidth: 1,
+                      backgroundColor:'rgba(244,92,67,.75)', borderColor: '#e11d48', borderWidth: 1, stack: 'churn',
                       datalabels: { display: false }
                   },
                   {
                       label:'Shifted to New Sale (Expired)', data:pArr.map(x=>x.nsShifted), 
-                      backgroundColor:'rgba(168,85,247,.8)', borderColor: tc.purple, borderWidth: 1,
+                      backgroundColor:'rgba(168,85,247,.8)', borderColor: tc.purple, borderWidth: 1, stack: 'churn',
                       datalabels: { display: false }
                   },
                   {
@@ -1313,8 +1318,8 @@ function renderCharts(){
               },
               plugins:{ legend:{display:true, labels:{color:tc.text, font:{size:10}}} },
               scales:{
-                  x:{ticks:{color:tc.text}},
-                  y:{ticks:{color:tc.text}, grid:{color:tc.grid}, title:{display:true, text:'Expired Subs', color:tc.text}},
+                  x:{stacked:true, ticks:{color:tc.text}},
+                  y:{stacked:true, ticks:{color:tc.text}, grid:{color:tc.grid}, title:{display:true, text:'Expired Subs', color:tc.text}},
                   y1:{position:'right', ticks:{color:tc.yellow}, grid:{display:false}, max:100}
               }
           }
