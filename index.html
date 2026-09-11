@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,173 +8,189 @@
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
+/* THEME VARIABLES */
+:root {
+  --bg-gradient: linear-gradient(135deg, #0a0a1a, #1a1a3e, #0d0d2b);
+  --text-main: #e0e0e0;
+  --text-muted: #aaa;
+  --card-bg: rgba(255,255,255,0.04);
+  --card-border: rgba(255,255,255,0.08);
+  --modal-bg: #1a1a3e;
+  --table-head-bg: rgba(30,30,60,0.97);
+  --table-border: rgba(255,255,255,0.05);
+  --input-bg: rgba(255,255,255,0.06);
+  --input-border: rgba(255,255,255,0.15);
+  --hover-bg: rgba(102,126,234,0.08);
+  --chart-grid: rgba(255,255,255,0.05);
+  --chart-text: #888;
+}
+[data-theme="light"] {
+  --bg-gradient: linear-gradient(135deg, #f4f7f6, #e2e8f0, #f4f7f6);
+  --text-main: #2d3748;
+  --text-muted: #4a5568;
+  --card-bg: #ffffff;
+  --card-border: #cbd5e0;
+  --modal-bg: #ffffff;
+  --table-head-bg: #edf2f7;
+  --table-border: #e2e8f0;
+  --input-bg: #ffffff;
+  --input-border: #a0aec0;
+  --hover-bg: rgba(102,126,234,0.15);
+  --chart-grid: rgba(0,0,0,0.08);
+  --chart-text: #4a5568;
+}
+
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-gradient(135deg,#0a0a1a,#1a1a3e,#0d0d2b);color:#e0e0e0;min-height:100vh;overflow-x:hidden}
-.header{background:linear-gradient(135deg,#667eea,#764ba2);padding:24px 40px;text-align:center;box-shadow:0 4px 30px rgba(102,126,234,.3)}
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:var(--bg-gradient);color:var(--text-main);min-height:100vh;overflow-x:hidden;transition:background 0.3s, color 0.3s;}
+.header{background:linear-gradient(135deg,#667eea,#764ba2);padding:24px 40px;text-align:center;box-shadow:0 4px 30px rgba(102,126,234,.3);position:relative;}
 .header h1{font-size:1.8rem;color:#fff;margin-bottom:4px}
 .header p{color:rgba(255,255,255,.85);font-size:.9rem}
 .header-badge{display:inline-block;background:rgba(255,255,255,.15);padding:3px 14px;border-radius:20px;font-size:.75rem;color:#fff;margin-top:6px}
 
+.theme-toggle { position:absolute; top:24px; right:30px; background:rgba(255,255,255,0.2); border:1px solid rgba(255,255,255,0.4); color:#fff; padding:6px 14px; border-radius:20px; cursor:pointer; font-size:0.8rem; font-weight:600; transition:0.2s; }
+.theme-toggle:hover { background:rgba(255,255,255,0.3); }
+
 .status-bar{margin:16px 30px;padding:10px 18px;border-radius:10px;font-size:.85rem;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.status-bar.loading{background:rgba(255,210,0,.1);border:1px solid rgba(255,210,0,.25);color:#ffd200}
-.status-bar.success{background:rgba(56,239,125,.1);border:1px solid rgba(56,239,125,.25);color:#38ef7d}
-.status-bar.error{background:rgba(244,92,67,.1);border:1px solid rgba(244,92,67,.25);color:#f45c43}
-.status-spinner{width:14px;height:14px;border:2px solid rgba(255,210,0,.3);border-top-color:#ffd200;border-radius:50%;animation:spin .8s linear infinite}
+.status-bar.loading{background:rgba(255,210,0,.1);border:1px solid rgba(255,210,0,.25);color:#d97706}
+.status-bar.success{background:rgba(56,239,125,.1);border:1px solid rgba(56,239,125,.25);color:#059669}
+.status-bar.error{background:rgba(244,92,67,.1);border:1px solid rgba(244,92,67,.25);color:#e11d48}
+.status-spinner{width:14px;height:14px;border:2px solid rgba(255,210,0,.3);border-top-color:#d97706;border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-.global-search-container{margin:12px 30px;background:rgba(255,255,255,.05);border:1px solid rgba(102,126,234,.4);border-radius:12px;padding:10px 18px;display:flex;align-items:center;gap:12px}
-.global-search-container input{flex:1;background:transparent;border:none;outline:none;color:#fff;font-size:.92rem}
+.global-search-container{margin:12px 30px;background:var(--card-bg);border:1px solid rgba(102,126,234,.4);border-radius:12px;padding:10px 18px;display:flex;align-items:center;gap:12px}
+.global-search-container input{flex:1;background:transparent;border:none;outline:none;color:var(--text-main);font-size:.92rem}
 .global-search-btn{background:linear-gradient(135deg,#667eea,#764ba2);border:none;color:#fff;padding:8px 18px;border-radius:8px;cursor:pointer;font-weight:600}
 
 /* SUMMARY TABLE CSS */
-.summary-table-container {
-    margin: 18px 30px;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(102, 126, 234, 0.4);
-    border-radius: 12px;
-    overflow-x: auto;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-}
-.summary-table {
-    width: 100%;
-    border-collapse: collapse;
-    text-align: center;
-    font-size: 0.95rem;
-    min-width: 800px;
-}
-.summary-table th {
-    background: rgba(102, 126, 234, 0.1);
-    padding: 14px 12px;
-    color: #ddd;
-    font-weight: 600;
-    border-bottom: 1px solid rgba(102, 126, 234, 0.3);
-    border-right: 1px solid rgba(255, 255, 255, 0.05);
-    white-space: nowrap;
-    transition: background 0.2s;
-}
-.summary-table th:hover {
-    background: rgba(102, 126, 234, 0.2);
-}
-.summary-table td {
-    padding: 14px 12px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    border-right: 1px solid rgba(255, 255, 255, 0.05);
-    color: #fff;
-}
-.summary-table td:first-child {
-    text-align: left;
-    font-weight: 700;
-    background: rgba(102, 126, 234, 0.05);
-    color: #a855f7;
-}
-.summary-table th:last-child, .summary-table td:last-child {
-    border-right: none;
-}
-.summary-table tbody tr:hover {
-    background: rgba(102, 126, 234, 0.08);
-}
-.summary-table td.data-cell:hover {
-    background: rgba(255,255,255,0.05);
-}
+.summary-table-container { margin: 18px 30px; background: var(--card-bg); border: 1px solid rgba(102, 126, 234, 0.4); border-radius: 12px; overflow-x: auto; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+.summary-table { width: 100%; border-collapse: collapse; text-align: center; font-size: 0.95rem; min-width: 800px; }
+.summary-table th { background: rgba(102, 126, 234, 0.1); padding: 14px 12px; font-weight: 600; border-bottom: 1px solid rgba(102, 126, 234, 0.3); border-right: 1px solid var(--table-border); white-space: nowrap; }
+.summary-table td { padding: 14px 12px; border-bottom: 1px solid var(--table-border); border-right: 1px solid var(--table-border); color: var(--text-main); }
+.summary-table td:first-child { text-align: left; font-weight: 700; background: rgba(102, 126, 234, 0.05); color: #a855f7; }
+.summary-table th:last-child, .summary-table td:last-child { border-right: none; }
+.summary-table tbody tr:hover { background: var(--hover-bg); }
+.summary-table td.data-cell:hover { background: rgba(102,126,234,0.15); }
 
 .section-header{margin:22px 30px 4px;display:flex;align-items:center;gap:10px}
-.section-header h2{font-size:1.15rem;color:#ddd}
-.section-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(102,126,234,.2),transparent);margin:6px 30px 14px}
+.section-header h2{font-size:1.15rem;color:var(--text-main)}
+.section-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(102,126,234,.3),transparent);margin:6px 30px 14px}
 .dashboard{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin:0 30px 14px}
 @media(max-width:1200px){.dashboard{grid-template-columns:1fr 1fr}}
 @media(max-width:800px){.dashboard{grid-template-columns:1fr}}
-.chart-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:18px}
+.chart-card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:14px;padding:18px}
 .chart-card.full-width{grid-column:1/-1}
-.chart-title{font-size:.95rem;font-weight:600;margin-bottom:12px;color:#ddd}
+.chart-title{font-size:.95rem;font-weight:600;margin-bottom:12px;color:var(--text-main)}
 .chart-container{position:relative;width:100%;height:280px}
 
 .action-block{background:rgba(14,165,233,.08);border-left:4px solid #0ea5e9;padding:16px 20px;margin:20px 30px;border-radius:0 10px 10px 0;font-size:.85rem;line-height:1.6}
-.action-block h4{color:#22d3ee;margin-bottom:8px;font-size:1rem;display:flex;align-items:center;gap:8px}
-.action-item{margin-bottom:6px;padding-left:18px;position:relative}
+.action-block h4{color:#0284c7;margin-bottom:8px;font-size:1rem;display:flex;align-items:center;gap:8px}
+[data-theme="dark"] .action-block h4 { color: #22d3ee; }
+.action-item{margin-bottom:6px;padding-left:18px;position:relative;color:var(--text-main)}
 .action-item::before{content:'→';position:absolute;left:0;color:#0ea5e9;font-weight:bold}
 
 .flow-container{padding:8px}
 .flow-row{display:flex;align-items:center;gap:8px;margin:6px 0;padding:8px 12px;border-radius:8px;cursor:pointer}
-.flow-row:hover{background:rgba(255,255,255,.04)}
+.flow-row:hover{background:var(--hover-bg)}
 .flow-bar-container{flex:1}
-.flow-bar{height:22px;border-radius:4px;display:flex;align-items:center;padding-left:8px;font-size:.7rem;font-weight:600}
-.flow-bar.partial{background:linear-gradient(90deg,rgba(168,85,247,.25),rgba(168,85,247,.55))}
-.flow-bar.churned{background:linear-gradient(90deg,rgba(244,92,67,.25),rgba(244,92,67,.55))}
-.flow-label{font-size:.72rem;color:#999;min-width:110px}
+.flow-bar{height:22px;border-radius:4px;display:flex;align-items:center;padding-left:8px;font-size:.7rem;font-weight:600; color:#fff;}
+.flow-bar.partial{background:linear-gradient(90deg,rgba(168,85,247,.4),rgba(168,85,247,.8))}
+.flow-bar.churned{background:linear-gradient(90deg,rgba(244,92,67,.4),rgba(244,92,67,.8))}
+.flow-label{font-size:.72rem;color:var(--text-muted);min-width:110px}
 .flow-value{font-size:.82rem;font-weight:700;min-width:50px;text-align:right}
 
 .venn-container{display:flex;justify-content:center;align-items:center;height:260px;position:relative}
 .venn-circle{width:160px;height:160px;border-radius:50%;position:absolute;display:flex;align-items:center;justify-content:center;font-weight:700;cursor:pointer}
-.venn-active{background:rgba(56,239,125,.18);border:2px solid rgba(56,239,125,.45);left:calc(50% - 140px)}
-.venn-expired{background:rgba(244,92,67,.18);border:2px solid rgba(244,92,67,.45);left:calc(50% - 20px)}
-.venn-overlap-zone{position:absolute;background:rgba(168,85,247,.28);border:2px solid rgba(168,85,247,.55);border-radius:50%;width:80px;height:160px;left:calc(50% - 80px);display:flex;align-items:center;justify-content:center;font-weight:700;color:#a855f7;clip-path:ellipse(50% 50%);cursor:pointer}
+.venn-active{background:rgba(56,239,125,.15);border:2px solid rgba(56,239,125,.5);left:calc(50% - 140px)}
+.venn-expired{background:rgba(244,92,67,.15);border:2px solid rgba(244,92,67,.5);left:calc(50% - 20px)}
+.venn-overlap-zone{position:absolute;background:rgba(168,85,247,.25);border:2px solid rgba(168,85,247,.6);border-radius:50%;width:80px;height:160px;left:calc(50% - 80px);display:flex;align-items:center;justify-content:center;font-weight:700;color:#a855f7;clip-path:ellipse(50% 50%);cursor:pointer}
 
 /* MODAL & 360 POPUP */
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(10,10,26,.95);z-index:2000;justify-content:center;align-items:center;padding:16px}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:2000;justify-content:center;align-items:center;padding:16px}
 .modal-overlay.show{display:flex}
-.modal{background:#1a1a3e;border:1px solid rgba(255,255,255,.12);border-radius:12px;width:100%;max-width:1550px;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.modal{background:var(--modal-bg);border:1px solid var(--card-border);border-radius:12px;width:100%;max-width:1550px;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.5)}
 .modal-header{background:linear-gradient(135deg,#667eea,#764ba2);padding:14px 20px;display:flex;justify-content:space-between;align-items:center}
 .modal-header h3{color:#fff;font-size:1.05rem}
 .modal-close{background:rgba(255,255,255,.2);border:none;color:#fff;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:background 0.2s}
 .modal-close:hover{background:rgba(255,255,255,.3)}
-.modal-stats{display:block; padding:0; background:rgba(255,255,255,.02);}
+.modal-stats{display:block; padding:0; background:transparent;}
 
-.table-controls{display:flex;gap:12px;padding:12px 20px;background:rgba(255,255,255,.02);border-bottom:1px solid rgba(255,255,255,.06);align-items:center;flex-wrap:wrap}
-.ctrl-input{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:#fff;padding:8px 12px;border-radius:6px;font-size:.8rem;outline:none}
+.table-controls{display:flex;gap:12px;padding:12px 20px;background:transparent;border-bottom:1px solid var(--table-border);align-items:center;flex-wrap:wrap}
+.ctrl-input{background:var(--input-bg);border:1px solid var(--input-border);color:var(--text-main);padding:8px 12px;border-radius:6px;font-size:.8rem;outline:none}
 .ctrl-input:focus{border-color:#667eea}
-.ctrl-input option { background-color:#1a1a3e; color:#fff; }
+.ctrl-input option { background-color:var(--modal-bg); color:var(--text-main); }
 
 .modal-body{padding:0;overflow-y:auto;flex:1;overflow-x:auto}
 .modal-table{width:100%;border-collapse:collapse;font-size:.74rem;min-width:1450px}
-.modal-table thead th{background:rgba(30,30,60,.97);padding:9px 12px;text-align:left;color:#999;font-weight:600;text-transform:uppercase;font-size:.65rem;position:sticky;top:0;z-index:1;white-space:nowrap;border-bottom:1px solid rgba(255,255,255,.05)}
-.modal-table tbody td{padding:7px 12px;border-bottom:1px solid rgba(255,255,255,.03);vertical-align:middle;color:#fff;}
-.modal-table tbody tr:hover{background:rgba(102,126,234,.06)}
+.modal-table thead th{background:var(--table-head-bg);padding:9px 12px;text-align:left;color:var(--text-muted);font-weight:600;text-transform:uppercase;font-size:.65rem;position:sticky;top:0;z-index:1;white-space:nowrap;border-bottom:1px solid var(--table-border)}
+.modal-table tbody td{padding:7px 12px;border-bottom:1px solid var(--table-border);vertical-align:middle;color:var(--text-main);}
+.modal-table tbody tr:hover{background:var(--hover-bg)}
 
-.pagination-controls{display:flex;justify-content:space-between;align-items:center;padding:10px 20px;background:rgba(255,255,255,.03);border-top:1px solid rgba(255,255,255,.06)}
-.page-btn{background:rgba(255,255,255,.08);border:none;color:#fff;padding:6px 14px;border-radius:4px;cursor:pointer;font-size:.8rem;transition:.2s}
-.page-btn:hover:not(:disabled){background:rgba(102,126,234,.4)}
+.pagination-controls{display:flex;justify-content:space-between;align-items:center;padding:10px 20px;background:transparent;border-top:1px solid var(--table-border)}
+.page-btn{background:var(--input-bg);border:1px solid var(--input-border);color:var(--text-main);padding:6px 14px;border-radius:4px;cursor:pointer;font-size:.8rem;transition:.2s}
+.page-btn:hover:not(:disabled){background:rgba(102,126,234,.2); border-color:#667eea;}
 .page-btn:disabled{opacity:0.4;cursor:not-allowed}
-.page-info{font-size:.8rem;color:#aaa}
+.page-info{font-size:.8rem;color:var(--text-muted)}
 
 .compguid-cell{font-family:monospace;font-size:.7rem;color:#a855f7;text-decoration:underline;cursor:pointer;word-break:break-all}
-.gstin-cell{font-family:monospace;font-size:.72rem;color:#22d3ee;text-decoration:underline;cursor:pointer;word-break:break-all}
-.combo-cell{font-family:monospace;font-size:.68rem;color:#38ef7d;word-break:break-all;background:rgba(56,239,125,.05);padding:4px 6px;border-radius:4px;border:1px dashed rgba(56,239,125,.2);cursor:pointer}
+.gstin-cell{font-family:monospace;font-size:.72rem;color:#0284c7;text-decoration:underline;cursor:pointer;word-break:break-all}
+[data-theme="dark"] .gstin-cell { color: #22d3ee; }
 
-.linked-summary-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:6px;font-size:.7rem;cursor:pointer;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);transition:all 0.2s;white-space:nowrap}
-.linked-summary-badge:hover{background:rgba(102,126,234,.2);border-color:#667eea;color:#fff;transform:translateY(-1px)}
+.combo-cell{font-family:monospace;font-size:.68rem;color:#059669;word-break:break-all;background:rgba(56,239,125,.1);padding:4px 6px;border-radius:4px;border:1px dashed rgba(56,239,125,.3);cursor:pointer}
+[data-theme="dark"] .combo-cell { color: #38ef7d; }
+
+.linked-summary-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:6px;font-size:.7rem;cursor:pointer;background:var(--input-bg);border:1px solid var(--input-border);transition:all 0.2s;white-space:nowrap}
+.linked-summary-badge:hover{background:rgba(102,126,234,.15);border-color:#667eea;color:#667eea;transform:translateY(-1px)}
 
 .status-badge{padding:3px 8px;border-radius:10px;font-size:.62rem;font-weight:600;white-space:nowrap;display:inline-block}
-.status-active{background:rgba(56,239,125,.12);color:#38ef7d;border:1px solid rgba(56,239,125,.35)}
-.status-expired{background:rgba(244,92,67,.12);color:#f45c43;border:1px solid rgba(244,92,67,.35)}
-.status-rdp{background:rgba(56,189,248,.15);color:#38bdf8;border:1px solid rgba(56,189,248,.4);margin-left:4px;cursor:help}
-.status-newsales{background:rgba(168,85,247,.15);color:#a855f7;border:1px solid rgba(168,85,247,.4);margin-left:4px;cursor:help}
-.status-ghost{background:rgba(244,63,94,.15);color:#f43f5e;border:1px solid rgba(244,63,94,.4);margin-left:4px}
+.status-active{background:rgba(56,239,125,.15);color:#059669;border:1px solid rgba(56,239,125,.4)}
+[data-theme="dark"] .status-active { color: #38ef7d; }
+.status-expired{background:rgba(244,92,67,.15);color:#e11d48;border:1px solid rgba(244,92,67,.4)}
+[data-theme="dark"] .status-expired { color: #f45c43; }
+.status-rdp{background:rgba(56,189,248,.15);color:#0284c7;border:1px solid rgba(56,189,248,.4);margin-left:4px;cursor:help}
+[data-theme="dark"] .status-rdp { color: #38bdf8; }
+.status-newsales{background:rgba(168,85,247,.15);color:#7e22ce;border:1px solid rgba(168,85,247,.4);margin-left:4px;cursor:help}
+[data-theme="dark"] .status-newsales { color: #a855f7; }
+.status-ghost{background:rgba(244,63,94,.15);color:#e11d48;border:1px solid rgba(244,63,94,.4);margin-left:4px}
+[data-theme="dark"] .status-ghost { color: #f43f5e; }
 
 .chip-wrap{display:flex;gap:4px;flex-wrap:wrap;max-width:250px}
-.chip-act{background:rgba(56,239,125,.1);color:#38ef7d;border:1px solid rgba(56,239,125,.25);padding:2px 6px;border-radius:4px;font-size:.65rem;white-space:nowrap}
-.header-360{font-size:1rem;font-weight:700;padding:12px 20px;margin-top:10px;border-radius:6px 6px 0 0}
-.header-360.act{background:rgba(56,239,125,.1);color:#38ef7d;border-left:4px solid #38ef7d}
-.header-360.exp{background:rgba(244,92,67,.1);color:#f45c43;border-left:4px solid #f45c43}
-.modal-footer{padding:14px 20px;background:rgba(255,255,255,.02);border-top:1px solid rgba(255,255,255,.06);display:flex;justify-content:flex-end;gap:12px}
-.modal-btn{padding:8px 16px;border-radius:6px;border:1px solid rgba(255,255,255,.15);background:transparent;color:#fff;font-size:.8rem;cursor:pointer;transition:.2s}
-.modal-btn.primary{background:linear-gradient(135deg,#667eea,#764ba2);border:none}
-.modal-btn:hover{background:rgba(255,255,255,.1)}
-.modal-btn.primary:hover{opacity:.9}
+.chip-act{background:rgba(56,239,125,.15);color:#059669;border:1px solid rgba(56,239,125,.3);padding:2px 6px;border-radius:4px;font-size:.65rem;white-space:nowrap}
+[data-theme="dark"] .chip-act { color: #38ef7d; }
 
-.data-table-container{margin:14px 30px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;overflow:hidden}
-.table-header{padding:14px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,.06);flex-wrap:wrap;gap:8px}
+.header-360{font-size:1rem;font-weight:700;padding:12px 20px;margin-top:10px;border-radius:6px 6px 0 0}
+.header-360.act{background:rgba(56,239,125,.1);color:#059669;border-left:4px solid #059669}
+[data-theme="dark"] .header-360.act{ color:#38ef7d; border-left-color: #38ef7d;}
+.header-360.exp{background:rgba(244,92,67,.1);color:#e11d48;border-left:4px solid #e11d48}
+[data-theme="dark"] .header-360.exp{ color:#f45c43; border-left-color: #f45c43;}
+
+.modal-footer{padding:14px 20px;background:transparent;border-top:1px solid var(--table-border);display:flex;justify-content:flex-end;gap:12px}
+.modal-btn{padding:8px 16px;border-radius:6px;border:1px solid var(--input-border);background:var(--input-bg);color:var(--text-main);font-size:.8rem;cursor:pointer;transition:.2s}
+.modal-btn.primary{background:linear-gradient(135deg,#667eea,#764ba2);border:none;color:#fff;}
+.modal-btn:hover{background:var(--hover-bg); border-color:#667eea;}
+.modal-btn.primary:hover{opacity:.9; color:#fff;}
+
+.data-table-container{margin:14px 30px;background:var(--card-bg);border:1px solid var(--card-border);border-radius:14px;overflow:hidden}
+.table-header{padding:14px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--table-border);flex-wrap:wrap;gap:8px}
 .table-tabs{display:flex;gap:5px;flex-wrap:wrap}
-.table-tab{padding:4px 11px;border-radius:16px;border:1px solid rgba(255,255,255,.12);background:transparent;color:#aaa;cursor:pointer;font-size:.75rem}
+.table-tab{padding:4px 11px;border-radius:16px;border:1px solid var(--input-border);background:transparent;color:var(--text-muted);cursor:pointer;font-size:.75rem}
 .table-tab.active{background:linear-gradient(135deg,#667eea,#764ba2);border-color:transparent;color:#fff}
 .table-tab:hover:not(.active){border-color:#667eea;color:#667eea}
 .table-scroll{max-height:500px;overflow:auto}
-.download-section{margin:12px 30px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
-.btn-download{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#bbb;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;transition:0.2s}
-.btn-download:hover{background:rgba(102,126,234,.15);border-color:#667eea;color:#fff}
 
-.loading-overlay{display:none;position:fixed;inset:0;background:rgba(10,10,26,.92);z-index:3000;justify-content:center;align-items:center;flex-direction:column;gap:14px}
+.download-section{margin:12px 30px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.btn-download{background:var(--card-bg);border:1px solid var(--card-border);color:var(--text-main);padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;transition:0.2s}
+.btn-download:hover{background:rgba(102,126,234,.15);border-color:#667eea;color:#667eea}
+
+.loading-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:3000;justify-content:center;align-items:center;flex-direction:column;gap:14px}
 .loading-overlay.show{display:flex}
-footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
+footer{text-align:center;padding:20px;color:var(--text-muted);font-size:.72rem}
+
+/* Specific text color classes to map properly in Light/Dark mode */
+.txt-red { color: #e11d48; } [data-theme="dark"] .txt-red { color: #f45c43; }
+.txt-green { color: #059669; } [data-theme="dark"] .txt-green { color: #38ef7d; }
+.txt-cyan { color: #0284c7; } [data-theme="dark"] .txt-cyan { color: #22d3ee; }
+.txt-purple { color: #7e22ce; } [data-theme="dark"] .txt-purple { color: #a855f7; }
+.txt-yellow { color: #d97706; } [data-theme="dark"] .txt-yellow { color: #ffd200; }
 </style>
 </head>
 <body>
@@ -224,7 +240,7 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
     
     <div class="pagination-controls">
         <button class="page-btn" id="modPrevBtn" onclick="modChangePage(-1)">◀ Previous 50</button>
-        <div class="page-info"><span id="modalRecordCount" style="margin-right: 15px; color: #888;"></span> <span id="modPageInfo">Page 1 of 1</span></div>
+        <div class="page-info"><span id="modalRecordCount" style="margin-right: 15px;"></span> <span id="modPageInfo">Page 1 of 1</span></div>
         <button class="page-btn" id="modNextBtn" onclick="modChangePage(1)">Next 50 ▶</button>
     </div>
   </div>
@@ -237,7 +253,7 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
       <h3 id="acc360Title">🏢 Account 360° Complete History</h3>
       <button class="modal-close" onclick="closeModal('account360Modal')">✕</button>
     </div>
-    <div class="modal-stats" id="acc360Stats" style="display:flex; padding:10px 20px;"></div>
+    <div class="modal-stats" id="acc360Stats" style="display:flex; padding:10px 20px; background:transparent;"></div>
     <div class="modal-body" style="padding-bottom:20px;">
         <div id="acc360Content"></div>
     </div>
@@ -251,7 +267,8 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
 <div class="header">
   <h1>📊 Enterprise Customer Churn & Retention Dashboard</h1>
   <p>Deduplicated Precision Engine · Partner Churn Rankings · Interactive Data Labels</p>
-  <div class="header-badge">v44.0 — Unified Expired Base Synergy Across All Charts</div>
+  <div class="header-badge">v46.0 — Math Synced Omni-Click & Light/Dark Mode</div>
+  <button id="themeToggleBtn" class="theme-toggle" onclick="toggleTheme()">☀️ Light Mode</button>
 </div>
 
 <div class="status-bar loading" id="statusBar">
@@ -286,32 +303,33 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
 <div class="section-header"><h2>🤝 Partner Performance & Migration Analytics</h2></div>
 <div class="section-divider"></div>
 <div class="dashboard">
-  <!-- CHART 1 -->
+  <!-- OMNI-CHART 1 -->
   <div class="chart-card full-width">
-    <div class="chart-title" style="cursor:pointer" title="Click to interact">🏆 Top Partners by Pure Churn (vs Expired Base)</div>
-    <div style="font-size: 0.75rem; color: #aaa; margin-bottom: 10px;">
-        <strong>Red:</strong> Total Expired Subscriptions &nbsp;|&nbsp; <strong>Line:</strong> Pure Churn % (Pure Churn / Total Expired)<br>
-        <strong>Click a bar</strong> to drill-down and see the exact breakdown in the popup summary table.
+    <div class="chart-title" style="cursor:pointer" title="Click to interact">🏆 Top Partners: Comprehensive Churn & Recovery (%)</div>
+    <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px;">
+        <strong>Red:</strong> Total Expired Base &nbsp;|&nbsp; 
+        <strong>Yellow:</strong> Pure Churn % &nbsp;|&nbsp; 
+        <strong>Cyan:</strong> RDP Shift % &nbsp;|&nbsp; 
+        <strong>Purple:</strong> New Sales Shift %<br>
+        <strong>Click anywhere on the chart</strong> to open the complete portfolio overview for that Partner.
     </div>
-    <div class="chart-container"><canvas id="partnerChurnChart"></canvas></div>
+    <div class="chart-container" style="height:320px;"><canvas id="partnerChurnChart"></canvas></div>
   </div>
   
-  <!-- CHART 2 -->
   <div class="chart-card">
     <div class="chart-title" style="cursor:pointer" title="Click to interact">🔄 Top Partners by RDP Shift (vs Expired Base)</div>
-    <div style="font-size: 0.7rem; color: #aaa; margin-bottom: 8px;">
-        <strong>Red:</strong> Pure Churn (Expired) &nbsp;|&nbsp; <strong>Cyan:</strong> Shifted to RDP (Expired) &nbsp;|&nbsp; <strong>Line:</strong> RDP Shift %<br>
-        <strong>Click a bar or line</strong> to drill-down.
+    <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 8px;">
+        <strong>Red:</strong> Pure Churn &nbsp;|&nbsp; <strong>Cyan:</strong> Shifted to RDP &nbsp;|&nbsp; <strong>Line:</strong> RDP Shift %<br>
+        <strong>Click a bar</strong> to view Partner's complete base.
     </div>
     <div class="chart-container"><canvas id="partnerRdpChart"></canvas></div>
   </div>
 
-  <!-- CHART 3 -->
   <div class="chart-card">
     <div class="chart-title" style="cursor:pointer" title="Click to interact">🆕 Top Partners by New Sales Shift (vs Expired Base)</div>
-    <div style="font-size: 0.7rem; color: #aaa; margin-bottom: 8px;">
-        <strong>Red:</strong> Pure Churn (Expired) &nbsp;|&nbsp; <strong>Purple:</strong> Shifted to New Sale (Expired) &nbsp;|&nbsp; <strong>Line:</strong> NS Shift %<br>
-        <strong>Click a bar or line</strong> to drill-down.
+    <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 8px;">
+        <strong>Red:</strong> Pure Churn &nbsp;|&nbsp; <strong>Purple:</strong> Shifted to New Sale &nbsp;|&nbsp; <strong>Line:</strong> NS Shift %<br>
+        <strong>Click a bar</strong> to view Partner's complete base.
     </div>
     <div class="chart-container"><canvas id="partnerNsChart"></canvas></div>
   </div>
@@ -341,7 +359,7 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
       <button class="table-tab" onclick="setMainTab('ghost',this)">👻 Ghost Churn</button>
       <button class="table-tab" onclick="setMainTab('atrisk',this)">⚠️ At Risk</button>
     </div>
-    <div style="font-size:.8rem;color:#888" id="mainTableCount"></div>
+    <div style="font-size:.8rem;color:var(--text-muted)" id="mainTableCount"></div>
   </div>
   
   <div class="table-controls">
@@ -383,7 +401,7 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
           <th>Status</th>
           <th>Linked by CompGUID</th>
           <th>Linked by GSTIN</th>
-          <th style="color:#38ef7d">Active Serials (Combo)</th>
+          <th class="txt-green">Active Serials (Combo)</th>
         </tr>
       </thead>
       <tbody id="mainTableBody"></tbody>
@@ -397,7 +415,7 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
   </div>
 </div>
 
-<footer>Customer Churn Dashboard v44.0 · Contextual Pivot Summaries & Logic Engine</footer>
+<footer>Customer Churn Dashboard v46.0 · Math-Synced Omni-Click Engine & Light Mode</footer>
 
 <script>
 Chart.register(ChartDataLabels);
@@ -411,6 +429,30 @@ window.stateGST = {
   '26':'Dadra & Nagar Haveli','27':'Maharashtra','29':'Karnataka','30':'Goa','31':'Lakshadweep',
   '32':'Kerala','33':'Tamil Nadu','34':'Puducherry','35':'Andaman & Nicobar','36':'Telangana','37':'Andhra Pradesh','38':'Ladakh'
 };
+
+function getThemeColors() {
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    return {
+        text: isLight ? '#4a5568' : '#888',
+        grid: isLight ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.05)',
+        yellow: isLight ? '#d97706' : '#ffd200',
+        cyan: isLight ? '#0284c7' : '#38bdf8',
+        purple: isLight ? '#7e22ce' : '#a855f7'
+    };
+}
+
+function toggleTheme() {
+    const root = document.documentElement;
+    const btn = document.getElementById('themeToggleBtn');
+    if (root.getAttribute('data-theme') === 'dark') {
+        root.setAttribute('data-theme', 'light');
+        btn.innerHTML = '🌙 Dark Mode';
+    } else {
+        root.setAttribute('data-theme', 'dark');
+        btn.innerHTML = '☀️ Light Mode';
+    }
+    renderCharts(); // Re-render charts with new theme colors
+}
 
 function getStateName(gstin) {
     if (!gstin || typeof gstin !== 'string' || gstin.length < 2) return 'Other';
@@ -436,7 +478,7 @@ function getTenureLabel(d) {
 function getTenureText(d) {
     const y = getTenureYrs(d);
     if (y < 0) return '<span style="color:#555">N/A</span>';
-    return `<span style="color:#22d3ee;font-weight:600">${Math.max(0, y).toFixed(1)} yrs</span>`;
+    return `<span class="txt-cyan" style="font-weight:600">${Math.max(0, y).toFixed(1)} yrs</span>`;
 }
 
 function hasRDP(d) {
@@ -786,15 +828,16 @@ function rowHtml(d) {
     const escGst = (d.gstin || '').replace(/'/g, "\\'");
     const escCombo = (d.comboKey || '').replace(/'/g, "\\'");
     const lastUseStr = d.lastUseDate ? formatDateFast(d.lastUseDate) : '<span style="color:#555">N/A</span>';
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
     
     return `<tr>
-      <td style="font-size:.7rem; color:#fff;"><b style="color:#fff">${d.ownerPartner}</b><br><span style="color:#ffd200">${d.categoryName}</span><br>Tenure: ${getTenureText(d)}</td>
+      <td style="font-size:.7rem;"><b>${d.ownerPartner}</b><br><span class="txt-yellow">${d.categoryName}</span><br>Tenure: ${getTenureText(d)}</td>
       <td class="compguid-cell" onclick="openAccount360('comp','${esc}')">${d.compGUID || ''}</td>
       <td class="gstin-cell" onclick="openAccount360('gst','${escGst}')">${d.gstin || '<span style="color:#555">N/A</span>'}</td>
       <td class="combo-cell" onclick="openAccount360('combo','${escCombo}')">${d.comboKey}</td>
-      <td style="color:#fff">${d.subscriptionId || ''}</td>
-      <td style="color:#fff">${lastUseStr}</td>
-      <td><b style="color:${d.source === 'expired' ? '#f45c43' : '#38ef7d'}">${d.expStr}</b></td>
+      <td>${d.subscriptionId || ''}</td>
+      <td>${lastUseStr}</td>
+      <td><b class="${d.source === 'expired' ? 'txt-red' : 'txt-green'}">${d.expStr}</b></td>
       <td>${statusCell(d)}</td>
       <td><div class="linked-summary-badge" onclick="openAccount360('comp', '${esc}')">🔍 360° Account View</div></td>
       <td><div class="linked-summary-badge" onclick="openAccount360('gst', '${escGst}')">🔍 360° Entity View</div></td>
@@ -814,11 +857,11 @@ function openAccount360(type, val) {
     const expiredSubs = matches.filter(d => d.source === 'expired');
 
     safeSetHTML('acc360Stats', `
-        <div class="modal-stat"><div class="modal-stat-value" style="color:#fff">${matches.length}</div><div class="modal-stat-label">Total Licenses</div></div>
-        <div class="modal-stat"><div class="modal-stat-value" style="color:#38ef7d">${activeSubs.length}</div><div class="modal-stat-label">Active Licenses</div></div>
-        <div class="modal-stat"><div class="modal-stat-value" style="color:#f45c43">${expiredSubs.length}</div><div class="modal-stat-label">Expired Licenses</div></div>
-        <div class="modal-stat" style="margin-left:auto; text-align:right; border-left:1px solid rgba(255,255,255,0.1); padding-left:20px;">
-            <div class="modal-stat-value" style="color:${activeSubs.length > 0 && expiredSubs.length > 0 ? '#a855f7' : (expiredSubs.length > 0 ? '#f45c43' : '#38ef7d')}">
+        <div class="modal-stat"><div class="modal-stat-value">${matches.length}</div><div class="modal-stat-label">Total Licenses</div></div>
+        <div class="modal-stat"><div class="modal-stat-value txt-green">${activeSubs.length}</div><div class="modal-stat-label">Active Licenses</div></div>
+        <div class="modal-stat"><div class="modal-stat-value txt-red">${expiredSubs.length}</div><div class="modal-stat-label">Expired Licenses</div></div>
+        <div class="modal-stat" style="margin-left:auto; text-align:right; border-left:1px solid var(--table-border); padding-left:20px;">
+            <div class="modal-stat-value ${activeSubs.length > 0 && expiredSubs.length > 0 ? 'txt-purple' : (expiredSubs.length > 0 ? 'txt-red' : 'txt-green')}">
                 ${activeSubs.length > 0 && expiredSubs.length > 0 ? '🟡 Partial Churn' : (expiredSubs.length > 0 ? '🔴 Full Churn' : '🟢 Fully Active')}
             </div>
             <div class="modal-stat-label">Account Health</div>
@@ -831,12 +874,12 @@ function openAccount360(type, val) {
         <div style="overflow-x:auto; padding:0 20px;"><table class="modal-table" style="margin-bottom:24px; min-width:1000px;">
             <thead><tr><th>Subscription No</th><th>Category</th><th>Partner</th><th>Install Date</th><th>BLS Expiry Date</th><th>Last Used Date</th><th>Status</th></tr></thead>
             <tbody>${activeSubs.map(d => `<tr>
-              <td style="font-weight:700; color:#38ef7d">${d.subscriptionId}</td>
-              <td style="color:#fff">${d.categoryName}</td>
-              <td style="color:#fff">${d.ownerPartner}</td>
-              <td style="color:#fff">${d.installDate ? formatDateFast(d.installDate) : '<span style="color:#555">N/A</span>'}</td>
-              <td><b style="color:#38ef7d">${d.expStr}</b></td>
-              <td style="color:#fff">${d.lastUseDate ? formatDateFast(d.lastUseDate) : '<span style="color:#555">N/A</span>'}</td>
+              <td class="txt-green" style="font-weight:700;">${d.subscriptionId}</td>
+              <td>${d.categoryName}</td>
+              <td>${d.ownerPartner}</td>
+              <td>${d.installDate ? formatDateFast(d.installDate) : '<span style="color:#555">N/A</span>'}</td>
+              <td><b class="txt-green">${d.expStr}</b></td>
+              <td>${d.lastUseDate ? formatDateFast(d.lastUseDate) : '<span style="color:#555">N/A</span>'}</td>
               <td>${statusCell(d)}</td>
             </tr>`).join('')}</tbody>
         </table></div>`;
@@ -846,12 +889,12 @@ function openAccount360(type, val) {
         <div style="overflow-x:auto; padding:0 20px;"><table class="modal-table" style="min-width:1000px;">
             <thead><tr><th>Subscription No</th><th>Category</th><th>Partner</th><th>Install Date</th><th>BLS Expiry Date</th><th>Last Used Date</th><th>Status</th></tr></thead>
             <tbody>${expiredSubs.map(d => `<tr>
-              <td style="font-weight:700; color:#f45c43">${d.subscriptionId}</td>
-              <td style="color:#fff">${d.categoryName}</td>
-              <td style="color:#fff">${d.ownerPartner}</td>
-              <td style="color:#fff">${d.installDate ? formatDateFast(d.installDate) : '<span style="color:#555">N/A</span>'}</td>
-              <td><b style="color:#f45c43">${d.expStr}</b></td>
-              <td style="color:#fff">${d.lastUseDate ? formatDateFast(d.lastUseDate) : '<span style="color:#555">N/A</span>'}</td>
+              <td class="txt-red" style="font-weight:700;">${d.subscriptionId}</td>
+              <td>${d.categoryName}</td>
+              <td>${d.ownerPartner}</td>
+              <td>${d.installDate ? formatDateFast(d.installDate) : '<span style="color:#555">N/A</span>'}</td>
+              <td><b class="txt-red">${d.expStr}</b></td>
+              <td>${d.lastUseDate ? formatDateFast(d.lastUseDate) : '<span style="color:#555">N/A</span>'}</td>
               <td>${statusCell(d)}</td>
             </tr>`).join('')}</tbody>
         </table></div>`;
@@ -946,30 +989,12 @@ function renderMainTablePage() {
     if(p) p.disabled = (mainPage === 1); if(n) n.disabled = (mainPage === totalPages);
 }
 
-function drillByPartnerChart(partner, context) {
-    let matches = []; let title = '';
-
-    if(context === 'PARTNER_EXPIRED') {
-        matches = expiredData.filter(d => d.ownerPartner === partner);
-        title = `🔴 Total Expired Base: ${partner}`;
-    } 
-    else if(context === 'RDP_SHIFT') {
-        matches = expiredData.filter(d => d.ownerPartner === partner && d.shiftedToRDP);
-        title = `🔄 RDP Shift Drill-Down: ${partner} (Expired Base Only)`;
-    }
-    else if(context === 'PURE_CHURN_RDP') {
-        matches = expiredData.filter(d => d.ownerPartner === partner && !d.shiftedToRDP);
-        title = `🔴 Pure Churn (No RDP) Drill-Down: ${partner}`;
-    }
-    else if(context === 'NS_SHIFT') {
-        matches = expiredData.filter(d => d.ownerPartner === partner && d.shiftedToNewSales);
-        title = `🆕 New Sales Shift Drill-Down: ${partner} (Expired Base Only)`;
-    }
-    else if(context === 'PURE_CHURN_NS') {
-        matches = expiredData.filter(d => d.ownerPartner === partner && !d.shiftedToNewSales);
-        title = `🔴 Pure Churn (No New Sales) Drill-Down: ${partner}`;
-    }
-
+// OMNI-CLICK DRILL DOWN LOGIC
+function drillByPartnerChart(partner) {
+    // ALWAYS load the entire portfolio for the partner to populate the dynamic table correctly!
+    const matches = expiredData.filter(d => d.ownerPartner === partner)
+                    .concat(activeData.filter(d => d.ownerPartner === partner));
+    const title = `🏢 Complete Portfolio View: ${partner}`;
     openDrillDown(title, matches);
 }
 
@@ -977,64 +1002,71 @@ function openDrillDown(title, data) {
     modalBaseData = data; 
     safeSetText('modalTitle', title);
     
-    // Dynamic Table Calculations based on the drilled-down subset
+    // Dynamic Table Calculations based on exactly what Chart equations use!
     const totSubs = data.length;
+    let expSubs = 0, actSubs = 0;
     let fullChurnSubs = 0, partialChurnSubs = 0, rdpSubs = 0, nsSubs = 0, ghostSubs = 0, riskSubs = 0;
     
     const today = new Date();
     const thirtyDaysFromNow = today.getTime() + 30*86400000;
 
     data.forEach(d => {
-        if (analysisResults.fullChurnSet.has(d.compGUID) && d.source === 'expired') fullChurnSubs++;
-        if (analysisResults.overlappingCompGUIDSet.has(d.compGUID)) partialChurnSubs++;
-        if (d.shiftedToRDP || (d.source === 'active' && hasRDP(d))) rdpSubs++;
-        if (d.shiftedToNewSales || d.isNewSales) nsSubs++;
-        if (d.isGhost) ghostSubs++;
-        if (d.source === 'active' && d.currentBlsExpiry && d.currentBlsExpiry.getTime() >= today.getTime() && d.currentBlsExpiry.getTime() <= thirtyDaysFromNow) riskSubs++;
+        if(d.source === 'expired') {
+            expSubs++;
+            if(analysisResults.fullChurnSet.has(d.compGUID)) fullChurnSubs++;
+            if(analysisResults.overlappingCompGUIDSet.has(d.compGUID)) partialChurnSubs++;
+            if(d.shiftedToRDP) rdpSubs++;
+            if(d.shiftedToNewSales) nsSubs++;
+        } else {
+            actSubs++;
+            if(analysisResults.overlappingCompGUIDSet.has(d.compGUID)) partialChurnSubs++;
+            if(d.isGhost) ghostSubs++;
+            if(d.currentBlsExpiry && d.currentBlsExpiry.getTime() >= today.getTime() && d.currentBlsExpiry.getTime() <= thirtyDaysFromNow) riskSubs++;
+        }
     });
 
-    const fcPct = totSubs ? ((fullChurnSubs / totSubs) * 100).toFixed(1) : 0;
+    const fcPct = expSubs ? ((fullChurnSubs / expSubs) * 100).toFixed(1) : 0;
     const pcPct = totSubs ? ((partialChurnSubs / totSubs) * 100).toFixed(1) : 0;
-    const rdpPct = totSubs ? ((rdpSubs / totSubs) * 100).toFixed(1) : 0;
-    const nsPct = totSubs ? ((nsSubs / totSubs) * 100).toFixed(1) : 0;
-    const ghPct = totSubs ? ((ghostSubs / totSubs) * 100).toFixed(1) : 0;
-    const rkPct = totSubs ? ((riskSubs / totSubs) * 100).toFixed(1) : 0;
+    const rdpPct = expSubs ? ((rdpSubs / expSubs) * 100).toFixed(1) : 0;
+    const nsPct = expSubs ? ((nsSubs / expSubs) * 100).toFixed(1) : 0;
+    const ghPct = actSubs ? ((ghostSubs / actSubs) * 100).toFixed(1) : 0;
+    const rkPct = actSubs ? ((riskSubs / actSubs) * 100).toFixed(1) : 0;
 
     const summaryHtml = `
     <div class="summary-table-container" style="margin: 0; border-radius: 0; box-shadow: none; border-left: none; border-right: none; border-top: none;">
       <table class="summary-table">
         <thead>
           <tr>
-            <th style="color:#fff;">Metrics Base</th>
-            <th style="color:#667eea;">Total Subs</th>
-            <th style="color:#f45c43;">Full Churn</th>
-            <th style="color:#a855f7;">Partial Churn</th>
-            <th style="color:#38bdf8;">Shifted to RDP</th>
-            <th style="color:#22d3ee;">Shift to New Sales</th>
-            <th style="color:#f43f5e;">Ghost Churn</th>
-            <th style="color:#ffd200;">At Risk</th>
+            <th>Metrics Base</th>
+            <th class="txt-purple">Total Subs</th>
+            <th class="txt-red">Full Churn</th>
+            <th class="txt-purple">Partial Churn</th>
+            <th class="txt-cyan">Shifted to RDP</th>
+            <th class="txt-cyan">Shift to New Sales</th>
+            <th class="txt-red">Ghost Churn</th>
+            <th class="txt-yellow">At Risk</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td style="color:#a855f7; font-weight:700;">Absolute Numbers</td>
-            <td style="font-size:1.1rem; font-weight:bold; color:#fff;">${totSubs.toLocaleString()}</td>
-            <td style="font-size:1.1rem; font-weight:bold; color:#fff;">${fullChurnSubs.toLocaleString()}</td>
-            <td style="font-size:1.1rem; font-weight:bold; color:#fff;">${partialChurnSubs.toLocaleString()}</td>
-            <td style="font-size:1.1rem; font-weight:bold; color:#fff;">${rdpSubs.toLocaleString()}</td>
-            <td style="font-size:1.1rem; font-weight:bold; color:#fff;">${nsSubs.toLocaleString()}</td>
-            <td style="font-size:1.1rem; font-weight:bold; color:#fff;">${ghostSubs.toLocaleString()}</td>
-            <td style="font-size:1.1rem; font-weight:bold; color:#fff;">${riskSubs.toLocaleString()}</td>
+            <td style="font-size:1.1rem; font-weight:bold;">${totSubs.toLocaleString()}</td>
+            <td style="font-size:1.1rem; font-weight:bold;">${fullChurnSubs.toLocaleString()}</td>
+            <td style="font-size:1.1rem; font-weight:bold;">${partialChurnSubs.toLocaleString()}</td>
+            <td style="font-size:1.1rem; font-weight:bold;">${rdpSubs.toLocaleString()}</td>
+            <td style="font-size:1.1rem; font-weight:bold;">${nsSubs.toLocaleString()}</td>
+            <td style="font-size:1.1rem; font-weight:bold;">${ghostSubs.toLocaleString()}</td>
+            <td style="font-size:1.1rem; font-weight:bold;">${riskSubs.toLocaleString()}</td>
           </tr>
           <tr>
-            <td style="color:#a855f7; font-weight:700;">%age</td>
-            <td style="color:#aaa;">100%</td>
-            <td style="color:#aaa;">${fcPct}%</td>
-            <td style="color:#aaa;">${pcPct}%</td>
-            <td style="color:#aaa;">${rdpPct}%</td>
-            <td style="color:#aaa;">${nsPct}%</td>
-            <td style="color:#aaa;">${ghPct}%</td>
-            <td style="color:#aaa;">${rkPct}%</td>
+            <td style="color:#a855f7; font-weight:700;">%age Base Logic</td>
+            <td style="color:var(--text-muted);">100%</td>
+            <td style="color:var(--text-muted);">${fcPct}% <br><span style="font-size:0.65rem">(of Expired Base: ${expSubs})</span></td>
+            <td style="color:var(--text-muted);">${pcPct}% <br><span style="font-size:0.65rem">(of Total Base: ${totSubs})</span></td>
+            <td style="color:var(--text-muted);">${rdpPct}% <br><span style="font-size:0.65rem">(of Expired Base: ${expSubs})</span></td>
+            <td style="color:var(--text-muted);">${nsPct}% <br><span style="font-size:0.65rem">(of Expired Base: ${expSubs})</span></td>
+            <td style="color:var(--text-muted);">${ghPct}% <br><span style="font-size:0.65rem">(of Active Base: ${actSubs})</span></td>
+            <td style="color:var(--text-muted);">${rkPct}% <br><span style="font-size:0.65rem">(of Active Base: ${actSubs})</span></td>
           </tr>
         </tbody>
       </table>
@@ -1054,7 +1086,7 @@ function openDrillDown(title, data) {
           <th>Status</th>
           <th>Linked by CompGUID</th>
           <th>Linked by GSTIN</th>
-          <th style="color:#38ef7d">Active Serials (Combo)</th>
+          <th class="txt-green">Active Serials (Combo)</th>
         </tr>
     `);
 
@@ -1097,18 +1129,24 @@ function runGlobalSearch(){
 function dc(n) { if (charts[n]) { charts[n].destroy(); charts[n] = null; } }
 function renderCharts(){
   const r = analysisResults;
+  const tc = getThemeColors();
   
-  // CHART 1: TOP PARTNERS BY PURE CHURN VS EXPIRED
+  // CHART 1: MASTER OMNI-CHART (Expired Base + Pure Churn % + RDP % + NS %)
   const pcEl1 = document.getElementById('partnerChurnChart');
   if(pcEl1){
       const pArr = Object.entries(r.partStats).map(([k, v]) => {
           const pureChurn = v.pureChurnCount || 0;
           const totExpired = v.totalExpired || 0; 
+          const rdpShifted = v.rdpShifted || 0;
+          const nsShifted = v.nsShifted || 0;
+
           return { 
               p: k, 
               pureChurn: pureChurn, 
               totExpired: totExpired,
-              rate: totExpired > 0 ? (pureChurn / totExpired) * 100 : 0 
+              rate: totExpired > 0 ? (pureChurn / totExpired) * 100 : 0,
+              rdpRate: totExpired > 0 ? (rdpShifted / totExpired) * 100 : 0,
+              nsRate: totExpired > 0 ? (nsShifted / totExpired) * 100 : 0
           };
       }).filter(x => x.totExpired >= 5 && x.p !== 'Direct / Unassigned' && x.p !== 'Direct')
         .sort((a, b) => b.pureChurn - a.pureChurn).slice(0, 10);
@@ -1119,28 +1157,40 @@ function renderCharts(){
               labels: pArr.map(x=>x.p.substring(0,25) + (x.p.length>25?'...':'')),
               datasets:[
                   {
-                      label:'Total Expired Subs', data:pArr.map(x=>x.totExpired), 
-                      backgroundColor:'rgba(244,92,67,.75)', borderColor: '#f45c43', borderWidth: 1,
+                      label:'Total Expired Base', data:pArr.map(x=>x.totExpired), 
+                      backgroundColor:'rgba(244,92,67,.65)', borderColor: '#e11d48', borderWidth: 1,
                       datalabels: { display: false }
                   },
                   {
-                      label:'Pure Churn % (of Expired)', data:pArr.map(x=>x.rate.toFixed(1)), 
-                      type: 'line', borderColor:'#ffd200', backgroundColor:'rgba(255,210,0,.1)',
-                      borderWidth:2, pointBackgroundColor:'#ffd200', pointRadius:3, yAxisID:'y1', tension:0.3,
-                      datalabels: { display: true, color: '#fff', align: 'top', anchor: 'end', formatter: v => v + '%' }
+                      label:'Pure Churn %', data:pArr.map(x=>x.rate.toFixed(1)), 
+                      type: 'line', borderColor:tc.yellow, backgroundColor:'transparent',
+                      borderWidth:2, pointBackgroundColor:tc.yellow, pointRadius:3, yAxisID:'y1', tension:0.3,
+                      datalabels: { display: false }
+                  },
+                  {
+                      label:'RDP Shift %', data:pArr.map(x=>x.rdpRate.toFixed(1)), 
+                      type: 'line', borderColor:tc.cyan, backgroundColor:'transparent',
+                      borderWidth:2, pointBackgroundColor:tc.cyan, pointRadius:3, yAxisID:'y1', tension:0.3,
+                      datalabels: { display: false }
+                  },
+                  {
+                      label:'New Sales Shift %', data:pArr.map(x=>x.nsRate.toFixed(1)), 
+                      type: 'line', borderColor:tc.purple, backgroundColor:'transparent',
+                      borderWidth:2, pointBackgroundColor:tc.purple, pointRadius:3, yAxisID:'y1', tension:0.3,
+                      datalabels: { display: false }
                   }
               ]
           },
           options:{
               responsive:true, maintainAspectRatio:false,
               onClick: (e, elements) => { 
-                  if(elements.length) drillByPartnerChart(pArr[elements[0].index].p, 'PARTNER_EXPIRED'); 
+                  if(elements.length) drillByPartnerChart(pArr[elements[0].index].p); 
               },
-              plugins:{ legend:{display:true, labels:{color:'#aaa', font:{size:10}}} },
+              plugins:{ legend:{display:true, labels:{color:tc.text, font:{size:10}}} },
               scales:{ 
-                  x:{ticks:{color:'#888'}}, 
-                  y:{ticks:{color:'#888'}, grid:{color:'rgba(255,255,255,.05)'}, title:{display:true, text:'Total Expired Subs', color:'#888'}},
-                  y1:{position:'right', ticks:{color:'#ffd200'}, grid:{display:false}, max:100}
+                  x:{ticks:{color:tc.text}}, 
+                  y:{ticks:{color:tc.text}, grid:{color:tc.grid}, title:{display:true, text:'Total Expired Subs', color:tc.text}},
+                  y1:{position:'right', ticks:{color:tc.yellow}, grid:{display:false}, max:100}
               }
           }
       }); 
@@ -1167,37 +1217,32 @@ function renderCharts(){
               datasets:[
                   {
                       label:'Pure Churn (Expired)', data:pArr.map(x=>x.pureChurn), 
-                      backgroundColor:'rgba(244,92,67,.75)', borderColor: '#f45c43', borderWidth: 1, stack: 'churn',
+                      backgroundColor:'rgba(244,92,67,.75)', borderColor: '#e11d48', borderWidth: 1, stack: 'churn',
                       datalabels: { display: false }
                   },
                   {
                       label:'Shifted to RDP (Expired)', data:pArr.map(x=>x.rdpShifted), 
-                      backgroundColor:'rgba(56,189,248,.8)', borderColor: '#38bdf8', borderWidth: 1, stack: 'churn',
+                      backgroundColor:'rgba(56,189,248,.8)', borderColor: tc.cyan, borderWidth: 1, stack: 'churn',
                       datalabels: { display: false }
                   },
                   {
                       label:'RDP Shift %', data:pArr.map(x=>x.rdpRate.toFixed(1)), 
-                      type: 'line', borderColor:'#ffd200', backgroundColor:'rgba(255,210,0,.1)',
-                      borderWidth:2, pointBackgroundColor:'#ffd200', pointRadius:3, yAxisID:'y1', tension:0.3,
-                      datalabels: { display: true, color: '#fff', align: 'top', anchor: 'end', formatter: v => v + '%' }
+                      type: 'line', borderColor:tc.yellow, backgroundColor:'transparent',
+                      borderWidth:2, pointBackgroundColor:tc.yellow, pointRadius:3, yAxisID:'y1', tension:0.3,
+                      datalabels: { display: true, color: tc.text, align: 'top', anchor: 'end', formatter: v => v + '%' }
                   }
               ]
           },
           options:{
               responsive:true, maintainAspectRatio:false,
               onClick: (e, elements) => { 
-                  if(elements.length) {
-                      const idx = elements[0].index, datasetIdx = elements[0].datasetIndex, partnerName = pArr[idx].p;
-                      if(datasetIdx === 0) drillByPartnerChart(partnerName, 'PURE_CHURN_RDP'); 
-                      else if(datasetIdx === 1) drillByPartnerChart(partnerName, 'RDP_SHIFT'); 
-                      else drillByPartnerChart(partnerName, 'PARTNER_EXPIRED'); // Clicking line shows ALL expired base
-                  }
+                  if(elements.length) drillByPartnerChart(pArr[elements[0].index].p); 
               },
-              plugins:{ legend:{display:true, labels:{color:'#aaa', font:{size:10}}} },
+              plugins:{ legend:{display:true, labels:{color:tc.text, font:{size:10}}} },
               scales:{
-                  x:{stacked:true, ticks:{color:'#888'}},
-                  y:{stacked:true, ticks:{color:'#888'}, grid:{color:'rgba(255,255,255,.05)'}, title:{display:true, text:'Expired Subs', color:'#888'}},
-                  y1:{position:'right', ticks:{color:'#ffd200'}, grid:{display:false}, max:100}
+                  x:{stacked:true, ticks:{color:tc.text}},
+                  y:{stacked:true, ticks:{color:tc.text}, grid:{color:tc.grid}, title:{display:true, text:'Expired Subs', color:tc.text}},
+                  y1:{position:'right', ticks:{color:tc.yellow}, grid:{display:false}, max:100}
               }
           }
       }); 
@@ -1224,37 +1269,32 @@ function renderCharts(){
               datasets:[
                   {
                       label:'Pure Churn (Expired)', data:pArr.map(x=>x.pureChurn), 
-                      backgroundColor:'rgba(244,92,67,.75)', borderColor: '#f45c43', borderWidth: 1, stack: 'churn',
+                      backgroundColor:'rgba(244,92,67,.75)', borderColor: '#e11d48', borderWidth: 1, stack: 'churn',
                       datalabels: { display: false }
                   },
                   {
                       label:'Shifted to New Sale (Expired)', data:pArr.map(x=>x.nsShifted), 
-                      backgroundColor:'rgba(168,85,247,.8)', borderColor: '#a855f7', borderWidth: 1, stack: 'churn',
+                      backgroundColor:'rgba(168,85,247,.8)', borderColor: tc.purple, borderWidth: 1, stack: 'churn',
                       datalabels: { display: false }
                   },
                   {
                       label:'New Sales Shift %', data:pArr.map(x=>x.nsRate.toFixed(1)), 
-                      type: 'line', borderColor:'#ffd200', backgroundColor:'rgba(255,210,0,.1)',
-                      borderWidth:2, pointBackgroundColor:'#ffd200', pointRadius:3, yAxisID:'y1', tension:0.3,
-                      datalabels: { display: true, color: '#fff', align: 'top', anchor: 'end', formatter: v => v + '%' }
+                      type: 'line', borderColor:tc.yellow, backgroundColor:'transparent',
+                      borderWidth:2, pointBackgroundColor:tc.yellow, pointRadius:3, yAxisID:'y1', tension:0.3,
+                      datalabels: { display: true, color: tc.text, align: 'top', anchor: 'end', formatter: v => v + '%' }
                   }
               ]
           },
           options:{
               responsive:true, maintainAspectRatio:false,
               onClick: (e, elements) => { 
-                  if(elements.length) {
-                      const idx = elements[0].index, datasetIdx = elements[0].datasetIndex, partnerName = pArr[idx].p;
-                      if(datasetIdx === 0) drillByPartnerChart(partnerName, 'PURE_CHURN_NS'); 
-                      else if (datasetIdx === 1) drillByPartnerChart(partnerName, 'NS_SHIFT'); 
-                      else drillByPartnerChart(partnerName, 'PARTNER_EXPIRED'); // Clicking line shows ALL expired base
-                  }
+                  if(elements.length) drillByPartnerChart(pArr[elements[0].index].p); 
               },
-              plugins:{ legend:{display:true, labels:{color:'#aaa', font:{size:10}}} },
+              plugins:{ legend:{display:true, labels:{color:tc.text, font:{size:10}}} },
               scales:{
-                  x:{stacked:true, ticks:{color:'#888'}},
-                  y:{stacked:true, ticks:{color:'#888'}, grid:{color:'rgba(255,255,255,.05)'}, title:{display:true, text:'Expired Subs', color:'#888'}},
-                  y1:{position:'right', ticks:{color:'#ffd200'}, grid:{display:false}, max:100}
+                  x:{stacked:true, ticks:{color:tc.text}},
+                  y:{stacked:true, ticks:{color:tc.text}, grid:{color:tc.grid}, title:{display:true, text:'Expired Subs', color:tc.text}},
+                  y1:{position:'right', ticks:{color:tc.yellow}, grid:{display:false}, max:100}
               }
           }
       }); 
@@ -1263,26 +1303,41 @@ function renderCharts(){
   const ccEl = document.getElementById('categoryChart');
   if(ccEl){
       const cArr = Object.entries(r.catStats).sort((a, b) => (b[1].active + b[1].expired) - (a[1].active + a[1].expired)).slice(0, 8);
-      dc('cc'); charts.cc = new Chart(ccEl,{type:'doughnut',data:{labels:cArr.map(x=>x[0]),datasets:[{data:cArr.map(x=>x[1].expired+x[1].active),backgroundColor:['#667eea','#764ba2','#f45c43','#ffd200','#22d3ee','#a855f7','#eb3349','#06b6d4'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#aaa',font:{size:10}}}}, datalabels: { display: false }}}); 
+      dc('cc'); charts.cc = new Chart(ccEl,{type:'doughnut',data:{labels:cArr.map(x=>x[0]),datasets:[{data:cArr.map(x=>x[1].expired+x[1].active),backgroundColor:['#667eea','#764ba2','#f45c43','#ffd200','#22d3ee','#a855f7','#eb3349','#06b6d4'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:tc.text,font:{size:10}}}}, datalabels: { display: false }}}); 
   }
 
   const tcEl = document.getElementById('tenureChart');
   if(tcEl){
-      dc('tc'); charts.tc = new Chart(tcEl,{type:'bar',data:{labels:Object.keys(r.tenStats),datasets:[{label:'Expired Subs (Churned)',data:Object.values(r.tenStats),backgroundColor:'rgba(168,85,247,.6)',borderRadius:4, datalabels:{display:true, color:'#fff'}}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{ticks:{color:'#888'}},y:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,.05)'}}}}}); 
+      dc('tc'); charts.tc = new Chart(tcEl,{type:'bar',data:{labels:Object.keys(r.tenStats),datasets:[{label:'Expired Subs (Churned)',data:Object.values(r.tenStats),backgroundColor:'rgba(168,85,247,.6)',borderRadius:4, datalabels:{display:true, color:tc.text}}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:tc.text}}},scales:{x:{ticks:{color:tc.text}},y:{ticks:{color:tc.text},grid:{color:tc.grid}}}}}); 
   }
 }
 
 function renderKPIs() {
     const r = analysisResults;
     const totSubs = r.totalExpired + r.totalActive;
+    const expSubs = r.totalExpired;
+    const actSubs = r.totalActive;
     
-    const rdpSubs = expiredData.filter(d => d.shiftedToRDP).length;
-    const nsSubs = expiredData.filter(d => d.shiftedToNewSales).length;
-    
-    const rdpPct = r.totalExpired ? ((rdpSubs / r.totalExpired) * 100).toFixed(1) : 0;
-    const nsPct = r.totalExpired ? ((nsSubs / r.totalExpired) * 100).toFixed(1) : 0;
-    const ghostPct = r.totalActive ? ((r.ghostCount / r.totalActive) * 100).toFixed(1) : 0;
-    const riskPct = r.totalActive ? ((r.atRisk / r.totalActive) * 100).toFixed(1) : 0;
+    let fullChurnSubs = 0, partialChurnSubs = 0, rdpSubs = 0, nsSubs = 0, ghostSubs = 0, riskSubs = 0;
+
+    expiredData.forEach(d => {
+        if(r.fullChurnSet.has(d.compGUID)) fullChurnSubs++;
+        if(r.overlappingCompGUIDSet.has(d.compGUID)) partialChurnSubs++;
+        if(d.shiftedToRDP) rdpSubs++;
+        if(d.shiftedToNewSales) nsSubs++;
+    });
+    activeData.forEach(d => {
+        if(r.overlappingCompGUIDSet.has(d.compGUID)) partialChurnSubs++;
+        if(d.isGhost) ghostSubs++;
+    });
+    riskSubs = r.atRisk;
+
+    const fcPct = expSubs ? ((fullChurnSubs / expSubs) * 100).toFixed(1) : 0;
+    const pcPct = totSubs ? ((partialChurnSubs / totSubs) * 100).toFixed(1) : 0;
+    const rdpPct = expSubs ? ((rdpSubs / expSubs) * 100).toFixed(1) : 0;
+    const nsPct = expSubs ? ((nsSubs / expSubs) * 100).toFixed(1) : 0;
+    const ghPct = actSubs ? ((ghostSubs / actSubs) * 100).toFixed(1) : 0;
+    const rkPct = actSubs ? ((riskSubs / actSubs) * 100).toFixed(1) : 0;
 
     const html = `
     <div class="summary-table-container">
@@ -1290,35 +1345,35 @@ function renderKPIs() {
         <thead>
           <tr>
             <th>Metrics Base</th>
-            <th style="color:#667eea; cursor:pointer;" onclick="drillByCategory('total')" title="Click to view all">Total Subs</th>
-            <th style="color:#f45c43; cursor:pointer;" onclick="drillByCategory('churned')" title="Click to view full churn">Full Churn (Comps)</th>
-            <th style="color:#a855f7; cursor:pointer;" onclick="drillByCategory('overlap')" title="Click to view partial churn">Partial Churn (Comps)</th>
-            <th style="color:#38bdf8; cursor:pointer;" onclick="drillByCategory('rdp')" title="Click to view RDP shifts">Shifted to RDP</th>
-            <th style="color:#22d3ee; cursor:pointer;" onclick="drillByCategory('newsales')" title="Click to view New Sales shifts">Shift to New Sales</th>
-            <th style="color:#f43f5e; cursor:pointer;" onclick="drillByCategory('ghost')" title="Click to view Ghost churn">Ghost Churn</th>
-            <th style="color:#ffd200; cursor:pointer;" onclick="drillByCategory('atrisk')" title="Click to view At-Risk">At Risk</th>
+            <th class="txt-purple" style="cursor:pointer;" onclick="drillByCategory('total')" title="Click to view all">Total Subs</th>
+            <th class="txt-red" style="cursor:pointer;" onclick="drillByCategory('churned')" title="Click to view full churn">Full Churn</th>
+            <th class="txt-purple" style="cursor:pointer;" onclick="drillByCategory('overlap')" title="Click to view partial churn">Partial Churn</th>
+            <th class="txt-cyan" style="cursor:pointer;" onclick="drillByCategory('rdp')" title="Click to view RDP shifts">Shifted to RDP</th>
+            <th class="txt-cyan" style="cursor:pointer;" onclick="drillByCategory('newsales')" title="Click to view New Sales shifts">Shift to New Sales</th>
+            <th class="txt-red" style="cursor:pointer;" onclick="drillByCategory('ghost')" title="Click to view Ghost churn">Ghost Churn</th>
+            <th class="txt-yellow" style="cursor:pointer;" onclick="drillByCategory('atrisk')" title="Click to view At-Risk">At Risk</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>Absolute Numbers</td>
+            <td style="color:#a855f7; font-weight:700;">Absolute Numbers</td>
             <td class="data-cell" style="font-size:1.1rem; font-weight:bold; cursor:pointer;" onclick="drillByCategory('total')">${totSubs.toLocaleString()}</td>
-            <td class="data-cell" style="font-size:1.1rem; font-weight:bold; cursor:pointer;" onclick="drillByCategory('churned')">${r.fullChurn.toLocaleString()}</td>
-            <td class="data-cell" style="font-size:1.1rem; font-weight:bold; cursor:pointer;" onclick="drillByCategory('overlap')">${r.overlappingCompGUIDs.toLocaleString()}</td>
+            <td class="data-cell" style="font-size:1.1rem; font-weight:bold; cursor:pointer;" onclick="drillByCategory('churned')">${fullChurnSubs.toLocaleString()}</td>
+            <td class="data-cell" style="font-size:1.1rem; font-weight:bold; cursor:pointer;" onclick="drillByCategory('overlap')">${partialChurnSubs.toLocaleString()}</td>
             <td class="data-cell" style="font-size:1.1rem; font-weight:bold; cursor:pointer;" onclick="drillByCategory('rdp')">${rdpSubs.toLocaleString()}</td>
             <td class="data-cell" style="font-size:1.1rem; font-weight:bold; cursor:pointer;" onclick="drillByCategory('newsales')">${nsSubs.toLocaleString()}</td>
-            <td class="data-cell" style="font-size:1.1rem; font-weight:bold; cursor:pointer;" onclick="drillByCategory('ghost')">${r.ghostCount.toLocaleString()}</td>
-            <td class="data-cell" style="font-size:1.1rem; font-weight:bold; cursor:pointer;" onclick="drillByCategory('atrisk')">${r.atRisk.toLocaleString()}</td>
+            <td class="data-cell" style="font-size:1.1rem; font-weight:bold; cursor:pointer;" onclick="drillByCategory('ghost')">${ghostSubs.toLocaleString()}</td>
+            <td class="data-cell" style="font-size:1.1rem; font-weight:bold; cursor:pointer;" onclick="drillByCategory('atrisk')">${riskSubs.toLocaleString()}</td>
           </tr>
           <tr>
-            <td>%age</td>
-            <td style="color:#aaa;">100%</td>
-            <td style="color:#aaa;">${r.churnRate}%</td>
-            <td style="color:#aaa;">${r.partialChurnRate}%</td>
-            <td style="color:#aaa;">${rdpPct}%</td>
-            <td style="color:#aaa;">${nsPct}%</td>
-            <td style="color:#aaa;">${ghostPct}%</td>
-            <td style="color:#aaa;">${riskPct}%</td>
+            <td style="color:#a855f7; font-weight:700;">%age Base Logic</td>
+            <td style="color:var(--text-muted);">100%</td>
+            <td style="color:var(--text-muted);">${fcPct}% <br><span style="font-size:0.65rem">(of Expired Base: ${expSubs.toLocaleString()})</span></td>
+            <td style="color:var(--text-muted);">${pcPct}% <br><span style="font-size:0.65rem">(of Total Base: ${totSubs.toLocaleString()})</span></td>
+            <td style="color:var(--text-muted);">${rdpPct}% <br><span style="font-size:0.65rem">(of Expired Base: ${expSubs.toLocaleString()})</span></td>
+            <td style="color:var(--text-muted);">${nsPct}% <br><span style="font-size:0.65rem">(of Expired Base: ${expSubs.toLocaleString()})</span></td>
+            <td style="color:var(--text-muted);">${ghPct}% <br><span style="font-size:0.65rem">(of Active Base: ${actSubs.toLocaleString()})</span></td>
+            <td style="color:var(--text-muted);">${rkPct}% <br><span style="font-size:0.65rem">(of Active Base: ${actSubs.toLocaleString()})</span></td>
           </tr>
         </tbody>
       </table>
@@ -1339,8 +1394,8 @@ function renderInsights(){
 function renderVenn(){
   const r = analysisResults;
   safeSetHTML('vennDiagram', `
-    <div class="venn-circle venn-active" onclick="drillByCategory('healthy')" title="Active-only companies"><div style="margin-left:-20px"><div style="font-size:1.1rem;color:#38ef7d">${r.healthySet.size.toLocaleString()}</div><div style="font-size:.58rem;color:#999">Active only</div></div></div>
-    <div class="venn-circle venn-expired" onclick="drillByCategory('churned')"><div style="margin-left:20px"><div style="font-size:1.1rem;color:#f45c43">${r.fullChurn.toLocaleString()}</div><div style="font-size:.58rem;color:#999">Expired only</div></div></div>
+    <div class="venn-circle venn-active" onclick="drillByCategory('healthy')" title="Active-only companies"><div style="margin-left:-20px"><div style="font-size:1.1rem;" class="txt-green">${r.healthySet.size.toLocaleString()}</div><div style="font-size:.58rem;color:var(--text-muted)">Active only</div></div></div>
+    <div class="venn-circle venn-expired" onclick="drillByCategory('churned')"><div style="margin-left:20px"><div style="font-size:1.1rem;" class="txt-red">${r.fullChurn.toLocaleString()}</div><div style="font-size:.58rem;color:var(--text-muted)">Expired only</div></div></div>
     <div class="venn-overlap-zone" onclick="drillByCategory('overlap')"><div><div>${r.overlappingCompGUIDs.toLocaleString()}</div><div style="font-size:.55rem;color:#ccc">Partial</div></div></div>`);
 }
 
@@ -1348,8 +1403,8 @@ function renderFlowDiagram(){
   const r = analysisResults, tot = r.totalCompanies || 1;
   const pp = ((r.overlappingCompGUIDs / tot) * 100).toFixed(1), fp = ((r.fullChurn / tot) * 100).toFixed(1);
   safeSetHTML('flowDiagram', `
-    <div class="flow-row" onclick="drillByCategory('overlap')"><div class="flow-label">🟡 Partial Churn</div><div class="flow-bar-container"><div class="flow-bar partial" style="width:${Math.max(+pp, 5)}%">${r.overlappingCompGUIDs.toLocaleString()}</div></div><div class="flow-value" style="color:#a855f7">${pp}%</div></div>
-    <div class="flow-row" onclick="drillByCategory('churned')"><div class="flow-label">🔴 Full Churn</div><div class="flow-bar-container"><div class="flow-bar churned" style="width:${Math.max(+fp, 5)}%">${r.fullChurn.toLocaleString()}</div></div><div class="flow-value" style="color:#f45c43">${fp}%</div></div>`);
+    <div class="flow-row" onclick="drillByCategory('overlap')"><div class="flow-label">🟡 Partial Churn</div><div class="flow-bar-container"><div class="flow-bar partial" style="width:${Math.max(+pp, 5)}%">${r.overlappingCompGUIDs.toLocaleString()}</div></div><div class="flow-value txt-purple">${pp}%</div></div>
+    <div class="flow-row" onclick="drillByCategory('churned')"><div class="flow-label">🔴 Full Churn</div><div class="flow-bar-container"><div class="flow-bar churned" style="width:${Math.max(+fp, 5)}%">${r.fullChurn.toLocaleString()}</div></div><div class="flow-value txt-red">${fp}%</div></div>`);
 }
 
 function drillByCategory(cat){
