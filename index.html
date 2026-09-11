@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Customer Churn & Retention Dashboard</title>
+<title>Customer Churn & Retention - Enterprise Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
@@ -123,6 +123,14 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-g
 .status-newsales{background:rgba(34,211,238,.15);color:#22d3ee;border:1px solid rgba(34,211,238,.35)}
 .status-ghost{background:rgba(244,63,94,.15);color:#f43f5e;border:1px solid rgba(244,63,94,.35)}
 
+.debug-console{margin:10px 30px;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.08);border-radius:8px;overflow:hidden}
+.debug-header{padding:8px 14px;background:rgba(255,255,255,.04);cursor:pointer;font-size:.8rem;color:#aaa}
+.debug-body{padding:10px 14px;max-height:160px;overflow-y:auto;font-family:monospace;font-size:.72rem;color:#ccc}
+.debug-line{padding:2px 0}
+.debug-line.success{color:#38ef7d}
+.debug-line.error{color:#f45c43}
+.debug-line.warn{color:#ffd200}
+
 .data-table-container{margin:14px 30px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;overflow:hidden}
 .table-header{padding:14px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,.06);flex-wrap:wrap;gap:8px}
 .table-tabs{display:flex;gap:5px;flex-wrap:wrap}
@@ -214,11 +222,16 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
 
 <div class="header">
   <h1>📊 Enterprise Customer Churn & Retention Dashboard</h1>
-  <p>Esc Key Support · Robust Timestamp & Date Parsing · Accurate Tenure Analysis</p>
-  <div class="header-badge">v29.0 — Clean 360° Account Popup & Robust Date Engine</div>
+  <p>Esc Key Support · Robust Timestamp & Date Parsing · Un-Killable Auto-Loader</p>
+  <div class="header-badge">v30.0 — Multi-Engine Auto-Loader Edition</div>
 </div>
 
-<div class="status-bar loading" id="statusBar"><div class="status-spinner"></div><span>Initializing Engine...</span></div>
+<div class="status-bar loading" id="statusBar"><div class="status-spinner"></div><span id="statusText">Fetching data files...</span></div>
+
+<div class="debug-console" id="debugConsole">
+  <div class="debug-header" onclick="toggleDebug()">🔧 Console Log (Click to toggle view)</div>
+  <div class="debug-body" id="debugBody"></div>
+</div>
 
 <div class="global-search-container">
   <span>🔍</span>
@@ -322,9 +335,10 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
   </div>
 </div>
 
-<footer>Customer Churn Dashboard v29.0 · Robust Date & Tenure Engine</footer>
+<footer>Customer Churn Dashboard v30.0 · Un-Killable Multi-Engine Auto-Loader</footer>
 
 <script>
+// ==================== GLOBAL CONSTANTS & HELPERS ====================
 window.stateGST = {
   '01':'J&K','02':'HP','03':'Punjab','04':'Chandigarh','05':'Uttarakhand','06':'Haryana',
   '07':'Delhi','08':'Rajasthan','09':'UP','10':'Bihar','11':'Sikkim','12':'Arunachal',
@@ -333,6 +347,23 @@ window.stateGST = {
   '26':'Dadra & Nagar Haveli','27':'Maharashtra','29':'Karnataka','30':'Goa','31':'Lakshadweep',
   '32':'Kerala','33':'Tamil Nadu','34':'Puducherry','35':'Andaman & Nicobar','36':'Telangana','37':'Andhra Pradesh','38':'Ladakh'
 };
+
+function debugLog(msg, type='info') {
+    const dc = document.getElementById('debugConsole');
+    if (dc) dc.classList.add('show');
+    const db = document.getElementById('debugBody');
+    if (db) {
+        const time = new Date().toLocaleTimeString();
+        db.innerHTML += `<div class="debug-line ${type}">[${time}] ${msg}</div>`;
+        db.scrollTop = db.scrollHeight;
+    }
+    console.log(`[${type}] ${msg}`);
+}
+
+function toggleDebug(){
+    const db=document.getElementById('debugBody');
+    if(db) db.style.display = db.style.display==='none'?'block':'none';
+}
 
 function getStateName(gstin) {
     if (!gstin || typeof gstin !== 'string' || gstin.length < 2) return 'Other';
@@ -349,7 +380,6 @@ function safeSetText(id, txt) {
     if (el) el.textContent = txt;
 }
 
-// ROBUST DATE PARSER
 function parseDateRobust(val) {
     if (!val) return null;
     if (val instanceof Date) return isNaN(val.getTime()) ? null : val;
@@ -361,29 +391,20 @@ function parseDateRobust(val) {
     let s = String(val).trim();
     if (!s || s.toLowerCase() === 'n/a' || s.toLowerCase() === 'null' || s.toLowerCase() === 'undefined') return null;
 
-    // Strip timestamp (e.g., "1/30/2019 12:00:00 AM" -> "1/30/2019")
     const datePart = s.split(' ')[0].trim();
-
     let d = new Date(datePart);
     if (!isNaN(d.getTime())) return d;
 
     const p = datePart.split(/[\/\-\.]/);
     if (p.length === 3) {
-        let p0 = parseInt(p[0], 10);
-        let p1 = parseInt(p[1], 10);
-        let p2 = parseInt(p[2], 10);
+        let p0 = parseInt(p[0], 10), p1 = parseInt(p[1], 10), p2 = parseInt(p[2], 10);
         if (isNaN(p0) || isNaN(p1) || isNaN(p2)) return null;
-
         let yr, mo, day;
-        if (p0 > 1000) {
-            yr = p0; mo = p1 - 1; day = p2;
-        } else if (p2 > 1000 || p2 > 50) {
+        if (p0 > 1000) { yr = p0; mo = p1 - 1; day = p2; }
+        else if (p2 > 1000 || p2 > 50) {
             yr = p2 < 100 ? 2000 + p2 : p2;
-            if (p0 > 12) { day = p0; mo = p1 - 1; }
-            else { day = p0; mo = p1 - 1; }
-        } else {
-            return null;
-        }
+            mo = p1 - 1; day = p0;
+        } else return null;
         d = new Date(yr, mo, day);
         return isNaN(d.getTime()) ? null : d;
     }
@@ -456,6 +477,15 @@ function setStatus(msg, type='info'){
   }
 }
 
+function decodeArrayBufferSmart(buffer){
+  const bytes=new Uint8Array(buffer); if(bytes.length<2)return '';
+  if(bytes[0]===0xFF&&bytes[1]===0xFE)return new TextDecoder('utf-16le').decode(bytes.subarray(2));
+  if(bytes[0]===0xFE&&bytes[1]===0xFF)return new TextDecoder('utf-16be').decode(bytes.subarray(2));
+  if(bytes.length>100){let n=0;for(let i=1;i<100;i+=2)if(bytes[i]===0)n++;if(n>35)return new TextDecoder('utf-16le').decode(bytes);}
+  if(bytes.length>=3&&bytes[0]===0xEF&&bytes[1]===0xBB&&bytes[2]===0xBF)return new TextDecoder('utf-8').decode(bytes.subarray(3));
+  return new TextDecoder('utf-8').decode(bytes).replace(/\0/g,'');
+}
+
 function parseArrayOfRows(rows,headers,source){
   let ci=-1,si=-1,gi=-1,ei=-1,pi=-1,ii=-1,cati=-1,ludi=-1;
   headers.forEach((h,i)=>{const l=String(h).toLowerCase().replace(/[^a-z0-9]/g,'');
@@ -474,9 +504,9 @@ function parseArrayOfRows(rows,headers,source){
       gstin:String(cols[gi]||'').trim().length>=8?String(cols[gi]||'').trim():null,
       comboKey: `${String(cols[gi]||'NO_GST').trim()}_${String(cols[ci]||'').trim()}`,
       currentBlsExpiry:dt, expStr:formatDateFast(dt),
-      ownerPartner:pi!==-1&&cols[pi]?String(cols[pi]).trim():'Direct',
+      ownerPartner:pi!==-1?String(cols[pi]||'Direct').trim():'Direct',
       installDate:ii!==-1?parseDateRobust(cols[ii]):null,
-      categoryName:cati!==-1&&cols[cati]?String(cols[cati]).trim():'Standard',
+      categoryName:cati!==-1?String(cols[cati]||'Standard').trim():'Standard',
       lastUseDate:ludi!==-1?parseDateRobust(cols[ludi]):null,
       source
     };
@@ -499,45 +529,119 @@ function parseExcelBuffer(buf,src){
   }catch(e){return[];}
 }
 
-async function fetchDataset(filename) {
-    const candidates = [
-        `data/${filename}.csv`, `./data/${filename}.csv`, `${filename}.csv`, `./${filename}.csv`,
-        `https://raw.githubusercontent.com/sauravgupta412-oss/customer-churn-analysis/main/data/${filename}.csv`,
-        `https://raw.githubusercontent.com/sauravgupta412-oss/customer-churn-analysis/main/${filename}.csv`
-    ];
-    const src = filename.includes('expired') ? 'expired' : 'active';
-    for (let url of candidates) {
-        try {
-            const res = await fetch(url + '?t=' + Date.now());
-            if (!res.ok) continue;
-            const buf = await res.arrayBuffer();
-            if (buf.byteLength < 20) continue;
-            const text = decodeArrayBufferSmart(buf);
-            if (text && !text.trim().startsWith('<!DOCTYPE') && !text.trim().startsWith('<html')) {
-                const parsed = parseCSVFast(text, src);
-                if (parsed && parsed.length > 0) return parsed;
-            }
-            const xlsxParsed = parseExcelBuffer(buf, src);
-            if (xlsxParsed && xlsxParsed.length > 0) return xlsxParsed;
-        } catch(e) {}
-    }
-    return [];
-}
-
+// UN-KILLABLE MULTI-ENGINE AUTO LOADER
 async function autoLoadFromRepo() {
-    setStatus('Fetching data files...', 'loading');
-    try {
-        expiredData = await fetchDataset('expired_customers');
-        activeData = await fetchDataset('active_customers');
+    setStatus('Connecting to Multi-Engine Data Loader...', 'loading');
+    debugLog('🚀 Starting v30.0 Auto-Loader Engine...');
 
-        if (expiredData.length > 0 && activeData.length > 0) {
-            setStatus(`✅ Real Data Loaded: ${expiredData.length.toLocaleString()} expired + ${activeData.length.toLocaleString()} active records`, 'success');
-            runAnalysis();
-        } else {
-            throw new Error(`Could not parse records.`);
+    let owner = 'sauravgupta412-oss';
+    let repo = 'customer-churn-analysis';
+
+    if (location.hostname.includes('github.io')) {
+        owner = location.hostname.split('.')[0];
+        const pp = location.pathname.split('/').filter(Boolean);
+        if (pp.length > 0) repo = pp[0];
+    }
+
+    debugLog(`Target Repo: ${owner}/${repo}`);
+
+    const filenames = {
+        expired: ['expired_customers', 'Expired_Customers', 'expired', 'Expired'],
+        active: ['active_customers', 'Active_Customers', 'active', 'Active']
+    };
+
+    const fetchAny = async (type) => {
+        const names = filenames[type];
+        const exts = ['.csv', '.xlsx'];
+        const folders = ['data/', ''];
+
+        for (let folder of folders) {
+            for (let name of names) {
+                for (let ext of exts) {
+                    const path = `${folder}${name}${ext}`;
+                    const rawUrl = `https://raw.githubusercontent.com/${owner}/${repo}/main/${path}`;
+                    
+                    // Strategy 1: Direct fetch
+                    try {
+                        debugLog(`Fetch attempt: ${path}`);
+                        const res = await fetch(path + '?t=' + Date.now());
+                        if (res.ok) {
+                            const buf = await res.arrayBuffer();
+                            if (buf.byteLength > 20) {
+                                const text = decodeArrayBufferSmart(buf);
+                                if (text && !text.trim().startsWith('<!DOCTYPE') && !text.trim().startsWith('<html')) {
+                                    const parsed = parseCSVFast(text, type);
+                                    if (parsed.length > 0) {
+                                        debugLog(`✅ Loaded ${type} via relative path: ${path} (${parsed.length} rows)`, 'success');
+                                        return parsed;
+                                    }
+                                }
+                                const xlsxParsed = parseExcelBuffer(buf, type);
+                                if (xlsxParsed.length > 0) {
+                                    debugLog(`✅ Loaded ${type} via Excel buffer: ${path} (${xlsxParsed.length} rows)`, 'success');
+                                    return xlsxParsed;
+                                }
+                            }
+                        }
+                    } catch(e) {}
+
+                    // Strategy 2: Raw GitHub CDN
+                    try {
+                        debugLog(`Fetch attempt Raw CDN: ${rawUrl}`);
+                        const res = await fetch(rawUrl);
+                        if (res.ok) {
+                            const buf = await res.arrayBuffer();
+                            const text = decodeArrayBufferSmart(buf);
+                            if (text && !text.trim().startsWith('<!DOCTYPE') && !text.trim().startsWith('<html')) {
+                                const parsed = parseCSVFast(text, type);
+                                if (parsed.length > 0) {
+                                    debugLog(`✅ Loaded ${type} via Raw CDN: ${rawUrl} (${parsed.length} rows)`, 'success');
+                                    return parsed;
+                                }
+                            }
+                        }
+                    } catch(e) {}
+                }
+            }
         }
-    } catch(err) {
-        setStatus(`⚠️ Auto-load failed. Upload CSV files manually below.`, 'error');
+
+        // Strategy 3: GitHub API Blobs
+        try {
+            debugLog(`Trying GitHub Tree API for ${type}...`);
+            const treeRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/main?recursive=1`);
+            if (treeRes.ok) {
+                const tree = await treeRes.json();
+                const matchedFile = (tree.tree || []).find(f => f.path.toLowerCase().includes(type));
+                if (matchedFile) {
+                    const blobRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/blobs/${matchedFile.sha}`);
+                    if (blobRes.ok) {
+                        const bData = await blobRes.json();
+                        const binStr = atob(bData.content.replace(/\s/g, ''));
+                        const bytes = new Uint8Array(binStr.length);
+                        for (let i = 0; i < binStr.length; i++) bytes[i] = binStr.charCodeAt(i);
+                        const text = decodeArrayBufferSmart(bytes.buffer);
+                        const parsed = parseCSVFast(text, type);
+                        if (parsed.length > 0) {
+                            debugLog(`✅ Loaded ${type} via GitHub Blobs API (${parsed.length} rows)`, 'success');
+                            return parsed;
+                        }
+                    }
+                }
+            }
+        } catch(e) {}
+
+        return [];
+    };
+
+    expiredData = await fetchAny('expired');
+    activeData = await fetchAny('active');
+
+    if (expiredData.length > 0 && activeData.length > 0) {
+        setStatus(`✅ Auto-Loaded: ${expiredData.length.toLocaleString()} expired + ${activeData.length.toLocaleString()} active records`, 'success');
+        runAnalysis();
+    } else {
+        debugLog(`❌ All Auto-Load Strategies exhausted. Expired: ${expiredData.length}, Active: ${activeData.length}`, 'error');
+        setStatus(`⚠️ Auto-load failed. Click below to upload your CSV files manually.`, 'error');
     }
 }
 
@@ -556,7 +660,7 @@ async function handleFileUpload(type, input) {
             setStatus(`✅ Uploaded: ${expiredData.length.toLocaleString()} expired + ${activeData.length.toLocaleString()} active records`, 'success');
             runAnalysis();
         } else {
-            setStatus(`Loaded ${parsed.length.toLocaleString()} ${type} records. Upload the other file.`, 'info');
+            setStatus(`Loaded ${parsed.length.toLocaleString()} ${type} records. Please upload the other file.`, 'info');
         }
     } catch(e) { setStatus(`❌ File error: ${e.message}`, 'error'); }
 }
@@ -584,7 +688,6 @@ function analyzeData(){
     const pk=d.ownerPartner; if(!partStats[pk])partStats[pk]={expired:0,active:0}; partStats[pk].expired++;
     const ck=d.categoryName; if(!catStats[ck])catStats[ck]={expired:0,active:0}; catStats[ck].expired++;
     
-    // Tenure categorization
     const tl = getTenureLabel(d);
     tenStats[tl] = (tenStats[tl] || 0) + 1;
   });
@@ -1026,7 +1129,7 @@ function renderCharts(){
   const stEl = document.getElementById('stateChart');
   if(stEl){
       const states = Object.keys(r.stateChurn).sort();
-      dc('st'); charts.st = new Chart(stEl,{type:'bar',data:{labels:states,datasets:[{label:'Expired',data:states.map(s=>r.stateChurn[s].expired),backgroundColor:'rgba(244,92,67,.6)'},{label:'Active',data:states.map(s=>r.stateChurn[s].active),backgroundColor:'rgba(102,126,234,.6)'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa',maxRotation:45}},y:{stacked:true,grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#888'}}}}}); 
+      dc('st'); charts.st = new Chart(stEl,{type:'bar',data:{labels:states,datasets:[{label:'Expired',data:states.map(s=>r.stateChurn[s].expired),backgroundColor:'rgba(244,92,67,.6)'},{label:'Active',data:states.map(s=>r.stateChurn[s].active),backgroundColor:'rgba(102,126,234,.6)'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{stacked:true,ticks:{color:'#888',maxRotation:45}},y:{stacked:true,grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#888'}}}}}); 
   }
 }
 
@@ -1046,22 +1149,22 @@ function rowCsv(d){
 }
 
 function downloadCSV(){
-  let csv='Partner,Category,Install,TenureYrs,CompGUID,GSTIN,GSTIN_CompGUID,SubNo,LastUsedDate,BLSExpiry,Source,NewSalesOrGhost,NewSalesDetail,LinkedActComp,LinkedExpComp,LinkedActGST,LinkedExpGST,ActiveSerialsCombo\n';
+  let csv='Partner,Category,Install,TenureYrs,CompGUID,GSTIN,GSTIN_CompGUID,SubNo,LastUsedDate,BLSExpiry,Source,NewSalesOrGhost,NewSalesDetail,LinkedActCompWithExpiries,LinkedExpCompWithExpiries,LinkedActGSTWithExpiries,LinkedExpGSTWithExpiries,ActiveSerialsCombo\n';
   expiredData.forEach(d=>csv+=rowCsv(d)); activeData.forEach(d=>csv+=rowCsv(d));
   dlFile(csv,'churn_full_export.csv','text/csv');
 }
 function downloadOverlap(){
-  const r=analysisResults; let csv='Partner,Category,Install,TenureYrs,CompGUID,GSTIN,GSTIN_CompGUID,SubNo,LastUsedDate,BLSExpiry,Source,NewSalesOrGhost,NewSalesDetail,LinkedActComp,LinkedExpComp,ActiveSerialsCombo\n';
+  const r=analysisResults; let csv='Partner,Category,Install,TenureYrs,CompGUID,GSTIN,GSTIN_CompGUID,SubNo,LastUsedDate,BLSExpiry,Source,NewSalesOrGhost,NewSalesDetail,LinkedActCompWithExpiries,LinkedExpCompWithExpiries,ActiveSerialsCombo\n';
   expiredData.concat(activeData).filter(d=>r.overlappingCompGUIDSet.has(d.compGUID)).forEach(d=>csv+=rowCsv(d));
   dlFile(csv,'partial_churn_export.csv','text/csv');
 }
 function downloadNewSales(){
-  let csv='Partner,Category,Install,TenureYrs,CompGUID,GSTIN,GSTIN_CompGUID,SubNo,LastUsedDate,BLSExpiry,Source,NewSalesOrGhost,NewSalesDetail,LinkedActComp,LinkedExpComp,LinkedActGST,LinkedExpGST,ActiveSerialsCombo\n';
+  let csv='Partner,Category,Install,TenureYrs,CompGUID,GSTIN,GSTIN_CompGUID,SubNo,LastUsedDate,BLSExpiry,Source,NewSalesOrGhost,NewSalesDetail,LinkedActCompWithExpiries,LinkedExpCompWithExpiries,LinkedActGSTWithExpiries,LinkedExpGSTWithExpiries,ActiveSerialsCombo\n';
   expiredData.concat(activeData).filter(d=>d.isNewSales).forEach(d=>csv+=rowCsv(d));
   dlFile(csv,'new_sales_export.csv','text/csv');
 }
 function downloadModalData(){
-  let csv='Partner,Category,Install,TenureYrs,CompGUID,GSTIN,GSTIN_CompGUID,SubNo,LastUsedDate,BLSExpiry,Source,NewSalesOrGhost,NewSalesDetail,LinkedActComp,LinkedExpComp,LinkedActGST,LinkedExpGST,ActiveSerialsCombo\n';
+  let csv='Partner,Category,Install,TenureYrs,CompGUID,GSTIN,GSTIN_CompGUID,SubNo,LastUsedDate,BLSExpiry,Source,NewSalesOrGhost,NewSalesDetail,LinkedActCompWithExpiries,LinkedExpCompWithExpiries,LinkedActGSTWithExpiries,LinkedExpGSTWithExpiries,ActiveSerialsCombo\n';
   modalFilteredData.forEach(d=>csv+=rowCsv(d));
   dlFile(csv,'drill_down_export.csv','text/csv');
 }
