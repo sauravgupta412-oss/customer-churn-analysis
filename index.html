@@ -34,10 +34,11 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-g
 .kpi-card.orange::before{background:linear-gradient(90deg,#f7971e,#ffd200)}
 .kpi-card.purple::before{background:linear-gradient(90deg,#a855f7,#ec4899)}
 .kpi-card.cyan::before{background:linear-gradient(90deg,#06b6d4,#22d3ee)}
+.kpi-card.ghost::before{background:linear-gradient(90deg,#ec4899,#f43f5e)}
 .kpi-card:hover{transform:translateY(-3px);border-color:rgba(255,255,255,.2)}
 .kpi-value{font-size:1.55rem;font-weight:700;margin:4px 0}
 .kpi-card.blue .kpi-value{color:#667eea}.kpi-card.green .kpi-value{color:#38ef7d}.kpi-card.red .kpi-value{color:#f45c43}
-.kpi-card.purple .kpi-value{color:#a855f7}.kpi-card.cyan .kpi-value{color:#22d3ee}.kpi-card.orange .kpi-value{color:#ffd200}
+.kpi-card.orange .kpi-value{color:#ffd200}.kpi-card.purple .kpi-value{color:#a855f7}.kpi-card.cyan .kpi-value{color:#22d3ee}.kpi-card.ghost .kpi-value{color:#f43f5e}
 .kpi-label{font-size:.7rem;color:#999;text-transform:uppercase;letter-spacing:1px}
 .kpi-sublabel{font-size:.65rem;color:#666;margin-top:2px}
 
@@ -80,7 +81,7 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-g
 /* MODAL */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(10,10,26,.95);z-index:2000;justify-content:center;align-items:center;padding:16px}
 .modal-overlay.show{display:flex}
-.modal{background:#1a1a3e;border:1px solid rgba(255,255,255,.12);border-radius:12px;width:100%;max-width:1480px;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.modal{background:#1a1a3e;border:1px solid rgba(255,255,255,.12);border-radius:12px;width:100%;max-width:1550px;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.5)}
 .modal-header{background:linear-gradient(135deg,#667eea,#764ba2);padding:14px 20px;display:flex;justify-content:space-between;align-items:center}
 .modal-header h3{color:#fff;font-size:1.05rem}
 .modal-close{background:rgba(255,255,255,.2);border:none;color:#fff;width:30px;height:30px;border-radius:50%;cursor:pointer}
@@ -92,9 +93,10 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-g
 .table-controls{display:flex;gap:12px;padding:12px 20px;background:rgba(255,255,255,.02);border-bottom:1px solid rgba(255,255,255,.06);align-items:center;flex-wrap:wrap}
 .ctrl-input{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:#fff;padding:8px 12px;border-radius:6px;font-size:.8rem;outline:none}
 .ctrl-input:focus{border-color:#667eea}
+.ctrl-input option { background-color:#1a1a3e; color:#fff; }
 
 .modal-body{padding:0;overflow-y:auto;flex:1;overflow-x:auto;}
-.modal-table{width:100%;border-collapse:collapse;font-size:.74rem;min-width:1300px}
+.modal-table{width:100%;border-collapse:collapse;font-size:.74rem;min-width:1450px}
 .modal-table thead th{background:rgba(30,30,60,.97);padding:9px 12px;text-align:left;color:#999;font-weight:600;text-transform:uppercase;font-size:.65rem;position:sticky;top:0;z-index:1;white-space:nowrap}
 .modal-table tbody td{padding:7px 12px;border-bottom:1px solid rgba(255,255,255,.03);vertical-align:top}
 .modal-table tbody tr:hover{background:rgba(102,126,234,.06)}
@@ -108,22 +110,22 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-g
 
 .compguid-cell{font-family:monospace;font-size:.7rem;color:#a855f7;text-decoration:underline;cursor:pointer;word-break:break-all}
 .combo-cell{font-family:monospace;font-size:.68rem;color:#38ef7d;word-break:break-all;background:rgba(56,239,125,.05);padding:4px 6px;border-radius:4px;border:1px dashed rgba(56,239,125,.2)}
-.chip-wrap{display:flex;flex-wrap:wrap;gap:4px;max-width:280px;max-height:80px;overflow-y:auto}
-.chip-act{color:#38ef7d;background:rgba(56,239,125,.1);border:1px solid rgba(56,239,125,.25);padding:2px 6px;border-radius:4px;font-size:.66rem;font-family:monospace}
-.chip-exp{color:#f45c43;background:rgba(244,92,67,.1);border:1px solid rgba(244,92,67,.25);padding:2px 6px;border-radius:4px;font-size:.66rem;font-family:monospace}
-.chip-label{font-size:.6rem;color:#888;width:100%;margin-top:2px}
+.chip-wrap{display:flex;flex-direction:column;gap:3px;max-width:320px;max-height:90px;overflow-y:auto}
+.chip-act{color:#38ef7d;background:rgba(56,239,125,.1);border:1px solid rgba(56,239,125,.25);padding:2px 6px;border-radius:4px;font-size:.66rem;font-family:monospace;white-space:nowrap}
+.chip-exp{color:#f45c43;background:rgba(244,92,67,.1);border:1px solid rgba(244,92,67,.25);padding:2px 6px;border-radius:4px;font-size:.66rem;font-family:monospace;white-space:nowrap}
+.chip-label{font-size:.62rem;color:#888;width:100%;margin-top:2px}
 .status-badge{padding:3px 8px;border-radius:10px;font-size:.62rem;font-weight:600;white-space:nowrap}
 .status-active{background:rgba(56,239,125,.12);color:#38ef7d}
 .status-expired{background:rgba(244,92,67,.12);color:#f45c43}
 .status-newsales{background:rgba(34,211,238,.15);color:#22d3ee;border:1px solid rgba(34,211,238,.35)}
+.status-ghost{background:rgba(244,63,94,.15);color:#f43f5e;border:1px solid rgba(244,63,94,.35)}
 
 .data-table-container{margin:14px 30px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;overflow:hidden}
 .table-header{padding:14px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,.06);flex-wrap:wrap;gap:8px}
 .table-tabs{display:flex;gap:5px;flex-wrap:wrap}
-.table-tab{padding:5px 14px;border-radius:16px;border:1px solid rgba(255,255,255,.12);background:transparent;color:#aaa;cursor:pointer;font-size:.78rem}
+.table-tab{padding:4px 11px;border-radius:16px;border:1px solid rgba(255,255,255,.12);background:transparent;color:#aaa;cursor:pointer;font-size:.75rem}
 .table-tab.active{background:linear-gradient(135deg,#667eea,#764ba2);border-color:transparent;color:#fff}
 .table-scroll{max-height:500px;overflow:auto}
-
 .download-section{margin:12px 30px;display:flex;gap:8px;flex-wrap:wrap}
 .btn-download{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#bbb;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.78rem}
 .loading-overlay{display:none;position:fixed;inset:0;background:rgba(10,10,26,.92);z-index:3000;justify-content:center;align-items:center;flex-direction:column;gap:14px}
@@ -152,10 +154,10 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
         <option value="5+ Years">5+ Years</option>
       </select>
       <select class="ctrl-input" id="modalSort" onchange="triggerModalUpdate()">
-        <option value="exp_desc">Sort: Expiry (Newest first)</option>
-        <option value="exp_asc">Sort: Expiry (Oldest first)</option>
-        <option value="tenure_desc">Sort: Tenure (High to Low)</option>
-        <option value="tenure_asc">Sort: Tenure (Low to High)</option>
+        <option value="exp_desc">Sort: Expiry (Newest)</option>
+        <option value="exp_asc">Sort: Expiry (Oldest)</option>
+        <option value="tenure_desc">Sort: Tenure (High-Low)</option>
+        <option value="tenure_asc">Sort: Tenure (Low-High)</option>
       </select>
       <button class="btn-download" style="background:#667eea;color:#fff;border:none" onclick="downloadModalData()">📥 Export View</button>
     </div>
@@ -178,8 +180,8 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
 
 <div class="header">
   <h1>📊 Enterprise Customer Churn & Retention Dashboard</h1>
-  <p>3-Way Correlation · Playbooks · Paged Batch Analytics · Advanced Filtering</p>
-  <div class="header-badge">v17.0 — Pagination, Tenure Filters & Actionable Playbooks</div>
+  <p>Dual Expiry Tracking · Ghost Churn Detection · Ultra-Fast Performance Engine</p>
+  <div class="header-badge">v20.0 — O(1) Instant Computation Engine</div>
 </div>
 
 <div class="status-bar loading" id="statusBar"><div class="status-spinner"></div><span>Loading data...</span></div>
@@ -205,12 +207,13 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
   <div class="chart-card"><div class="chart-title">⭕ CompGUID Overlap</div><div class="venn-container" id="vennDiagram"></div></div>
   <div class="chart-card"><div class="chart-title">📊 Churn & New Sales Flow</div><div class="flow-container" id="flowDiagram"></div></div>
 </div>
+
 <!-- PLAYBOOK 1 -->
 <div class="action-block">
     <h4>💡 Playbook: Correlation & Recovery</h4>
-    <div class="action-item"><strong>For Partial Churn (Yellow):</strong> These customers dropped some licenses but kept others. <em>Action: Run an automated win-back campaign offering a 15% consolidation discount to reactivate the dropped seats.</em></div>
-    <div class="action-item"><strong>For New Sales (Blue):</strong> These are active licenses bought *after* old ones expired. <em>Action: Ensure your partner commission structures account for this so they aren't treating simple rotations as net-new business.</em></div>
-    <div class="action-item"><strong>For At-Risk (Orange):</strong> Subscriptions expiring in 30 days. <em>Action: Trigger immediate automated renewal emails and assign Account Managers to high-value GSTINs.</em></div>
+    <div class="action-item"><strong>For Ghost Churn (Pink):</strong> Active subscriptions that have not been used in 90+ days. <em>Action: High risk of non-renewal! Reach out immediately to offer training or technical support.</em></div>
+    <div class="action-item"><strong>For Partial Churn (Yellow):</strong> Customers who dropped some licenses but kept others. <em>Action: Offer a consolidation discount to win back expired serials.</em></div>
+    <div class="action-item"><strong>For New Sales (Blue):</strong> Active licenses purchased after an old one expired. <em>Action: Verify if this is net-new growth or license replacement.</em></div>
 </div>
 
 <!-- SECTION 2: PARTNERS & PRODUCTS -->
@@ -221,29 +224,9 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
   <div class="chart-card"><div class="chart-title">📦 Category Mix</div><div class="chart-container"><canvas id="categoryChart"></canvas></div></div>
   <div class="chart-card"><div class="chart-title">⏳ Tenure of Churned Customers</div><div class="chart-container"><canvas id="tenureChart"></canvas></div></div>
 </div>
-<!-- PLAYBOOK 2 -->
-<div class="action-block">
-    <h4>💡 Playbook: Partners & Product</h4>
-    <div class="action-item"><strong>Tenure &lt; 1 Year Churn:</strong> Represents onboarding failure. <em>Action: Implement a mandatory 30-day post-sale setup call for all new installations.</em></div>
-    <div class="action-item"><strong>Partner Accountability:</strong> Look at the Top 10 chart. <em>Action: Shift marketing development funds (MDF) towards partners with high green (Active) bars, and mandate retraining for partners with high red (Expired) bars.</em></div>
-</div>
-
-<!-- SECTION 3: GEOGRAPHY -->
-<div class="section-header"><h2>📅 Geography & Timeline</h2></div>
-<div class="section-divider"></div>
-<div class="dashboard">
-  <div class="chart-card full-width"><div class="chart-title">🗺️ State-wise Churn (from GSTIN)</div><div class="chart-container tall"><canvas id="stateChart"></canvas></div></div>
-  <div class="chart-card full-width"><div class="chart-title">📈 Monthly Expiry Trend</div><div class="chart-container"><canvas id="timelineChart"></canvas></div></div>
-</div>
-<!-- PLAYBOOK 3 -->
-<div class="action-block">
-    <h4>💡 Playbook: Geography & Time</h4>
-    <div class="action-item"><strong>Regional Spikes:</strong> If a specific state (e.g., Maharashtra) has a massive red bar, it indicates regional competitor activity. <em>Action: Run localized webinars and feature-awareness campaigns in that state.</em></div>
-    <div class="action-item"><strong>Future Expiry Walls:</strong> Look ahead on the Monthly Trend chart. <em>Action: If a huge volume of expiries is coming in 2 months, pre-approve bulk renewal discounts today.</em></div>
-</div>
 
 <!-- DATA TABLE (MAIN DASHBOARD) -->
-<div class="section-header"><h2>📋 Full Enriched Records (Paged Batch Analytics)</h2></div>
+<div class="section-header"><h2>📋 Full Enriched Records (Dual Expiry Tracking)</h2></div>
 <div class="section-divider"></div>
 <div class="data-table-container">
   <div class="table-header">
@@ -252,8 +235,8 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
       <button class="table-tab" onclick="setMainTab('overlap',this)">🟡 Partial</button>
       <button class="table-tab" onclick="setMainTab('churned',this)">🔴 Full Churn</button>
       <button class="table-tab" onclick="setMainTab('newsales',this)">🔵 New Sales</button>
+      <button class="table-tab" onclick="setMainTab('ghost',this)">👻 Ghost Churn</button>
       <button class="table-tab" onclick="setMainTab('atrisk',this)">⚠️ At Risk</button>
-      <button class="table-tab" onclick="setMainTab('healthy',this)">🟢 Healthy</button>
     </div>
     <div style="font-size:.8rem;color:#888" id="mainTableCount"></div>
   </div>
@@ -285,12 +268,13 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
           <th>View 2: GSTIN</th>
           <th>View 3: Combo (GSTIN_CompGUID)</th>
           <th>Sub No</th>
+          <th>Last Used</th>
           <th>BLS Expiry</th>
           <th>Status</th>
           <th>New Sales</th>
-          <th>Linked by CompGUID</th>
-          <th>Linked by GSTIN</th>
-          <th style="color:#38ef7d">Active Serials (Combo)</th>
+          <th>Linked by CompGUID (w/ Expiry)</th>
+          <th>Linked by GSTIN (w/ Expiry)</th>
+          <th style="color:#38ef7d">Active Serials + Expiries (Combo)</th>
         </tr>
       </thead>
       <tbody id="mainTableBody"></tbody>
@@ -305,22 +289,21 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
   </div>
 </div>
 
-<footer>Customer Churn Dashboard v17.0 · Enterprise Paged Analytics</footer>
+<footer>Customer Churn Dashboard v20.0 · Fast O(1) Engine · Zero Lag</footer>
 
 <script>
 let expiredData=[],activeData=[],analysisResults={},charts={};
-window.compNet={}; window.gstNet={}; window.comboNet={}; window.compExpMeta={}; window.compActMeta={};
+window.compNet={}; window.gstNet={}; window.comboNet={}; 
+window.compMinExpDate={}; window.compMaxExpDate={};
+
 const stateGST={'01':'J&K','02':'HP','03':'Punjab','04':'CHD','05':'UK','06':'Haryana','07':'Delhi','08':'Rajasthan','09':'UP','10':'Bihar','11':'Sikkim','18':'Assam','19':'WB','20':'JH','21':'Odisha','22':'CG','23':'MP','24':'Gujarat','27':'Maharashtra','29':'Karnataka','30':'Goa','32':'Kerala','33':'TN','36':'Telangana','37':'AP'};
 
 const PAGE_SIZE = 50;
-
-// Main Table State
-let mainBaseData = [];     // Depends on tab
-let mainFilteredData = []; // Depends on search/sort
+let mainBaseData = [];     
+let mainFilteredData = []; 
 let mainPage = 1;
 let currentMainTab = 'all';
 
-// Modal Table State
 let modalBaseData = []; 
 let modalFilteredData = [];
 let modalPage = 1;
@@ -330,6 +313,11 @@ let uiTimer=null;
 function setStatus(msg,type='info'){
   const sb=document.getElementById('statusBar'); sb.className='status-bar '+type;
   sb.innerHTML=type==='loading'?`<div class="status-spinner"></div><span>${msg}</span>`:`<span>${msg}</span>`;
+}
+
+function formatDateFast(d) {
+    if (!d || isNaN(d.getTime())) return 'N/A';
+    return (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear();
 }
 
 function fastParseDate(str){
@@ -352,7 +340,7 @@ function decodeArrayBufferSmart(buffer){
 }
 
 function parseArrayOfRows(rows,headers,source){
-  let ci=-1,si=-1,gi=-1,ei=-1,pi=-1,ii=-1,cati=-1;
+  let ci=-1,si=-1,gi=-1,ei=-1,pi=-1,ii=-1,cati=-1,ludi=-1;
   headers.forEach((h,i)=>{const l=String(h).toLowerCase().replace(/[^a-z0-9]/g,'');
     if(l.includes('guid')||l.includes('comp'))ci=i;
     else if(l.includes('sub')||l.includes('number')||l.includes('serial'))si=i;
@@ -361,6 +349,7 @@ function parseArrayOfRows(rows,headers,source){
     else if(l.includes('owner')||l.includes('partner'))pi=i;
     else if(l.includes('install'))ii=i;
     else if(l.includes('category')||l.includes('product'))cati=i;
+    else if(l.includes('last') && (l.includes('use') || l.includes('active') || l.includes('login') || l.includes('sync'))) ludi=i;
   });
   if(ci===-1&&headers.length>=1)ci=0; if(si===-1&&headers.length>=2)si=1; if(gi===-1&&headers.length>=3)gi=2;
   if(ei===-1&&headers.length>=4)ei=3; if(pi===-1&&headers.length>=5)pi=4; if(ii===-1&&headers.length>=6)ii=5; if(cati===-1&&headers.length>=7)cati=6;
@@ -371,12 +360,15 @@ function parseArrayOfRows(rows,headers,source){
     if(!comp&&!sub)continue;
     const validGst = gst.length>=8 ? gst : null;
     const comboKey = `${validGst || 'NO_GST'}_${comp}`;
+    const dt = fastParseDate(cols[ei])||new Date();
     out.push({
       compGUID:comp, subscriptionId:sub, gstin:validGst, comboKey:comboKey,
-      currentBlsExpiry:fastParseDate(cols[ei])||new Date(),
+      currentBlsExpiry:dt,
+      expStr: formatDateFast(dt),
       ownerPartner:pi!==-1&&cols[pi]?String(cols[pi]).trim():'Direct / Unassigned',
       installDate:ii!==-1?fastParseDate(cols[ii]):null,
       categoryName:cati!==-1&&cols[cati]?String(cols[cati]).trim():'Standard',
+      lastUseDate:ludi!==-1?fastParseDate(cols[ludi]):null,
       source
     });
   }
@@ -393,6 +385,7 @@ function parseCSVFast(text,source){
   const headers=parseRow(lines[0]); const raw=[]; for(let i=1;i<lines.length;i++)raw.push(parseRow(lines[i]));
   return parseArrayOfRows(raw,headers,source);
 }
+
 function parseExcelBuffer(buf,source){
   try{
     const wb=XLSX.read(new Uint8Array(buf),{type:'array',cellDates:true});
@@ -434,40 +427,11 @@ async function autoLoadFromRepo(){
   }catch(err){setStatus('⚠️ Auto-load failed: '+err.message,'error');}
 }
 
-function computeNewSalesFlag(d){
-  const metaE=window.compExpMeta[d.compGUID]||[], metaA=window.compActMeta[d.compGUID]||[];
-  if(!metaE.length||!metaA.length)return {isNewSales:false,detail:''};
-  const pairs=[];
-  for(const a of metaA){
-    if(!a.install)continue;
-    for(const e of metaE){
-      if(!e.expiry)continue;
-      if(a.install.getTime()>=e.expiry.getTime()) pairs.push({activeSub:a.sub,expSub:e.sub,install:a.install,expiry:e.expiry});
-    }
-  }
-  if(!pairs.length)return {isNewSales:false,detail:''};
-  if(d.source==='active'){
-    const hit=pairs.filter(p=>p.activeSub===d.subscriptionId||(d.installDate&&p.install.getTime()===d.installDate.getTime()));
-    if(hit.length||pairs.length){
-      const use=hit.length?hit:pairs;
-      const expSubs=[...new Set(use.map(p=>p.expSub))].slice(0,5).join(', ');
-      return {isNewSales:true,detail:`Install ≥ Exp BLS of: ${expSubs}`};
-    }
-  }else{
-    const hit=pairs.filter(p=>p.expSub===d.subscriptionId);
-    if(hit.length){
-      const actSubs=[...new Set(hit.map(p=>p.activeSub))].slice(0,5).join(', ');
-      return {isNewSales:true,detail:`Replaced by active: ${actSubs}`};
-    }
-    if(pairs.length) return {isNewSales:true,detail:`Comp has New Sales vs ${[...new Set(pairs.map(p=>p.activeSub))].slice(0,3).join(', ')}`};
-  }
-  return {isNewSales:false,detail:''};
-}
-
 function getTenureYrs(d){
   if(!d.installDate) return -1;
   return (d.currentBlsExpiry-d.installDate)/(1000*60*60*24*365.25);
 }
+
 function getTenureLabel(d){
   const y = getTenureYrs(d);
   if(y<0) return 'Unknown';
@@ -477,120 +441,195 @@ function getTenureLabel(d){
   return '5+ Years';
 }
 
+// ULTRA-FAST O(N) SINGLE PASS ENGINE
 function analyzeData(){
-  const eG=new Set(),aG=new Set();
-  const mE={},mA={},sC={},partStats={},catStats={},tenStats={'< 1 Year':0,'1-3 Years':0,'3-5 Years':0,'5+ Years':0};
-  window.compNet={}; window.gstNet={}; window.comboNet={}; window.compExpMeta={}; window.compActMeta={};
+  const eG=new Set(), aG=new Set(), eGST=new Set(), aGST=new Set();
+  const mE={}, mA={}, sC={}, partStats={}, catStats={}, tenStats={'< 1 Year':0,'1-3 Years':0,'3-5 Years':0,'5+ Years':0};
+  
+  window.compNet={}; window.gstNet={}; window.comboNet={}; 
+  window.compMinExpDate={};
 
-  const processRecord = (d) => {
-    if(!window.compNet[d.compGUID])window.compNet[d.compGUID]={a:[],e:[]};
-    window.compNet[d.compGUID][d.source==='active'?'a':'e'].push(d.subscriptionId);
-    if(d.gstin){
-      if(!window.gstNet[d.gstin])window.gstNet[d.gstin]={a:[],e:[]};
-      window.gstNet[d.gstin][d.source==='active'?'a':'e'].push(d.subscriptionId);
-    }
-    if(!window.comboNet[d.comboKey])window.comboNet[d.comboKey]={a:[],e:[]};
-    window.comboNet[d.comboKey][d.source==='active'?'a':'e'].push(d.subscriptionId);
+  // 1. Expired Pass
+  for(let i=0; i<expiredData.length; i++) {
+      const d = expiredData[i];
+      const itemMeta = { sub: d.subscriptionId, expStr: d.expStr };
 
-    if(d.source==='expired'){
-      if(!window.compExpMeta[d.compGUID])window.compExpMeta[d.compGUID]=[];
-      window.compExpMeta[d.compGUID].push({sub:d.subscriptionId,expiry:d.currentBlsExpiry});
-    }else{
-      if(!window.compActMeta[d.compGUID])window.compActMeta[d.compGUID]=[];
-      window.compActMeta[d.compGUID].push({sub:d.subscriptionId,install:d.installDate});
-    }
+      if(!window.compNet[d.compGUID]) window.compNet[d.compGUID] = { a: [], e: [] };
+      window.compNet[d.compGUID].e.push(itemMeta);
 
-    if(d.source==='expired') eG.add(d.compGUID); else aG.add(d.compGUID);
-    const mon=d.currentBlsExpiry.toISOString().slice(0,7);
-    if(d.source==='expired') mE[mon]=(mE[mon]||0)+1; else mA[mon]=(mA[mon]||0)+1;
-    if(d.gstin&&d.gstin.length>=2){const st=stateGST[d.gstin.slice(0,2)]||'Other';if(!sC[st])sC[st]={expired:0,active:0};sC[st][d.source]++;}
+      // Track earliest expired expiry for New Sales check
+      const expTime = d.currentBlsExpiry.getTime();
+      if(!window.compMinExpDate[d.compGUID] || expTime < window.compMinExpDate[d.compGUID]) {
+          window.compMinExpDate[d.compGUID] = expTime;
+      }
 
-    const pKey=d.ownerPartner||'Direct / Unassigned'; if(!partStats[pKey])partStats[pKey]={expired:0,active:0}; partStats[pKey][d.source]++;
-    const cKey=d.categoryName||'Standard'; if(!catStats[cKey])catStats[cKey]={expired:0,active:0}; catStats[cKey][d.source]++;
+      if(d.gstin){
+        if(!window.gstNet[d.gstin]) window.gstNet[d.gstin] = { a: [], e: [] };
+        window.gstNet[d.gstin].e.push(itemMeta);
+      }
 
-    if(d.source==='expired'){
+      if(!window.comboNet[d.comboKey]) window.comboNet[d.comboKey] = { a: [], e: [] };
+      window.comboNet[d.comboKey].e.push(itemMeta);
+
+      eG.add(d.compGUID);
+      const mon=d.currentBlsExpiry.toISOString().slice(0,7);
+      mE[mon]=(mE[mon]||0)+1;
+
+      if(d.gstin && d.gstin.length>=2){const st=stateGST[d.gstin.slice(0,2)]||'Other';if(!sC[st])sC[st]={expired:0,active:0};sC[st].expired++;}
+
+      const pKey=d.ownerPartner||'Direct / Unassigned'; if(!partStats[pKey])partStats[pKey]={expired:0,active:0}; partStats[pKey].expired++;
+      const cKey=d.categoryName||'Standard'; if(!catStats[cKey])catStats[cKey]={expired:0,active:0}; catStats[cKey].expired++;
+
       const tl = getTenureLabel(d);
       if(tl !== 'Unknown') tenStats[tl]++;
-    }
-  };
+  }
 
-  expiredData.forEach(processRecord);
-  activeData.forEach(processRecord);
+  // 2. Active Pass
+  let ghostCount = 0;
+  let newSalesActiveSubs = 0;
+  const newSalesCompGUIDs = new Set();
+  const today = new Date();
+  const ninetyDaysAgo = today.getTime() - 90 * 86400000;
+  const rd = 30, riskDate = new Date(today.getTime() + rd * 86400000);
+  const atRiskData = [];
 
-  let newSalesActiveSubs=0, newSalesCompGUIDs=new Set();
-  const tag=d=>{
-    const ns=computeNewSalesFlag(d); d.isNewSales=ns.isNewSales; d.newSalesDetail=ns.detail;
-    if(ns.isNewSales){ newSalesCompGUIDs.add(d.compGUID); if(d.source==='active')newSalesActiveSubs++; }
-  };
-  expiredData.forEach(tag); activeData.forEach(tag);
+  for(let i=0; i<activeData.length; i++) {
+      const d = activeData[i];
+      const itemMeta = { sub: d.subscriptionId, expStr: d.expStr };
 
-  const rd=30, today=new Date(), riskDate=new Date(today.getTime()+rd*86400000);
-  const atRiskData=activeData.filter(d=>d.currentBlsExpiry<=riskDate&&d.currentBlsExpiry>=today);
+      if(!window.compNet[d.compGUID]) window.compNet[d.compGUID] = { a: [], e: [] };
+      window.compNet[d.compGUID].a.push(itemMeta);
 
-  const oG=new Set(); eG.forEach(x=>{if(aG.has(x))oG.add(x);});
-  const fC=new Set(); eG.forEach(x=>{if(!aG.has(x))fC.add(x);});
-  const onlyActive=new Set(); aG.forEach(x=>{if(!eG.has(x))onlyActive.add(x);});
-  const tot=fC.size+onlyActive.size+oG.size;
+      if(d.gstin){
+        if(!window.gstNet[d.gstin]) window.gstNet[d.gstin] = { a: [], e: [] };
+        window.gstNet[d.gstin].a.push(itemMeta);
+      }
 
-  analysisResults={
-    totalExpired:expiredData.length,totalActive:activeData.length,
-    overlappingCompGUIDs:oG.size,fullChurn:fC.size,onlyActive:onlyActive.size,
-    atRisk:atRiskData.length,atRiskData, newSalesActiveSubs,newSalesCompanies:newSalesCompGUIDs.size,
-    churnRate:tot?((fC.size/tot)*100).toFixed(1):'0.0',
-    retentionRate:tot?((hG=onlyActive.size)/tot*100).toFixed(1):'0.0',
-    partialChurnRate:tot?((oG.size/tot)*100).toFixed(1):'0.0',
-    monthlyExpired:mE,monthlyActive:mA,stateChurn:sC,
-    overlappingCompGUIDSet:oG,fullChurnSet:fC,onlyActiveSet:onlyActive,
-    partStats,catStats,tenStats,totalCompanies:tot
+      if(!window.comboNet[d.comboKey]) window.comboNet[d.comboKey] = { a: [], e: [] };
+      window.comboNet[d.comboKey].a.push(itemMeta);
+
+      aG.add(d.compGUID);
+      const mon=d.currentBlsExpiry.toISOString().slice(0,7);
+      mA[mon]=(mA[mon]||0)+1;
+
+      if(d.gstin && d.gstin.length>=2){const st=stateGST[d.gstin.slice(0,2)]||'Other';if(!sC[st])sC[st]={expired:0,active:0};sC[st].active++;}
+
+      const pKey=d.ownerPartner||'Direct / Unassigned'; if(!partStats[pKey])partStats[pKey]={expired:0,active:0}; partStats[pKey].active++;
+      const cKey=d.categoryName||'Standard'; if(!catStats[cKey])catStats[cKey]={expired:0,active:0}; catStats[cKey].active++;
+
+      // Fast Ghost Churn check
+      if(d.lastUseDate && d.lastUseDate.getTime() < ninetyDaysAgo) {
+          d.isGhost = true;
+          ghostCount++;
+      }
+
+      // Fast O(1) New Sales check
+      const minExp = window.compMinExpDate[d.compGUID];
+      if(minExp && d.installDate && d.installDate.getTime() >= minExp) {
+          d.isNewSales = true;
+          newSalesActiveSubs++;
+          newSalesCompGUIDs.add(d.compGUID);
+      }
+
+      if(d.currentBlsExpiry <= riskDate && d.currentBlsExpiry >= today) {
+          atRiskData.push(d);
+      }
+  }
+
+  // Tag Expired records belonging to New Sales companies
+  for(let i=0; i<expiredData.length; i++) {
+      if(newSalesCompGUIDs.has(expiredData[i].compGUID)) {
+          expiredData[i].isNewSales = true;
+      }
+  }
+
+  const oG = new Set(); eG.forEach(x => { if (aG.has(x)) oG.add(x); });
+  const fC = new Set(); eG.forEach(x => { if (!aG.has(x)) fC.add(x); });
+  const onlyActive = new Set(); aG.forEach(x => { if (!eG.has(x)) onlyActive.add(x); });
+  const tot = fC.size + onlyActive.size + oG.size;
+
+  analysisResults = {
+    totalExpired: expiredData.length, totalActive: activeData.length,
+    overlappingCompGUIDs: oG.size, fullChurn: fC.size, healthy: onlyActive.size,
+    atRisk: atRiskData.length, atRiskData,
+    newSalesActiveSubs, newSalesCompanies: newSalesCompGUIDs.size,
+    ghostCount,
+    churnRate: tot ? ((fC.size / tot) * 100).toFixed(1) : '0.0',
+    retentionRate: tot ? ((onlyActive.size / tot) * 100).toFixed(1) : '0.0',
+    partialChurnRate: tot ? ((oG.size / tot) * 100).toFixed(1) : '0.0',
+    monthlyExpired: mE, monthlyActive: mA, stateChurn: sC,
+    overlappingCompGUIDSet: oG, fullChurnSet: fC, healthySet: onlyActive,
+    partStats, catStats, tenStats, totalCompanies: tot
   };
 }
 
-// ================== SHARED RENDERING LOGIC ==================
-function chips(list,cls){
-  if(!list||!list.length)return'<span style="color:#555;font-size:.65rem">—</span>';
-  return `<div class="chip-wrap">${[...new Set(list)].map(s=>`<span class="${cls}">${s}</span>`).join('')}</div>`;
+// ULTRA-FAST LIGHTWEIGHT CHIP GENERATOR
+function chipsWithExpiry(list, cls){
+  if(!list || !list.length) return '<span style="color:#555;font-size:.65rem">—</span>';
+  let html = '<div class="chip-wrap">';
+  const limit = Math.min(list.length, 6);
+  for(let i=0; i<limit; i++) {
+      const item = list[i];
+      html += `<span class="${cls}">${item.sub} (Exp: ${item.expStr})</span>`;
+  }
+  if(list.length > limit) html += `<span style="font-size:0.6rem;color:#888">+${list.length - limit} more</span>`;
+  html += '</div>';
+  return html;
 }
 
 function getL(d){
-  const cn=window.compNet[d.compGUID]||{a:[],e:[]}, gn=d.gstin?(window.gstNet[d.gstin]||{a:[],e:[]}):{a:[],e:[]};
-  const ca=cn.a.filter(s=>s!==d.subscriptionId), ce=cn.e.filter(s=>s!==d.subscriptionId);
-  const ga=gn.a.filter(s=>s!==d.subscriptionId), ge=gn.e.filter(s=>s!==d.subscriptionId);
-  return{
-    c:`${ca.length?`<div class="chip-label">Active (${ca.length})</div>`+chips(ca,'chip-act'):''}${ce.length?`<div class="chip-label">Expired (${ce.length})</div>`+chips(ce,'chip-exp'):''}${!ca.length&&!ce.length?'<span style="color:#555;font-size:.6rem">None</span>':''}`,
-    g:d.gstin?(`${ga.length?`<div class="chip-label">Active (${ga.length})</div>`+chips(ga,'chip-act'):''}${ge.length?`<div class="chip-label">Expired (${ge.length})</div>`+chips(ge,'chip-exp'):''}${!ga.length&&!ge.length?'<span style="color:#555;font-size:.6rem">None</span>':''}`):'<span style="color:#555;font-size:.6rem">No GSTIN</span>'
+  const cn = window.compNet[d.compGUID] || { a: [], e: [] };
+  const gn = d.gstin ? (window.gstNet[d.gstin] || { a: [], e: [] }) : { a: [], e: [] };
+  
+  const ca = cn.a.filter(x => x.sub !== d.subscriptionId);
+  const ce = cn.e.filter(x => x.sub !== d.subscriptionId);
+  const ga = gn.a.filter(x => x.sub !== d.subscriptionId);
+  const ge = gn.e.filter(x => x.sub !== d.subscriptionId);
+  
+  return {
+    c: `${ca.length ? `<div class="chip-label">🟢 Active (${ca.length})</div>` + chipsWithExpiry(ca, 'chip-act') : ''}${ce.length ? `<div class="chip-label">🔴 Expired (${ce.length})</div>` + chipsWithExpiry(ce, 'chip-exp') : ''}${!ca.length && !ce.length ? '<span style="color:#555;font-size:.6rem">None</span>' : ''}`,
+    g: d.gstin ? (`${ga.length ? `<div class="chip-label">🟢 Active (${ga.length})</div>` + chipsWithExpiry(ga, 'chip-act') : ''}${ge.length ? `<div class="chip-label">🔴 Expired (${ge.length})</div>` + chipsWithExpiry(ge, 'chip-exp') : ''}${!ga.length && !ge.length ? '<span style="color:#555;font-size:.6rem">None</span>' : ''}`) : '<span style="color:#555;font-size:.6rem">No GSTIN</span>'
   };
 }
 
 function getComboActiveSubsHTML(d){
   const combo = window.comboNet[d.comboKey];
   if(!combo || !combo.a || combo.a.length === 0) return '<span style="color:#555;font-size:.65rem">None</span>';
-  return chips(combo.a, 'chip-act');
+  return chipsWithExpiry(combo.a, 'chip-act');
 }
 
 function getTenureText(d){
   const y = getTenureYrs(d);
-  if(y<0) return '<span style="color:#555">N/A</span>';
+  if(y < 0) return '<span style="color:#555">N/A</span>';
   return `<span style="color:#22d3ee;font-weight:600">${y.toFixed(1)} yrs</span>`;
 }
 
 function newSalesCell(d){
-  if(d.isNewSales)return`<span class="status-badge status-newsales">New Sales</span><div style="font-size:.65rem;color:#67e8f9;margin-top:4px">${d.newSalesDetail||''}</div>`;
-  return`<span style="color:#555;font-size:.7rem">—</span>`;
+  if(d.isGhost) return `<span class="status-badge status-ghost">👻 Ghost Churn</span>`;
+  if(d.isNewSales) return `<span class="status-badge status-newsales">New Sales</span>`;
+  return `<span style="color:#555;font-size:.7rem">—</span>`;
 }
 
 function rowHtml(d) {
-    const l=getL(d), esc=(d.compGUID||'').replace(/'/g,"\\'"), escCombo=(d.comboKey||'').replace(/'/g,"\\'");
+    const l = getL(d);
+    const esc = (d.compGUID || '').replace(/'/g, "\\'");
+    const escCombo = (d.comboKey || '').replace(/'/g, "\\'");
     const comboActHtml = getComboActiveSubsHTML(d);
+    const lastUseStr = d.lastUseDate ? d.lastUseDate.toLocaleDateString() : '<span style="color:#555">N/A</span>';
+    
     return `<tr>
       <td style="font-size:.7rem"><b style="color:#fff">${d.ownerPartner}</b><br><span style="color:#ffd200">${d.categoryName}</span><br>Tenure: ${getTenureText(d)}</td>
-      <td class="compguid-cell" onclick="document.getElementById('globalSearchInput').value='${esc}';runGlobalSearch()">${d.compGUID||''}</td>
-      <td>${d.gstin||'<span style="color:#555">N/A</span>'}</td>
+      <td class="compguid-cell" onclick="document.getElementById('globalSearchInput').value='${esc}';runGlobalSearch()">${d.compGUID || ''}</td>
+      <td>${d.gstin || '<span style="color:#555">N/A</span>'}</td>
       <td class="combo-cell" onclick="document.getElementById('globalSearchInput').value='${escCombo}';runGlobalSearch()">${d.comboKey}</td>
-      <td>${d.subscriptionId||''}</td>
-      <td>${d.currentBlsExpiry.toLocaleDateString()}</td>
-      <td><span class="status-badge ${d.source==='expired'?'status-expired':'status-active'}">${d.source}</span></td>
+      <td>${d.subscriptionId || ''}</td>
+      <td>${lastUseStr}</td>
+      <td><b style="color:${d.source === 'expired' ? '#f45c43' : '#38ef7d'}">${d.expStr}</b></td>
+      <td><span class="status-badge ${d.source === 'expired' ? 'status-expired' : 'status-active'}">${d.source}</span></td>
       <td>${newSalesCell(d)}</td>
-      <td>${l.c}</td><td>${l.g}</td><td>${comboActHtml}</td>
+      <td>${l.c}</td>
+      <td>${l.g}</td>
+      <td>${comboActHtml}</td>
     </tr>`;
 }
 
@@ -603,19 +642,14 @@ function applyFiltersAndSort(sourceData, searchId, tenureId, sortId) {
     const q = rawQ.toLowerCase(), cq = q.replace(/[^a-z0-9]/g, '');
     let res = [];
 
-    // Filter Loop
     for (let i = 0; i < sourceData.length; i++) {
         const d = sourceData[i];
-        
-        // Tenure Filter
         if (tenureF !== 'ALL') {
             const tl = getTenureLabel(d);
             if (tl !== tenureF) continue;
         }
-
-        // Search Filter
         if (rawQ) {
-            const str = `${d.compGUID} ${d.subscriptionId} ${d.gstin} ${d.comboKey} ${d.ownerPartner} ${d.categoryName} ${d.isNewSales?'new sales':''}`.toLowerCase();
+            const str = `${d.compGUID} ${d.subscriptionId} ${d.gstin} ${d.comboKey} ${d.ownerPartner} ${d.categoryName} ${d.isNewSales ? 'new sales' : ''} ${d.isGhost ? 'ghost' : ''}`.toLowerCase();
             let match = str.includes(q);
             if (!match && cq.length >= 2) match = str.replace(/[^a-z0-9]/g, '').includes(cq);
             if (!match) continue;
@@ -623,13 +657,12 @@ function applyFiltersAndSort(sourceData, searchId, tenureId, sortId) {
         res.push(d);
     }
 
-    // Sort Loop
     if(sortF === 'exp_desc') res.sort((a,b)=> b.currentBlsExpiry - a.currentBlsExpiry);
     else if(sortF === 'exp_asc') res.sort((a,b)=> a.currentBlsExpiry - b.currentBlsExpiry);
     else if(sortF === 'tenure_desc') res.sort((a,b)=> getTenureYrs(b) - getTenureYrs(a));
     else if(sortF === 'tenure_asc') res.sort((a,b)=> {
         let ta = getTenureYrs(a), tb = getTenureYrs(b);
-        if(ta<0) ta=999; if(tb<0) tb=999; // Put unknowns at end
+        if(ta < 0) ta = 999; if(tb < 0) tb = 999; 
         return ta - tb;
     });
 
@@ -637,26 +670,26 @@ function applyFiltersAndSort(sourceData, searchId, tenureId, sortId) {
 }
 
 // ================== MAIN TABLE ==================
-function setMainTab(f,btn){
-    currentMainTab=f;
-    document.querySelectorAll('.table-tab').forEach(t=>t.classList.remove('active'));
-    if(btn)btn.classList.add('active');
+function setMainTab(f, btn){
+    currentMainTab = f;
+    document.querySelectorAll('.table-tab').forEach(t => t.classList.remove('active'));
+    if(btn) btn.classList.add('active');
     
-    // Reset Base Data
-    const r=analysisResults, rd=30, today=new Date(), riskDate=new Date(today.getTime()+rd*86400000);
+    const r = analysisResults, rd = 30, today = new Date(), riskDate = new Date(today.getTime() + rd * 86400000);
     const all = expiredData.concat(activeData);
     mainBaseData = [];
 
     for(let i=0; i<all.length; i++){
-        const d=all[i];
-        const o=r.overlappingCompGUIDSet.has(d.compGUID);
-        const cat=o?'Partial Churn':(d.source==='expired'?'Full Churn':'Healthy');
-        if(f==='overlap' && !o) continue;
-        if(f==='churned' && cat!=='Full Churn') continue;
-        if(f==='newsales' && !d.isNewSales) continue;
-        if(f==='healthy' && cat!=='Healthy') continue;
-        if(f==='atrisk') {
-            if(!(d.source==='active' && d.currentBlsExpiry<=riskDate && d.currentBlsExpiry>=today)) continue;
+        const d = all[i];
+        const o = r.overlappingCompGUIDSet.has(d.compGUID);
+        const cat = o ? 'Partial Churn' : (d.source === 'expired' ? 'Full Churn' : 'Healthy');
+        if(f === 'overlap' && !o) continue;
+        if(f === 'churned' && cat !== 'Full Churn') continue;
+        if(f === 'newsales' && !d.isNewSales) continue;
+        if(f === 'ghost' && !d.isGhost) continue;
+        if(f === 'healthy' && cat !== 'Healthy') continue;
+        if(f === 'atrisk') {
+            if(!(d.source === 'active' && d.currentBlsExpiry <= riskDate && d.currentBlsExpiry >= today)) continue;
         }
         mainBaseData.push(d);
     }
@@ -671,7 +704,7 @@ function triggerMainUpdate() {
         mainFilteredData = applyFiltersAndSort(mainBaseData, 'mainSearch', 'mainTenureFilter', 'mainSort');
         mainPage = 1;
         renderMainTablePage();
-    }, 250);
+    }, 150);
 }
 
 function mainChangePage(dir) {
@@ -703,7 +736,7 @@ function renderMainTablePage() {
 function openDrillDown(title, data, statsArray) {
     modalBaseData = data;
     document.getElementById('modalTitle').textContent = title;
-    document.getElementById('modalStats').innerHTML = statsArray.map(s=>`<div class="modal-stat"><div class="modal-stat-value" style="color:${s.color||'#667eea'}">${s.value}</div><div class="modal-stat-label">${s.label}</div></div>`).join('');
+    document.getElementById('modalStats').innerHTML = statsArray.map(s => `<div class="modal-stat"><div class="modal-stat-value" style="color:${s.color || '#667eea'}">${s.value}</div><div class="modal-stat-label">${s.label}</div></div>`).join('');
     document.getElementById('modalSearch').value = '';
     if(document.getElementById('modalTenureFilter')) document.getElementById('modalTenureFilter').value = 'ALL';
     
@@ -717,7 +750,7 @@ function triggerModalUpdate() {
         modalFilteredData = applyFiltersAndSort(modalBaseData, 'modalSearch', 'modalTenureFilter', 'modalSort');
         modalPage = 1;
         renderModalTablePage();
-    }, 250);
+    }, 150);
 }
 
 function modChangePage(dir) {
@@ -726,7 +759,7 @@ function modChangePage(dir) {
 }
 
 function renderModalTablePage() {
-    document.getElementById('modalTableHead').innerHTML=`<tr><th>Partner / Category</th><th>View 1: CompGUID</th><th>View 2: GSTIN</th><th>View 3: GSTIN + CompGUID</th><th>Sub No</th><th>Expiry</th><th>Status</th><th>New Sales</th><th>Linked by CompGUID</th><th>Linked by GSTIN</th><th style="color:#38ef7d;">Active Serials (Same GSTIN + CompGUID)</th></tr>`;
+    document.getElementById('modalTableHead').innerHTML = `<tr><th>Partner / Category</th><th>View 1: CompGUID</th><th>View 2: GSTIN</th><th>View 3: GSTIN + CompGUID</th><th>Sub No</th><th>Last Used</th><th>BLS Expiry</th><th>Status</th><th>New Sales</th><th>Linked by CompGUID (w/ Expiry)</th><th>Linked by GSTIN (w/ Expiry)</th><th style="color:#38ef7d;">Active Serials + Expiries (Combo)</th></tr>`;
     
     const total = modalFilteredData.length;
     const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
@@ -751,102 +784,131 @@ function closeModal(){ document.getElementById('drillModal').classList.remove('s
 
 // ==================== ACTIONS & CHARTS ====================
 function runGlobalSearch(){
-  const raw=document.getElementById('globalSearchInput').value.trim();
-  if(!raw){alert('Enter search term');return;}
-  const q=raw.toLowerCase(), cq=q.replace(/[^a-z0-9]/g,'');
-  const matches=[];
-  const scan=arr=>{for(const d of arr){const str=`${d.compGUID} ${d.subscriptionId} ${d.gstin} ${d.comboKey} ${d.ownerPartner} ${d.categoryName} ${d.isNewSales?'new sales':''}`.toLowerCase();
-    if(str.includes(q)||(cq.length>=2&&str.replace(/[^a-z0-9]/g,'').includes(cq)))matches.push(d);}};
-  scan(expiredData);scan(activeData);
-  openDrillDown(`🔍 Search: "${raw}"`,matches,[
-    {value:matches.length.toLocaleString(),label:'Matches',color:'#667eea'},
-    {value:matches.filter(d=>d.isNewSales).length.toLocaleString(),label:'New Sales',color:'#22d3ee'},
-    {value:matches.filter(d=>d.source==='expired').length.toLocaleString(),label:'Expired',color:'#f45c43'}
+  const raw = document.getElementById('globalSearchInput').value.trim();
+  if(!raw){ alert('Enter search term'); return; }
+  const q = raw.toLowerCase(), cq = q.replace(/[^a-z0-9]/g, '');
+  const matches = [];
+  const scan = arr => {
+      for(let i=0; i<arr.length; i++) {
+          const d = arr[i];
+          const str = `${d.compGUID} ${d.subscriptionId} ${d.gstin} ${d.comboKey} ${d.ownerPartner} ${d.categoryName} ${d.isNewSales ? 'new sales' : ''} ${d.isGhost ? 'ghost' : ''}`.toLowerCase();
+          if(str.includes(q) || (cq.length >= 2 && str.replace(/[^a-z0-9]/g, '').includes(cq))) matches.push(d);
+      }
+  };
+  scan(expiredData); scan(activeData);
+  openDrillDown(`🔍 Search: "${raw}"`, matches, [
+    { value: matches.length.toLocaleString(), label: 'Matches', color: '#667eea' },
+    { value: matches.filter(d => d.isNewSales).length.toLocaleString(), label: 'New Sales', color: '#22d3ee' },
+    { value: matches.filter(d => d.isGhost).length.toLocaleString(), label: 'Ghost Churn', color: '#f43f5e' },
+    { value: matches.filter(d => d.source === 'expired').length.toLocaleString(), label: 'Expired', color: '#f45c43' }
   ]);
 }
 
 function drillByCategory(cat){
-  const r=analysisResults; let d=[],t='',s=[];
-  if(cat==='total'){d=expiredData.concat(activeData);t='📊 All Subscriptions';s=[{value:(r.totalExpired+r.totalActive).toLocaleString(),label:'Total'},{value:r.totalExpired.toLocaleString(),label:'Expired',color:'#f45c43'},{value:r.totalActive.toLocaleString(),label:'Active',color:'#667eea'}];}
-  else if(cat==='churned'){d=expiredData.filter(x=>r.fullChurnSet.has(x.compGUID));t='🔴 Full Churn';s=[{value:d.length.toLocaleString(),label:'Records',color:'#f45c43'}];}
-  else if(cat==='healthy'){d=activeData.filter(x=>r.healthySet.has(x.compGUID));t='🟢 Healthy';s=[{value:d.length.toLocaleString(),label:'Records',color:'#38ef7d'}];}
-  else if(cat==='overlap'){d=expiredData.concat(activeData).filter(x=>r.overlappingCompGUIDSet.has(x.compGUID));t='🟡 Partial Churn';s=[{value:d.length.toLocaleString(),label:'Records',color:'#a855f7'},{value:d.filter(x=>x.isNewSales).length.toLocaleString(),label:'New Sales rows',color:'#22d3ee'}];}
-  else if(cat==='newsales'){d=expiredData.concat(activeData).filter(x=>x.isNewSales);t='🔵 New Sales (Install ≥ Expired BLS)';s=[{value:d.length.toLocaleString(),label:'Tagged rows',color:'#22d3ee'},{value:r.newSalesCompanies.toLocaleString(),label:'Companies',color:'#22d3ee'},{value:r.newSalesActiveSubs.toLocaleString(),label:'Active New Sales',color:'#38ef7d'}];}
-  else if(cat==='atrisk'){d=r.atRiskData;t='⚠️ At-Risk Active';s=[{value:d.length.toLocaleString(),label:'Records',color:'#ffd200'}];}
-  openDrillDown(t,d,s);
+  const r = analysisResults; let d = [], t = '', s = [];
+  if(cat === 'total'){ d = expiredData.concat(activeData); t = '📊 All Subscriptions'; s = [{ value: (r.totalExpired + r.totalActive).toLocaleString(), label: 'Total' }, { value: r.totalExpired.toLocaleString(), label: 'Expired', color: '#f45c43' }, { value: r.totalActive.toLocaleString(), label: 'Active', color: '#667eea' }]; }
+  else if(cat === 'churned'){ d = expiredData.filter(x => r.fullChurnSet.has(x.compGUID)); t = '🔴 Full Churn'; s = [{ value: d.length.toLocaleString(), label: 'Records', color: '#f45c43' }]; }
+  else if(cat === 'healthy'){ d = activeData.filter(x => r.healthySet.has(x.compGUID)); t = '🟢 Healthy'; s = [{ value: d.length.toLocaleString(), label: 'Records', color: '#38ef7d' }]; }
+  else if(cat === 'overlap'){ d = expiredData.concat(activeData).filter(x => r.overlappingCompGUIDSet.has(x.compGUID)); t = '🟡 Partial Churn'; s = [{ value: d.length.toLocaleString(), label: 'Records', color: '#a855f7' }, { value: d.filter(x => x.isNewSales).length.toLocaleString(), label: 'New Sales rows', color: '#22d3ee' }]; }
+  else if(cat === 'newsales'){ d = expiredData.concat(activeData).filter(x => x.isNewSales); t = '🔵 New Sales (Install ≥ Expired BLS)'; s = [{ value: d.length.toLocaleString(), label: 'Tagged rows', color: '#22d3ee' }, { value: r.newSalesCompanies.toLocaleString(), label: 'Companies', color: '#22d3ee' }]; }
+  else if(cat === 'ghost'){ d = activeData.filter(x => x.isGhost); t = '👻 Ghost Churn (Active but Unused >90 days)'; s = [{ value: d.length.toLocaleString(), label: 'Abandoned Subscriptions', color: '#f43f5e' }]; }
+  else if(cat === 'atrisk'){ d = r.atRiskData; t = '⚠️ At-Risk Active'; s = [{ value: d.length.toLocaleString(), label: 'Records', color: '#ffd200' }]; }
+  openDrillDown(t, d, s);
 }
 
 function renderKPIs(){
-  const r=analysisResults;
-  document.getElementById('kpiStrip').innerHTML=`
-    <div class="kpi-card blue" onclick="drillByCategory('total')"><div class="kpi-label">Total Subs</div><div class="kpi-value">${(r.totalExpired+r.totalActive).toLocaleString()}</div><div class="kpi-sublabel">${r.totalExpired.toLocaleString()} exp · ${r.totalActive.toLocaleString()} act</div></div>
+  const r = analysisResults;
+  document.getElementById('kpiStrip').innerHTML = `
+    <div class="kpi-card blue" onclick="drillByCategory('total')"><div class="kpi-label">Total Subs</div><div class="kpi-value">${(r.totalExpired + r.totalActive).toLocaleString()}</div><div class="kpi-sublabel">${r.totalExpired.toLocaleString()} exp · ${r.totalActive.toLocaleString()} act</div></div>
     <div class="kpi-card red" onclick="drillByCategory('churned')"><div class="kpi-label">Full Churn</div><div class="kpi-value">${r.churnRate}%</div><div class="kpi-sublabel">${r.fullChurn.toLocaleString()} companies</div></div>
     <div class="kpi-card purple" onclick="drillByCategory('overlap')"><div class="kpi-label">Partial Churn</div><div class="kpi-value">${r.overlappingCompGUIDs.toLocaleString()}</div><div class="kpi-sublabel">${r.partialChurnRate}% overlap</div></div>
     <div class="kpi-card cyan" onclick="drillByCategory('newsales')"><div class="kpi-label">New Sales</div><div class="kpi-value">${r.newSalesCompanies.toLocaleString()}</div><div class="kpi-sublabel">${r.newSalesActiveSubs.toLocaleString()} active installs ≥ exp</div></div>
+    <div class="kpi-card ghost" onclick="drillByCategory('ghost')"><div class="kpi-label">Ghost Churn</div><div class="kpi-value">${r.ghostCount.toLocaleString()}</div><div class="kpi-sublabel">unused > 90 days</div></div>
     <div class="kpi-card orange" onclick="drillByCategory('atrisk')"><div class="kpi-label">At-Risk</div><div class="kpi-value">${r.atRisk.toLocaleString()}</div><div class="kpi-sublabel">active near expiry</div></div>`;
 }
 
+function renderInsights(){
+  const r = analysisResults, cr = +r.churnRate, ins = [];
+  if (cr > 40) ins.push('🔴 <strong>HIGH FULL CHURN:</strong> ' + r.churnRate + '%');
+  else if (cr > 20) ins.push('🟡 <strong>MODERATE FULL CHURN:</strong> ' + r.churnRate + '%');
+  else ins.push('✅ <strong>FULL CHURN:</strong> ' + r.churnRate + '%');
+  if (r.overlappingCompGUIDs) ins.push('🟣 <strong>PARTIAL CHURN:</strong> ' + r.overlappingCompGUIDs.toLocaleString() + ' companies in both datasets');
+  if (r.ghostCount) ins.push('👻 <strong>GHOST CHURN WARNING:</strong> ' + r.ghostCount.toLocaleString() + ' active subscriptions have NOT been used in 90+ days.');
+  if (r.newSalesCompanies) ins.push('🔵 <strong>NEW SALES:</strong> ' + r.newSalesCompanies.toLocaleString() + ' companies where Active Install_Date ≥ Expired BLS Expiry');
+  if (r.atRisk) ins.push('⚠️ <strong>AT-RISK:</strong> ' + r.atRisk.toLocaleString() + ' active near expiry');
+  document.getElementById('insightBox').innerHTML = '<h4>💡 Insights</h4>' + ins.map(t => '<div class="insight-item">' + t + '</div>').join('');
+}
+
 function renderVenn(){
-  const r=analysisResults;
-  document.getElementById('vennDiagram').innerHTML=`
-    <div class="venn-circle venn-active" onclick="drillByCategory('healthy')" title="Active-only companies"><div style="margin-left:-20px"><div style="font-size:1.1rem;color:#667eea">${r.onlyActive.toLocaleString()}</div><div style="font-size:.58rem;color:#999">Active only</div></div></div>
+  const r = analysisResults;
+  document.getElementById('vennDiagram').innerHTML = `
+    <div class="venn-circle venn-active" onclick="drillByCategory('total')" title="Active-only companies"><div style="margin-left:-20px"><div style="font-size:1.1rem;color:#667eea">${r.onlyActive.toLocaleString()}</div><div style="font-size:.58rem;color:#999">Active only</div></div></div>
     <div class="venn-circle venn-expired" onclick="drillByCategory('churned')"><div style="margin-left:20px"><div style="font-size:1.1rem;color:#f45c43">${r.fullChurn.toLocaleString()}</div><div style="font-size:.58rem;color:#999">Expired only</div></div></div>
     <div class="venn-overlap-zone" onclick="drillByCategory('overlap')"><div><div>${r.overlappingCompGUIDs.toLocaleString()}</div><div style="font-size:.55rem;color:#ccc">Partial</div></div></div>`;
 }
 
 function renderFlowDiagram(){
-  const r=analysisResults, tot=r.totalCompanies||1;
-  const pp=((r.overlappingCompGUIDs/tot)*100).toFixed(1), fp=((r.fullChurn/tot)*100).toFixed(1);
-  const nsp=r.overlappingCompGUIDs?((r.newSalesCompanies/Math.max(r.overlappingCompGUIDs,1))*100).toFixed(1):'0';
-  const ap=r.totalActive?((r.atRisk/r.totalActive)*100).toFixed(1):'0';
-  document.getElementById('flowDiagram').innerHTML=`
-    <div class="flow-row" onclick="drillByCategory('overlap')"><div class="flow-label">🟡 Partial Churn</div><div class="flow-bar-container"><div class="flow-bar partial" style="width:${Math.max(+pp,5)}%">${r.overlappingCompGUIDs.toLocaleString()}</div></div><div class="flow-value" style="color:#a855f7">${pp}%</div></div>
-    <div class="flow-row" onclick="drillByCategory('churned')"><div class="flow-label">🔴 Full Churn</div><div class="flow-bar-container"><div class="flow-bar churned" style="width:${Math.max(+fp,5)}%">${r.fullChurn.toLocaleString()}</div></div><div class="flow-value" style="color:#f45c43">${fp}%</div></div>
-    <div class="flow-row" onclick="drillByCategory('newsales')"><div class="flow-label">🔵 New Sales</div><div class="flow-bar-container"><div class="flow-bar newsales" style="width:${Math.max(+nsp,5)}%">${r.newSalesCompanies.toLocaleString()} cos</div></div><div class="flow-value" style="color:#22d3ee">${nsp}%</div></div>
-    <div class="flow-row" onclick="drillByCategory('atrisk')"><div class="flow-label">⚠️ At-Risk</div><div class="flow-bar-container"><div class="flow-bar atrisk" style="width:${Math.max(+ap,3)}%">${r.atRisk.toLocaleString()}</div></div><div class="flow-value" style="color:#ffd200">${ap}%</div></div>`;
+  const r = analysisResults, tot = r.totalCompanies || 1;
+  const pp = ((r.overlappingCompGUIDs / tot) * 100).toFixed(1), fp = ((r.fullChurn / tot) * 100).toFixed(1);
+  const nsp = r.overlappingCompGUIDs ? ((r.newSalesCompanies / Math.max(r.overlappingCompGUIDs, 1)) * 100).toFixed(1) : '0';
+  const ap = r.totalActive ? ((r.atRisk / r.totalActive) * 100).toFixed(1) : '0';
+  document.getElementById('flowDiagram').innerHTML = `
+    <div class="flow-row" onclick="drillByCategory('overlap')"><div class="flow-label">🟡 Partial Churn</div><div class="flow-bar-container"><div class="flow-bar partial" style="width:${Math.max(+pp, 5)}%">${r.overlappingCompGUIDs.toLocaleString()}</div></div><div class="flow-value" style="color:#a855f7">${pp}%</div></div>
+    <div class="flow-row" onclick="drillByCategory('churned')"><div class="flow-label">🔴 Full Churn</div><div class="flow-bar-container"><div class="flow-bar churned" style="width:${Math.max(+fp, 5)}%">${r.fullChurn.toLocaleString()}</div></div><div class="flow-value" style="color:#f45c43">${fp}%</div></div>
+    <div class="flow-row" onclick="drillByCategory('newsales')"><div class="flow-label">🔵 New Sales</div><div class="flow-bar-container"><div class="flow-bar newsales" style="width:${Math.max(+nsp, 5)}%">${r.newSalesCompanies.toLocaleString()} cos</div></div><div class="flow-value" style="color:#22d3ee">${nsp}%</div></div>
+    <div class="flow-row" onclick="drillByCategory('ghost')"><div class="flow-label">👻 Ghost Churn</div><div class="flow-bar-container"><div class="flow-bar" style="background:rgba(244,63,94,.5);width:${Math.max(r.ghostCount > 0 ? 10 : 0, 3)}%">${r.ghostCount.toLocaleString()} subs</div></div><div class="flow-value" style="color:#f43f5e">Unused</div></div>
+    <div class="flow-row" onclick="drillByCategory('atrisk')"><div class="flow-label">⚠️ At-Risk</div><div class="flow-bar-container"><div class="flow-bar atrisk" style="width:${Math.max(+ap, 3)}%">${r.atRisk.toLocaleString()}</div></div><div class="flow-value" style="color:#ffd200">${ap}%</div></div>`;
 }
 
-function dc(n){if(charts[n]){charts[n].destroy();charts[n]=null;}}
+function dc(n) { if (charts[n]) { charts[n].destroy(); charts[n] = null; } }
 function renderCharts(){
-  const r=analysisResults;
-  const pArr=Object.entries(r.partStats).map(([k,v])=>({p:k,a:v.active,e:v.expired,t:v.active+v.expired})).sort((a,b)=>b.t-a.t).slice(0,10);
-  dc('pc');charts.pc=new Chart(document.getElementById('partnerChart'),{type:'bar',data:{labels:pArr.map(x=>x.p.substring(0,20)),datasets:[{label:'Expired',data:pArr.map(x=>x.e),backgroundColor:'rgba(244,92,67,.7)'},{label:'Active',data:pArr.map(x=>x.a),backgroundColor:'rgba(102,126,234,.7)'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{stacked:true,ticks:{color:'#888'}},y:{stacked:true,ticks:{color:'#888'},grid:{color:'rgba(255,255,255,.05)'}}}}});
-  const cArr=Object.entries(r.catStats).sort((a,b)=>(b[1].active+b[1].expired)-(a[1].active+a[1].expired)).slice(0,8);
-  dc('cc');charts.cc=new Chart(document.getElementById('categoryChart'),{type:'doughnut',data:{labels:cArr.map(x=>x[0]),datasets:[{data:cArr.map(x=>x[1].expired+x[1].active),backgroundColor:['#667eea','#764ba2','#f45c43','#ffd200','#22d3ee','#a855f7','#eb3349','#06b6d4'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#aaa',font:{size:10}}}}}});
-  dc('tc');charts.tc=new Chart(document.getElementById('tenureChart'),{type:'bar',data:{labels:Object.keys(r.tenStats),datasets:[{label:'Expired Subs (Churned)',data:Object.values(r.tenStats),backgroundColor:'rgba(168,85,247,.6)',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{ticks:{color:'#888'}},y:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,.05)'}}}}});
-  const months=[...new Set([...Object.keys(r.monthlyExpired),...Object.keys(r.monthlyActive)])].sort();
-  dc('tl');charts.tl=new Chart(document.getElementById('timelineChart'),{type:'line',data:{labels:months,datasets:[{label:'Expired',data:months.map(m=>r.monthlyExpired[m]||0),borderColor:'#f45c43',backgroundColor:'rgba(244,92,67,.1)',fill:true,tension:.3},{label:'Active',data:months.map(m=>r.monthlyActive[m]||0),borderColor:'#667eea',backgroundColor:'rgba(102,126,234,.1)',fill:true,tension:.3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{ticks:{color:'#888',maxRotation:45}},y:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#888'}}}}});
-  const states=Object.keys(r.stateChurn).sort();
-  dc('st');charts.st=new Chart(document.getElementById('stateChart'),{type:'bar',data:{labels:states,datasets:[{label:'Expired',data:states.map(s=>r.stateChurn[s].expired),backgroundColor:'rgba(244,92,67,.6)'},{label:'Active',data:states.map(s=>r.stateChurn[s].active),backgroundColor:'rgba(102,126,234,.6)'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{stacked:true,ticks:{color:'#888',maxRotation:45}},y:{stacked:true,grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#888'}}}}});
+  const r = analysisResults;
+  const pArr = Object.entries(r.partStats).map(([k, v]) => ({ p: k, a: v.active, e: v.expired, t: v.active + v.expired })).sort((a, b) => b.t - a.t).slice(0, 10);
+  dc('pc'); charts.pc = new Chart(document.getElementById('partnerChart'), { type: 'bar', data: { labels: pArr.map(x => x.p.substring(0, 20)), datasets: [{ label: 'Expired', data: pArr.map(x => x.e), backgroundColor: 'rgba(244,92,67,.7)' }, { label: 'Active', data: pArr.map(x => x.a), backgroundColor: 'rgba(102,126,234,.7)' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#aaa' } } }, scales: { x: { stacked: true, ticks: { color: '#888' } }, y: { stacked: true, ticks: { color: '#888' }, grid: { color: 'rgba(255,255,255,.05)' } } } } });
+  const cArr = Object.entries(r.catStats).sort((a, b) => (b[1].active + b[1].expired) - (a[1].active + a[1].expired)).slice(0, 8);
+  dc('cc'); charts.cc = new Chart(document.getElementById('categoryChart'), { type: 'doughnut', data: { labels: cArr.map(x => x[0]), datasets: [{ data: cArr.map(x => x[1].expired + x[1].active), backgroundColor: ['#667eea', '#764ba2', '#f45c43', '#ffd200', '#22d3ee', '#a855f7', '#eb3349', '#06b6d4'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#aaa', font: { size: 10 } } } } } });
+  dc('tc'); charts.tc = new Chart(document.getElementById('tenureChart'), { type: 'bar', data: { labels: Object.keys(r.tenStats), datasets: [{ label: 'Expired Subs (Churned)', data: Object.values(r.tenStats), backgroundColor: 'rgba(168,85,247,.6)', borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#aaa' } } }, scales: { x: { ticks: { color: '#888' } }, y: { ticks: { color: '#888' }, grid: { color: 'rgba(255,255,255,.05)' } } } } });
+  const months = [...new Set([...Object.keys(r.monthlyExpired), ...Object.keys(r.monthlyActive)])].sort();
+  dc('tl'); charts.tl = new Chart(document.getElementById('timelineChart'), { type: 'line', data: { labels: months, datasets: [{ label: 'Expired', data: months.map(m => r.monthlyExpired[m] || 0), borderColor: '#f45c43', backgroundColor: 'rgba(244,92,67,.1)', fill: true, tension: .3 }, { label: 'Active', data: months.map(m => r.monthlyActive[m] || 0), borderColor: '#667eea', backgroundColor: 'rgba(102,126,234,.1)', fill: true, tension: .3 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#aaa' } } }, scales: { x: { ticks: { color: '#888', maxRotation: 45 } }, y: { grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: '#888' } } } } });
+  const states = Object.keys(r.stateChurn).sort();
+  dc('st'); charts.st = new Chart(document.getElementById('stateChart'), { type: 'bar', data: { labels: states, datasets: [{ label: 'Expired', data: states.map(s => r.stateChurn[s].expired), backgroundColor: 'rgba(244,92,67,.6)' }, { label: 'Active', data: states.map(s => r.stateChurn[s].active), backgroundColor: 'rgba(102,126,234,.6)' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#aaa' } } }, scales: { x: { stacked: true, ticks: { color: '#888', maxRotation: 45 } }, y: { stacked: true, grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: '#888' } } } } });
 }
 
-// ==================== DOWNLOADS ====================
 function dlFile(c,n,t){const b=new Blob([c],{type:t});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=n;a.click();URL.revokeObjectURL(u);}
+
 function rowCsv(d){
   const cn=window.compNet[d.compGUID]||{a:[],e:[]}, gn=d.gstin?(window.gstNet[d.gstin]||{a:[],e:[]}):{a:[],e:[]};
   const combo=window.comboNet[d.comboKey]||{a:[],e:[]};
   const ten=d.installDate?((d.currentBlsExpiry-d.installDate)/31557600000).toFixed(2):'';
   const inst=d.installDate?d.installDate.toISOString().slice(0,10):'';
-  const comboActList=[...new Set(combo.a)].join('; ');
-  return `"${d.ownerPartner}","${d.categoryName}","${inst}","${ten}","${d.compGUID}","${d.gstin||''}","${d.comboKey}","${d.subscriptionId}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}","${d.isNewSales?'Yes':'No'}","${(d.newSalesDetail||'').replace(/"/g,"'")}","${[...new Set(cn.a.filter(s=>s!==d.subscriptionId))].join('; ')}","${[...new Set(cn.e.filter(s=>s!==d.subscriptionId))].join('; ')}","${[...new Set(gn.a.filter(s=>s!==d.subscriptionId))].join('; ')}","${[...new Set(gn.e.filter(s=>s!==d.subscriptionId))].join('; ')}","${comboActList}"\n`;
+  const lud=d.lastUseDate?d.lastUseDate.toISOString().slice(0,10):'';
+  
+  const ca=[...new Set(cn.a.filter(x=>x.sub!==d.subscriptionId).map(x=>`${x.sub}(Exp:${x.expStr})`))].join('; ');
+  const ce=[...new Set(cn.e.filter(x=>x.sub!==d.subscriptionId).map(x=>`${x.sub}(Exp:${x.expStr})`))].join('; ');
+  const ga=[...new Set(gn.a.filter(x=>x.sub!==d.subscriptionId).map(x=>`${x.sub}(Exp:${x.expStr})`))].join('; ');
+  const ge=[...new Set(gn.e.filter(x=>x.sub!==d.subscriptionId).map(x=>`${x.sub}(Exp:${x.expStr})`))].join('; ');
+  const comboActList=[...new Set(combo.a.map(x=>`${x.sub}(Exp:${x.expStr})`))].join('; ');
+
+  return `"${d.ownerPartner}","${d.categoryName}","${inst}","${ten}","${d.compGUID}","${d.gstin||''}","${d.comboKey}","${d.subscriptionId}","${lud}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}","${d.isGhost?'Ghost':(d.isNewSales?'Yes':'No')}","${(d.newSalesDetail||'').replace(/"/g,"'")}","${ca}","${ce}","${ga}","${ge}","${comboActList}"\n`;
 }
+
 function downloadCSV(){
-  let csv='Partner,Category,Install,TenureYrs,CompGUID,GSTIN,GSTIN_CompGUID,SubNo,BLSExpiry,Source,NewSales,NewSalesDetail,LinkedActComp,LinkedExpComp,LinkedActGST,LinkedExpGST,ActiveSerialsSameGSTINCompGUID\n';
+  let csv='Partner,Category,Install,TenureYrs,CompGUID,GSTIN,GSTIN_CompGUID,SubNo,LastUsedDate,BLSExpiry,Source,NewSalesOrGhost,NewSalesDetail,LinkedActCompWithExpiries,LinkedExpCompWithExpiries,LinkedActGSTWithExpiries,LinkedExpGSTWithExpiries,ActiveSerialsSameGSTINCompGUIDWithExpiries\n';
   expiredData.forEach(d=>csv+=rowCsv(d)); activeData.forEach(d=>csv+=rowCsv(d));
-  dlFile(csv,'churn_full_3way_active_serials_export.csv','text/csv');
+  dlFile(csv,'churn_full_dual_expiry_export.csv','text/csv');
 }
 function downloadOverlap(){
-  const r=analysisResults; let csv='Partner,Category,Install,TenureYrs,CompGUID,GSTIN,GSTIN_CompGUID,SubNo,BLSExpiry,Source,NewSales,NewSalesDetail,LinkedActComp,LinkedExpComp,ActiveSerialsSameGSTINCompGUID\n';
+  const r=analysisResults; let csv='Partner,Category,Install,TenureYrs,CompGUID,GSTIN,GSTIN_CompGUID,SubNo,LastUsedDate,BLSExpiry,Source,NewSalesOrGhost,NewSalesDetail,LinkedActCompWithExpiries,LinkedExpCompWithExpiries,ActiveSerialsSameGSTINCompGUIDWithExpiries\n';
   const w=d=>{if(!r.overlappingCompGUIDSet.has(d.compGUID))return; csv+=rowCsv(d);};
-  expiredData.forEach(w); activeData.forEach(w); dlFile(csv,'partial_churn_3way_active_serials_export.csv','text/csv');
+  expiredData.forEach(w); activeData.forEach(w); dlFile(csv,'partial_churn_dual_expiry_export.csv','text/csv');
 }
 function downloadNewSales(){
-  let csv='Partner,Category,Install,TenureYrs,CompGUID,GSTIN,GSTIN_CompGUID,SubNo,BLSExpiry,Source,NewSales,NewSalesDetail,LinkedActComp,LinkedExpComp,LinkedActGST,LinkedExpGST,ActiveSerialsSameGSTINCompGUID\n';
+  let csv='Partner,Category,Install,TenureYrs,CompGUID,GSTIN,GSTIN_CompGUID,SubNo,LastUsedDate,BLSExpiry,Source,NewSalesOrGhost,NewSalesDetail,LinkedActCompWithExpiries,LinkedExpCompWithExpiries,LinkedActGSTWithExpiries,LinkedExpGSTWithExpiries,ActiveSerialsSameGSTINCompGUIDWithExpiries\n';
   expiredData.concat(activeData).filter(d=>d.isNewSales).forEach(d=>csv+=rowCsv(d));
-  dlFile(csv,'new_sales_3way_active_serials_export.csv','text/csv');
+  dlFile(csv,'new_sales_export.csv','text/csv');
 }
 function downloadModalData(){
-  let csv='Partner,Category,Install,TenureYrs,CompGUID,GSTIN,GSTIN_CompGUID,SubNo,BLSExpiry,Source,NewSales,NewSalesDetail,LinkedActComp,LinkedExpComp,LinkedActGST,LinkedExpGST,ActiveSerialsSameGSTINCompGUID\n';
+  let csv='Partner,Category,Install,TenureYrs,CompGUID,GSTIN,GSTIN_CompGUID,SubNo,LastUsedDate,BLSExpiry,Source,NewSalesOrGhost,NewSalesDetail,LinkedActCompWithExpiries,LinkedExpCompWithExpiries,LinkedActGSTWithExpiries,LinkedExpGSTWithExpiries,ActiveSerialsSameGSTINCompGUIDWithExpiries\n';
   modalFilteredData.forEach(d=>csv+=rowCsv(d));
   dlFile(csv,'drill_down_export.csv','text/csv');
 }
@@ -854,12 +916,12 @@ function downloadModalData(){
 function runAnalysis(){
   document.getElementById('loadingOverlay').classList.add('show');
   setTimeout(()=>{
-    analyzeData(); renderKPIs(); renderVenn(); renderFlowDiagram(); renderCharts(); 
-    setMainTab('all'); // This will trigger main table render
+    analyzeData(); renderKPIs(); renderInsights(); renderVenn(); renderFlowDiagram(); renderCharts(); 
+    setMainTab('all'); 
     document.getElementById('loadingOverlay').classList.remove('show');
-  },50);
+  }, 40);
 }
-window.addEventListener('load',autoLoadFromRepo);
+window.addEventListener('load', autoLoadFromRepo);
 </script>
 </body>
 </html>
