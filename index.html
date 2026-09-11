@@ -174,9 +174,9 @@ footer{text-align:center;padding:20px;color:var(--text-muted);font-size:.72rem}
       <table class="modal-table"><thead id="modalTableHead"></thead><tbody id="modalTableBody"></tbody></table>
     </div>
     <div class="pagination-controls">
-      <button class="page-btn" id="modPrevBtn" onclick="modChangePage(-1)">◀ Previous 50</button>
+      <button class="page-btn" id="modPrevBtn" onclick="modChangePage(-1)">◀ Previous 100</button>
       <div class="page-info"><span id="modalRecordCount" style="margin-right:15px"></span><span id="modPageInfo">Page 1 of 1</span></div>
-      <button class="page-btn" id="modNextBtn" onclick="modChangePage(1)">Next 50 ▶</button>
+      <button class="page-btn" id="modNextBtn" onclick="modChangePage(1)">Next 100 ▶</button>
     </div>
   </div>
 </div>
@@ -235,8 +235,7 @@ footer{text-align:center;padding:20px;color:var(--text-muted);font-size:.72rem}
   <div class="chart-card full-width">
     <div class="chart-title">🗺️ Top States by Expired Subscriptions & Pure Churn %</div>
     <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:10px">
-      <strong>Bar:</strong> Total Expired from State (via GSTIN) &nbsp;|&nbsp; <strong>Line:</strong> Pure Churn % of that state's expired base<br>
-      <strong>Click a bar</strong> to open that state's portfolio.
+      <strong>Bar:</strong> Total Expired from State (via GSTIN) &nbsp;|&nbsp; <strong>Line:</strong> Pure Churn % of that state's expired base
     </div>
     <div class="chart-container" style="height:340px"><canvas id="stateChurnChart"></canvas></div>
   </div>
@@ -250,7 +249,17 @@ footer{text-align:center;padding:20px;color:var(--text-muted);font-size:.72rem}
     <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:10px">
       <strong>Red:</strong> Total Expired Base &nbsp;|&nbsp; <strong>Yellow:</strong> Pure Churn % &nbsp;|&nbsp; <strong>Cyan:</strong> RDP Shift % &nbsp;|&nbsp; <strong>Purple:</strong> New Sales Shift %
     </div>
-    <div class="chart-container" style="height:320px"><canvas id="partnerChurnChart"></canvas></div>
+    <div class="chart-container" style="height:340px"><canvas id="partnerChurnChart"></canvas></div>
+  </div>
+</div>
+
+<div class="dashboard">
+  <div class="chart-card full-width">
+    <div class="chart-title">🔄 Expired Base Analysis by Renewal Count</div>
+    <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:10px">
+      <strong>Red:</strong> Total Expired Base &nbsp;|&nbsp; <strong>Yellow:</strong> Pure Churn % &nbsp;|&nbsp; <strong>Cyan:</strong> RDP Shift % &nbsp;|&nbsp; <strong>Purple:</strong> New Sales Shift %
+    </div>
+    <div class="chart-container" style="height:340px"><canvas id="renewalChurnChart"></canvas></div>
   </div>
 </div>
 
@@ -323,15 +332,15 @@ footer{text-align:center;padding:20px;color:var(--text-muted);font-size:.72rem}
       <thead>
         <tr>
           <th>Partner / Category / Tenure</th>
-          <th>View 1: CompGUID</th>
-          <th>View 2: GSTIN</th>
-          <th>View 3: Combo</th>
+          <th>CompGUID</th>
+          <th>GSTIN</th>
+          <th>Combo</th>
           <th>Sub No</th>
           <th>Last Used</th>
           <th>BLS Expiry</th>
           <th>Status</th>
-          <th>Linked by CompGUID</th>
-          <th>Linked by GSTIN</th>
+          <th>360 Comp</th>
+          <th>360 GST</th>
           <th class="txt-green">Active Serials</th>
         </tr>
       </thead>
@@ -339,13 +348,13 @@ footer{text-align:center;padding:20px;color:var(--text-muted);font-size:.72rem}
     </table>
   </div>
   <div class="pagination-controls">
-    <button class="page-btn" id="mainPrevBtn" onclick="mainChangePage(-1)">◀ Previous 50</button>
+    <button class="page-btn" id="mainPrevBtn" onclick="mainChangePage(-1)">◀ Previous 100</button>
     <div class="page-info" id="mainPageInfo">Page 1 of 1</div>
-    <button class="page-btn" id="mainNextBtn" onclick="mainChangePage(1)">Next 50 ▶</button>
+    <button class="page-btn" id="mainNextBtn" onclick="mainChangePage(1)">Next 100 ▶</button>
   </div>
 </div>
 
-<footer>Expired base Churn Analysis · v51.1 — Load Fix + State Chart</footer>
+<footer>Expired base Churn Analysis · v53.0 — Data Labels + Ordinal Renewal Axis</footer>
 
 <script>
 Chart.register(ChartDataLabels);
@@ -359,6 +368,20 @@ window.stateGST = {
   '26':'Dadra & Nagar Haveli','27':'Maharashtra','29':'Karnataka','30':'Goa','31':'Lakshadweep',
   '32':'Kerala','33':'Tamil Nadu','34':'Puducherry','35':'Andaman & Nicobar','36':'Telangana','37':'Andhra Pradesh','38':'Ladakh'
 };
+
+function ordinalRenewalLabel(n) {
+  const num = parseInt(n, 10);
+  if (isNaN(num) || num < 0) return String(n);
+  const k = num + 1;
+  const mod100 = k % 100;
+  if (mod100 >= 11 && mod100 <= 13) return k + 'th time';
+  switch (k % 10) {
+    case 1: return k + 'st time';
+    case 2: return k + 'nd time';
+    case 3: return k + 'rd time';
+    default: return k + 'th time';
+  }
+}
 
 function getThemeColors() {
   const isLight = document.documentElement.getAttribute('data-theme') === 'light';
@@ -427,7 +450,7 @@ document.addEventListener('keydown', function(e) {
 
 let expiredData=[], activeData=[], analysisResults={}, charts={};
 window.compNet={}; window.gstNet={}; window.comboNet={};
-const PAGE_SIZE = 50;
+const PAGE_SIZE = 100;
 let mainBaseData=[], mainFilteredData=[], mainPage=1, currentMainTab='all';
 let modalBaseData=[], modalFilteredData=[], modalPage=1, currentModalCategory='ALL', currentAcc360Data=[], uiTimer=null;
 
@@ -477,7 +500,7 @@ function decodeArrayBufferSmart(buffer) {
   return new TextDecoder('utf-8').decode(bytes).replace(/\0/g,'');
 }
 function parseArrayOfRows(rows, headers, source) {
-  let ci=-1,si=-1,gi=-1,ei=-1,pi=-1,ii=-1,cati=-1,ludi=-1,rdpi=-1;
+  let ci=-1,si=-1,gi=-1,ei=-1,pi=-1,ii=-1,cati=-1,ludi=-1,rdpi=-1,rni=-1;
   headers.forEach((h,i)=>{
     const l=String(h).toLowerCase().replace(/[^a-z0-9]/g,'');
     if (l.includes('guid')||l.includes('comp')) ci=i;
@@ -489,6 +512,7 @@ function parseArrayOfRows(rows, headers, source) {
     else if (l.includes('category')||l.includes('product')) cati=i;
     else if (l.includes('last') && (l.includes('use')||l.includes('active')||l.includes('login'))) ludi=i;
     else if (l.includes('rdp')) rdpi=i;
+    else if (l.includes('renewal') && l.includes('count')) rni=i;
   });
   if (ci===-1&&headers.length>=1) ci=0; if (si===-1&&headers.length>=2) si=1; if (gi===-1&&headers.length>=3) gi=2;
   if (ei===-1&&headers.length>=4) ei=3; if (pi===-1&&headers.length>=5) pi=4; if (ii===-1&&headers.length>=6) ii=5;
@@ -503,6 +527,7 @@ function parseArrayOfRows(rows, headers, source) {
     if (seen.has(uniqueKey)) continue;
     seen.add(uniqueKey);
     const validGst = gst.length>=8 ? gst : null;
+    const rc = (rni !== -1 && cols[rni]) ? String(cols[rni]).trim() : '0';
     out.push({
       compGUID:comp, subscriptionId:sub, gstin:validGst, comboKey:`${validGst||'NO_GST'}_${comp}`,
       currentBlsExpiry:dt, expStr:formatDateFast(dt),
@@ -511,6 +536,7 @@ function parseArrayOfRows(rows, headers, source) {
       categoryName: cati!==-1&&cols[cati]?String(cols[cati]).trim():'Standard',
       lastUseDate: ludi!==-1?parseDateRobust(cols[ludi]):null,
       rdpLicense: rdpi!==-1&&cols[rdpi]?String(cols[rdpi]).trim():'N/A',
+      renewalCount: rc,
       source, shiftedToRDP:false, shiftedToNewSales:false, isNewSales:false, isGhost:false
     });
   }
@@ -552,7 +578,7 @@ async function fetchDataset(filename) {
       }
       const xlsxParsed = parseExcelBuffer(buf, src);
       if (xlsxParsed && xlsxParsed.length > 0) return xlsxParsed;
-    } catch (e) { /* try next */ }
+    } catch (e) {}
   }
   return [];
 }
@@ -575,7 +601,7 @@ async function autoLoadFromRepo() {
     }
   } catch (err) {
     console.error(err);
-    setStatus(`⚠️ Auto-load failed (${err.message}). Use manual upload below, or place CSVs in /data/expired_customers.csv and /data/active_customers.csv`, 'error');
+    setStatus(`⚠️ Auto-load failed (${err.message}). Use manual upload below.`, 'error');
     if (uploadBox) uploadBox.classList.add('show');
   }
 }
@@ -604,7 +630,7 @@ function analyzeData() {
   const eG=new Set(), aG=new Set(), today=new Date();
   const nDA = today.getTime() - 90*86400000;
   const thirtyDaysFromNow = today.getTime() + 30*86400000;
-  const mE={}, mA={}, sC={}, partStats={}, catStats={}, tenStats={'< 1 Year':0,'1-3 Years':0,'3-5 Years':0,'5+ Years':0,'Unknown':0};
+  const sC={}, partStats={}, renStats={}, catStats={}, tenStats={'< 1 Year':0,'1-3 Years':0,'3-5 Years':0,'5+ Years':0,'Unknown':0};
   window.compNet={}; window.gstNet={}; window.comboNet={};
   const compActiveMeta = {};
 
@@ -670,16 +696,27 @@ function analyzeData() {
   expiredData.forEach(d => {
     const pk = d.ownerPartner || 'Direct / Unassigned';
     if (!partStats[pk]) partStats[pk] = {totalExpired:0, rdpShifted:0, nsShifted:0, pureChurnCount:0, partialChurnCount:0, totalActive:0};
+    const rc = d.renewalCount || '0';
+    if (!renStats[rc]) renStats[rc] = {totalExpired:0, rdpShifted:0, nsShifted:0, pureChurn:0};
+
     partStats[pk].totalExpired++;
+    renStats[rc].totalExpired++;
     if (fC.has(d.compGUID)) {
       partStats[pk].pureChurnCount++;
+      renStats[rc].pureChurn++;
       const st = getStateName(d.gstin); if (sC[st]) sC[st].pureChurn++;
     } else {
       partStats[pk].partialChurnCount++;
       const st = getStateName(d.gstin); if (sC[st]) sC[st].partialChurn++;
     }
-    if (d.shiftedToRDP) { partStats[pk].rdpShifted++; const st=getStateName(d.gstin); if (sC[st]) sC[st].rdpShifted++; }
-    if (d.shiftedToNewSales) { partStats[pk].nsShifted++; const st=getStateName(d.gstin); if (sC[st]) sC[st].nsShifted++; }
+    if (d.shiftedToRDP) {
+      partStats[pk].rdpShifted++; renStats[rc].rdpShifted++;
+      const st=getStateName(d.gstin); if (sC[st]) sC[st].rdpShifted++;
+    }
+    if (d.shiftedToNewSales) {
+      partStats[pk].nsShifted++; renStats[rc].nsShifted++;
+      const st=getStateName(d.gstin); if (sC[st]) sC[st].nsShifted++;
+    }
   });
   activeData.forEach(d => {
     const pk = d.ownerPartner || 'Direct / Unassigned';
@@ -695,7 +732,7 @@ function analyzeData() {
     newSalesCompanies: nsComps.size, newSalesActiveSubs: activeData.filter(d=>d.isNewSales).length,
     ghostCount: activeData.filter(d=>d.isGhost).length,
     atRisk: atRiskData.length, atRiskData,
-    partStats, catStats, tenStats, stateChurn: sC,
+    partStats, renStats, catStats, tenStats, stateChurn: sC,
     overlappingCompGUIDSet: oG, fullChurnSet: fC, healthySet: onlyActive, totalCompanies: tot
   };
 }
@@ -777,7 +814,7 @@ function openAccount360(type, val) {
 }
 function downloadAcc360Data() {
   if (!currentAcc360Data.length) { alert('No data'); return; }
-  let csv='Partner,Category,Install,TenureYrs,CompGUID,SubNo,GSTIN,Combo,RDP,LastUsed,Expiry,Source,ShiftedToRDP,ShiftedToNS,IsNewSales\n';
+  let csv='Partner,Category,Install,TenureYrs,CompGUID,SubNo,GSTIN,Combo,RDP,LastUsed,Expiry,Source,ShiftedToRDP,ShiftedToNS,IsNewSales,RenewalCount\n';
   currentAcc360Data.forEach(d => csv += rowCsv(d));
   dlFile(csv, `Account_${currentAcc360Data[0].compGUID||'360'}.csv`, 'text/csv');
 }
@@ -888,6 +925,13 @@ function drillByPartnerChart(partner) {
 function drillByStateChart(stateName) {
   const matches = expiredData.filter(d=>getStateName(d.gstin)===stateName).concat(activeData.filter(d=>getStateName(d.gstin)===stateName));
   openDrillDown(`📍 State Portfolio: ${stateName}`, matches, 'EXPIRED');
+}
+function drillByRenewalChart(rc) {
+  const expMatches = expiredData.filter(d => d.renewalCount === rc);
+  const validComps = new Set(expMatches.map(d => d.compGUID));
+  const actMatches = activeData.filter(d => validComps.has(d.compGUID));
+  const matches = expMatches.concat(actMatches);
+  openDrillDown(`🔄 Portfolio: Renewal Count = ${ordinalRenewalLabel(rc)}`, matches, 'EXPIRED');
 }
 function openDrillDown(title, data, defaultBase='EXPIRED') {
   modalBaseData = data; currentModalCategory = 'ALL';
@@ -1037,7 +1081,7 @@ function renderCharts() {
     });
   }
 
-  // PARTNER OMNI
+  // PARTNER OMNI — with labels
   const pcEl1 = document.getElementById('partnerChurnChart');
   if (pcEl1) {
     const pArr = Object.entries(r.partStats).map(([k,v]) => {
@@ -1050,17 +1094,104 @@ function renderCharts() {
       data:{
         labels:pArr.map(x=>x.p.substring(0,25)+(x.p.length>25?'...':'')),
         datasets:[
-          { label:'Total Expired Base', data:pArr.map(x=>x.totExpired), backgroundColor:'rgba(244,92,67,.65)', borderColor:'#e11d48', borderWidth:1, datalabels:{display:false} },
-          { label:'Pure Churn %', data:pArr.map(x=>x.rate.toFixed(1)), type:'line', borderColor:tc.yellow, borderWidth:2, pointBackgroundColor:tc.yellow, pointRadius:3, yAxisID:'y1', tension:0.3, datalabels:{display:false} },
-          { label:'RDP Shift %', data:pArr.map(x=>x.rdpRate.toFixed(1)), type:'line', borderColor:tc.cyan, borderWidth:2, pointBackgroundColor:tc.cyan, pointRadius:3, yAxisID:'y1', tension:0.3, datalabels:{display:false} },
-          { label:'New Sales Shift %', data:pArr.map(x=>x.nsRate.toFixed(1)), type:'line', borderColor:tc.purple, borderWidth:2, pointBackgroundColor:tc.purple, pointRadius:3, yAxisID:'y1', tension:0.3, datalabels:{display:false} }
+          {
+            label:'Total Expired Base',
+            data:pArr.map(x=>x.totExpired),
+            backgroundColor:'rgba(244,92,67,.65)', borderColor:'#e11d48', borderWidth:1,
+            datalabels:{ display:true, color:tc.text, anchor:'end', align:'top', font:{size:10,weight:'bold'}, formatter:v=>Number(v).toLocaleString() }
+          },
+          {
+            label:'Pure Churn %',
+            data:pArr.map(x=>x.rate.toFixed(1)),
+            type:'line', borderColor:tc.yellow, borderWidth:2, pointBackgroundColor:tc.yellow, pointRadius:3, yAxisID:'y1', tension:0.3,
+            datalabels:{ display:true, color:tc.yellow, align:'top', anchor:'end', offset:2, font:{size:9,weight:'bold'}, formatter:v=>v+'%' }
+          },
+          {
+            label:'RDP Shift %',
+            data:pArr.map(x=>x.rdpRate.toFixed(1)),
+            type:'line', borderColor:tc.cyan, borderWidth:2, pointBackgroundColor:tc.cyan, pointRadius:3, yAxisID:'y1', tension:0.3,
+            datalabels:{ display:true, color:tc.cyan, align:'bottom', anchor:'start', offset:2, font:{size:9,weight:'bold'}, formatter:v=>v+'%' }
+          },
+          {
+            label:'New Sales Shift %',
+            data:pArr.map(x=>x.nsRate.toFixed(1)),
+            type:'line', borderColor:tc.purple, borderWidth:2, pointBackgroundColor:tc.purple, pointRadius:3, yAxisID:'y1', tension:0.3,
+            datalabels:{ display:true, color:tc.purple, align:'right', anchor:'center', offset:4, font:{size:9,weight:'bold'}, formatter:v=>v+'%' }
+          }
         ]
       },
       options:{
         responsive:true, maintainAspectRatio:false,
         onClick:(e,els)=>{ if(els.length) drillByPartnerChart(pArr[els[0].index].p); },
         plugins:{ legend:{display:true, labels:{color:tc.text, font:{size:10}}} },
-        scales:{ x:{ticks:{color:tc.text}}, y:{ticks:{color:tc.text}, grid:{color:tc.grid}, title:{display:true, text:'Total Expired Subs', color:tc.text}}, y1:{position:'right', ticks:{color:tc.yellow}, grid:{display:false}, max:100} }
+        scales:{
+          x:{ticks:{color:tc.text}},
+          y:{ticks:{color:tc.text}, grid:{color:tc.grid}, title:{display:true, text:'Total Expired Subs', color:tc.text}},
+          y1:{position:'right', ticks:{color:tc.yellow}, grid:{display:false}, max:100}
+        }
+      }
+    });
+  }
+
+  // RENEWAL COUNT OMNI — ordinal labels + data labels
+  const renEl = document.getElementById('renewalChurnChart');
+  if (renEl) {
+    const renArr = Object.entries(r.renStats || {}).map(([k,v]) => {
+      const pureChurn = v.pureChurn || 0;
+      const totExpired = v.totalExpired || 0;
+      const rdpShifted = v.rdpShifted || 0;
+      const nsShifted = v.nsShifted || 0;
+      return {
+        rc: k,
+        label: ordinalRenewalLabel(k),
+        totExpired,
+        rate: totExpired ? (pureChurn/totExpired)*100 : 0,
+        rdpRate: totExpired ? (rdpShifted/totExpired)*100 : 0,
+        nsRate: totExpired ? (nsShifted/totExpired)*100 : 0
+      };
+    }).sort((a,b) => parseInt(a.rc,10) - parseInt(b.rc,10));
+
+    dc('ren1');
+    charts.ren1 = new Chart(renEl, {
+      type:'bar',
+      data:{
+        labels: renArr.map(x => x.label),
+        datasets:[
+          {
+            label:'Total Expired Base',
+            data:renArr.map(x=>x.totExpired),
+            backgroundColor:'rgba(244,92,67,.65)', borderColor:'#e11d48', borderWidth:1,
+            datalabels:{ display:true, color:tc.text, anchor:'end', align:'top', font:{size:10,weight:'bold'}, formatter:v=>Number(v).toLocaleString() }
+          },
+          {
+            label:'Pure Churn %',
+            data:renArr.map(x=>x.rate.toFixed(1)),
+            type:'line', borderColor:tc.yellow, borderWidth:2, pointBackgroundColor:tc.yellow, pointRadius:4, yAxisID:'y1', tension:0.3,
+            datalabels:{ display:true, color:tc.yellow, align:'top', anchor:'end', offset:4, font:{size:9,weight:'bold'}, formatter:v=>v+'%' }
+          },
+          {
+            label:'RDP Shift %',
+            data:renArr.map(x=>x.rdpRate.toFixed(1)),
+            type:'line', borderColor:tc.cyan, borderWidth:2, pointBackgroundColor:tc.cyan, pointRadius:4, yAxisID:'y1', tension:0.3,
+            datalabels:{ display:true, color:tc.cyan, align:'bottom', anchor:'start', offset:4, font:{size:9,weight:'bold'}, formatter:v=>v+'%' }
+          },
+          {
+            label:'New Sales Shift %',
+            data:renArr.map(x=>x.nsRate.toFixed(1)),
+            type:'line', borderColor:tc.purple, borderWidth:2, pointBackgroundColor:tc.purple, pointRadius:4, yAxisID:'y1', tension:0.3,
+            datalabels:{ display:true, color:tc.purple, align:'right', anchor:'center', offset:6, font:{size:9,weight:'bold'}, formatter:v=>v+'%' }
+          }
+        ]
+      },
+      options:{
+        responsive:true, maintainAspectRatio:false,
+        onClick:(e,els)=>{ if(els.length) drillByRenewalChart(renArr[els[0].index].rc); },
+        plugins:{ legend:{display:true, labels:{color:tc.text, font:{size:10}}} },
+        scales:{
+          x:{ ticks:{color:tc.text}, title:{display:true, text:'Renewal attempt', color:tc.text, font:{size:12,weight:'bold'}} },
+          y:{ ticks:{color:tc.text}, grid:{color:tc.grid}, title:{display:true, text:'Total Expired Subs', color:tc.text} },
+          y1:{ position:'right', ticks:{color:tc.yellow}, grid:{display:false}, max:100, title:{display:true, text:'%', color:tc.yellow} }
+        }
       }
     });
   }
@@ -1081,7 +1212,7 @@ function renderCharts() {
           { label:'Pure Churn (Expired)', data:pArr.map(x=>x.pureChurn), backgroundColor:'rgba(244,92,67,.75)', borderColor:'#e11d48', borderWidth:1, stack:'s', datalabels:{display:false} },
           { label:'Shifted to RDP (Expired)', data:pArr.map(x=>x.rdpShifted), backgroundColor:'rgba(56,189,248,.8)', borderColor:tc.cyan, borderWidth:1, stack:'s', datalabels:{display:false} },
           { label:'RDP Shift %', data:pArr.map(x=>x.rdpRate.toFixed(1)), type:'line', borderColor:tc.yellow, borderWidth:2, pointBackgroundColor:tc.yellow, pointRadius:4, yAxisID:'y1', tension:0.3,
-            datalabels:{ display:true, color:tc.text, align:'top', anchor:'bottom', offset:8, formatter:v=>v+'%' } }
+            datalabels:{ display:true, color:tc.text, align:'top', anchor:'bottom', offset:8, formatter:v => v + '%' } }
         ]
       },
       options:{
@@ -1109,7 +1240,7 @@ function renderCharts() {
           { label:'Pure Churn (Expired)', data:pArr.map(x=>x.pureChurn), backgroundColor:'rgba(244,92,67,.75)', borderColor:'#e11d48', borderWidth:1, stack:'s', datalabels:{display:false} },
           { label:'Shifted to New Sale (Expired)', data:pArr.map(x=>x.nsShifted), backgroundColor:'rgba(168,85,247,.8)', borderColor:tc.purple, borderWidth:1, stack:'s', datalabels:{display:false} },
           { label:'New Sales Shift %', data:pArr.map(x=>x.nsRate.toFixed(1)), type:'line', borderColor:tc.yellow, borderWidth:2, pointBackgroundColor:tc.yellow, pointRadius:4, yAxisID:'y1', tension:0.3,
-            datalabels:{ display:true, color:tc.text, align:'top', anchor:'bottom', offset:8, formatter:v=>v+'%' } }
+            datalabels:{ display:true, color:tc.text, align:'top', anchor:'bottom', offset:8, formatter:v => v + '%' } }
         ]
       },
       options:{
@@ -1239,12 +1370,12 @@ function rowCsv(d) {
   const ten=d.installDate?((d.currentBlsExpiry-d.installDate)/31557600000).toFixed(2):'';
   const inst=d.installDate?d.installDate.toISOString().slice(0,10):'';
   const lud=d.lastUseDate?d.lastUseDate.toISOString().slice(0,10):'';
-  return `"${d.ownerPartner}","${d.categoryName}","${inst}","${ten}","${d.compGUID}","${d.subscriptionId}","${d.gstin||''}","${d.comboKey}","${d.rdpLicense||''}","${lud}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}","${d.shiftedToRDP?'Yes':'No'}","${d.shiftedToNewSales?'Yes':'No'}","${d.isNewSales?'Yes':'No'}"\n`;
+  return `"${d.ownerPartner}","${d.categoryName}","${inst}","${ten}","${d.compGUID}","${d.subscriptionId}","${d.gstin||''}","${d.comboKey}","${d.rdpLicense||''}","${lud}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}","${d.shiftedToRDP?'Yes':'No'}","${d.shiftedToNewSales?'Yes':'No'}","${d.isNewSales?'Yes':'No'}","${d.renewalCount||0}"\n`;
 }
-function downloadCSV(){ let csv='Partner,Category,Install,TenureYrs,CompGUID,SubNo,GSTIN,Combo,RDP,LastUsed,Expiry,Source,ShiftedToRDP,ShiftedToNS,IsNewSales\n'; expiredData.forEach(d=>csv+=rowCsv(d)); activeData.forEach(d=>csv+=rowCsv(d)); dlFile(csv,'churn_full_export.csv','text/csv'); }
-function downloadOverlap(){ const r=analysisResults; let csv='Partner,Category,Install,TenureYrs,CompGUID,SubNo,GSTIN,Combo,RDP,LastUsed,Expiry,Source,ShiftedToRDP,ShiftedToNS,IsNewSales\n'; expiredData.concat(activeData).filter(d=>r.overlappingCompGUIDSet.has(d.compGUID)).forEach(d=>csv+=rowCsv(d)); dlFile(csv,'partial_churn_export.csv','text/csv'); }
-function downloadNewSales(){ let csv='Partner,Category,Install,TenureYrs,CompGUID,SubNo,GSTIN,Combo,RDP,LastUsed,Expiry,Source,ShiftedToRDP,ShiftedToNS,IsNewSales\n'; expiredData.filter(d=>d.shiftedToNewSales).concat(activeData.filter(d=>d.isNewSales)).forEach(d=>csv+=rowCsv(d)); dlFile(csv,'new_sales_export.csv','text/csv'); }
-function downloadModalData(){ let csv='Partner,Category,Install,TenureYrs,CompGUID,SubNo,GSTIN,Combo,RDP,LastUsed,Expiry,Source,ShiftedToRDP,ShiftedToNS,IsNewSales\n'; modalFilteredData.forEach(d=>csv+=rowCsv(d)); dlFile(csv,'drill_down_export.csv','text/csv'); }
+function downloadCSV(){ let csv='Partner,Category,Install,TenureYrs,CompGUID,SubNo,GSTIN,Combo,RDP,LastUsed,Expiry,Source,ShiftedToRDP,ShiftedToNS,IsNewSales,RenewalCount\n'; expiredData.forEach(d=>csv+=rowCsv(d)); activeData.forEach(d=>csv+=rowCsv(d)); dlFile(csv,'churn_full_export.csv','text/csv'); }
+function downloadOverlap(){ const r=analysisResults; let csv='Partner,Category,Install,TenureYrs,CompGUID,SubNo,GSTIN,Combo,RDP,LastUsed,Expiry,Source,ShiftedToRDP,ShiftedToNS,IsNewSales,RenewalCount\n'; expiredData.concat(activeData).filter(d=>r.overlappingCompGUIDSet.has(d.compGUID)).forEach(d=>csv+=rowCsv(d)); dlFile(csv,'partial_churn_export.csv','text/csv'); }
+function downloadNewSales(){ let csv='Partner,Category,Install,TenureYrs,CompGUID,SubNo,GSTIN,Combo,RDP,LastUsed,Expiry,Source,ShiftedToRDP,ShiftedToNS,IsNewSales,RenewalCount\n'; expiredData.filter(d=>d.shiftedToNewSales).concat(activeData.filter(d=>d.isNewSales)).forEach(d=>csv+=rowCsv(d)); dlFile(csv,'new_sales_export.csv','text/csv'); }
+function downloadModalData(){ let csv='Partner,Category,Install,TenureYrs,CompGUID,SubNo,GSTIN,Combo,RDP,LastUsed,Expiry,Source,ShiftedToRDP,ShiftedToNS,IsNewSales,RenewalCount\n'; modalFilteredData.forEach(d=>csv+=rowCsv(d)); dlFile(csv,'drill_down_export.csv','text/csv'); }
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', autoLoadFromRepo);
 else autoLoadFromRepo();
