@@ -77,10 +77,10 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-g
 .venn-expired{background:rgba(244,92,67,.18);border:2px solid rgba(244,92,67,.45);left:calc(50% - 20px)}
 .venn-overlap-zone{position:absolute;background:rgba(168,85,247,.28);border:2px solid rgba(168,85,247,.55);border-radius:50%;width:80px;height:160px;left:calc(50% - 80px);display:flex;align-items:center;justify-content:center;font-weight:700;color:#a855f7;clip-path:ellipse(50% 50%);cursor:pointer}
 
-/* MODAL */
+/* MODAL & 360 POPUP */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(10,10,26,.95);z-index:2000;justify-content:center;align-items:center;padding:16px}
 .modal-overlay.show{display:flex}
-.modal{background:#1a1a3e;border:1px solid rgba(255,255,255,.12);border-radius:12px;width:100%;max-width:1550px;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.modal{background:#1a1a3e;border:1px solid rgba(255,255,255,.12);border-radius:12px;width:100%;max-width:1480px;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.5)}
 .modal-header{background:linear-gradient(135deg,#667eea,#764ba2);padding:14px 20px;display:flex;justify-content:space-between;align-items:center}
 .modal-header h3{color:#fff;font-size:1.05rem}
 .modal-close{background:rgba(255,255,255,.2);border:none;color:#fff;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:background 0.2s}
@@ -96,8 +96,8 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-g
 .ctrl-input option { background-color:#1a1a3e; color:#fff; }
 
 .modal-body{padding:0;overflow-y:auto;flex:1;overflow-x:auto;}
-.modal-table{width:100%;border-collapse:collapse;font-size:.74rem;min-width:1450px}
-.modal-table thead th{background:rgba(30,30,60,.97);padding:9px 12px;text-align:left;color:#999;font-weight:600;text-transform:uppercase;font-size:.65rem;position:sticky;top:0;z-index:1;white-space:nowrap;border-bottom:1px solid rgba(255,255,255,.05)}
+.modal-table{width:100%;border-collapse:collapse;font-size:.74rem;min-width:1100px}
+.modal-table thead th{background:rgba(30,30,60,.97);padding:10px 14px;text-align:left;color:#999;font-weight:600;text-transform:uppercase;font-size:.65rem;position:sticky;top:0;z-index:1;white-space:nowrap;border-bottom:1px solid rgba(255,255,255,.05)}
 .modal-table tbody td{padding:8px 14px;border-bottom:1px solid rgba(255,255,255,.03);vertical-align:middle}
 .modal-table tbody tr:hover{background:rgba(102,126,234,.06)}
 
@@ -141,7 +141,7 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-g
 footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
 
 .header-360 {
-    background:rgba(255,255,255,0.02); padding:10px 15px; margin:10px 20px 0; border-radius:8px; border-left:4px solid #38ef7d; font-weight:600; color:#38ef7d; display:flex; align-items:center;
+    background:rgba(255,255,255,0.02); padding:10px 15px; margin:14px 20px 8px; border-radius:8px; border-left:4px solid #38ef7d; font-weight:600; color:#38ef7d; display:flex; align-items:center; font-size:0.9rem;
 }
 .header-360.exp { border-left-color: #f45c43; color: #f45c43; background:rgba(244,92,67,0.05); }
 .header-360.act { border-left-color: #38ef7d; color: #38ef7d; background:rgba(56,239,125,0.05); }
@@ -197,7 +197,7 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
 <!-- DEDICATED ACCOUNT 360° DETAIL POPUP -->
 <div class="modal-overlay" id="account360Modal">
   <div class="modal" style="max-width:1400px">
-    <div class="modal-header" style="background:linear-gradient(135deg,#11998e,#38ef7d)">
+    <div class="modal-header" style="background:linear-gradient(135deg,#667eea,#764ba2)">
       <h3 id="acc360Title">🏢 Account 360° Complete History</h3>
       <button class="modal-close" onclick="closeModal('account360Modal')">✕</button>
     </div>
@@ -207,15 +207,15 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
     </div>
     <div class="modal-footer">
       <button class="modal-btn primary" onclick="downloadAcc360Data()">📥 Export Account Report</button>
-      <button class="modal-btn" onclick="closeModal('account360Modal')">Close</button>
+      <button class="modal-btn" onclick="closeModal('account360Modal')">Close (Esc)</button>
     </div>
   </div>
 </div>
 
 <div class="header">
   <h1>📊 Enterprise Customer Churn & Retention Dashboard</h1>
-  <p>Esc Key Support · Fixed Chart Rendering · Smart Unknown Tenure Handling</p>
-  <div class="header-badge">v28.0 — Fully Verified Function Scope & Enterprise Engine</div>
+  <p>Esc Key Support · Robust Timestamp & Date Parsing · Accurate Tenure Analysis</p>
+  <div class="header-badge">v29.0 — Clean 360° Account Popup & Robust Date Engine</div>
 </div>
 
 <div class="status-bar loading" id="statusBar"><div class="status-spinner"></div><span>Initializing Engine...</span></div>
@@ -322,10 +322,9 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
   </div>
 </div>
 
-<footer>Customer Churn Dashboard v28.0 · Guaranteed Scope Engine</footer>
+<footer>Customer Churn Dashboard v29.0 · Robust Date & Tenure Engine</footer>
 
 <script>
-// ==================== GLOBAL HELPERS ====================
 window.stateGST = {
   '01':'J&K','02':'HP','03':'Punjab','04':'Chandigarh','05':'Uttarakhand','06':'Haryana',
   '07':'Delhi','08':'Rajasthan','09':'UP','10':'Bihar','11':'Sikkim','12':'Arunachal',
@@ -345,15 +344,62 @@ function safeSetHTML(id, html) {
     const el = document.getElementById(id);
     if (el) el.innerHTML = html;
 }
-
 function safeSetText(id, txt) {
     const el = document.getElementById(id);
     if (el) el.textContent = txt;
 }
 
+// ROBUST DATE PARSER
+function parseDateRobust(val) {
+    if (!val) return null;
+    if (val instanceof Date) return isNaN(val.getTime()) ? null : val;
+    if (typeof val === 'number') {
+        if (val < 1000) return null;
+        const d = new Date((val - 25569) * 86400000);
+        return isNaN(d.getTime()) ? null : d;
+    }
+    let s = String(val).trim();
+    if (!s || s.toLowerCase() === 'n/a' || s.toLowerCase() === 'null' || s.toLowerCase() === 'undefined') return null;
+
+    // Strip timestamp (e.g., "1/30/2019 12:00:00 AM" -> "1/30/2019")
+    const datePart = s.split(' ')[0].trim();
+
+    let d = new Date(datePart);
+    if (!isNaN(d.getTime())) return d;
+
+    const p = datePart.split(/[\/\-\.]/);
+    if (p.length === 3) {
+        let p0 = parseInt(p[0], 10);
+        let p1 = parseInt(p[1], 10);
+        let p2 = parseInt(p[2], 10);
+        if (isNaN(p0) || isNaN(p1) || isNaN(p2)) return null;
+
+        let yr, mo, day;
+        if (p0 > 1000) {
+            yr = p0; mo = p1 - 1; day = p2;
+        } else if (p2 > 1000 || p2 > 50) {
+            yr = p2 < 100 ? 2000 + p2 : p2;
+            if (p0 > 12) { day = p0; mo = p1 - 1; }
+            else { day = p0; mo = p1 - 1; }
+        } else {
+            return null;
+        }
+        d = new Date(yr, mo, day);
+        return isNaN(d.getTime()) ? null : d;
+    }
+    return null;
+}
+
+function formatDateFast(d) {
+    if (!d || isNaN(d.getTime())) return 'N/A';
+    return (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear();
+}
+
 function getTenureYrs(d) {
     if (!d || !d.installDate || !d.currentBlsExpiry) return -1;
-    return (d.currentBlsExpiry - d.installDate) / (1000 * 60 * 60 * 24 * 365.25);
+    const diffMs = d.currentBlsExpiry.getTime() - d.installDate.getTime();
+    if (diffMs < 0) return 0;
+    return diffMs / (1000 * 60 * 60 * 24 * 365.25);
 }
 
 function getTenureLabel(d) {
@@ -368,10 +414,10 @@ function getTenureLabel(d) {
 function getTenureText(d) {
     const y = getTenureYrs(d);
     if (y < 0) return '<span style="color:#555">N/A</span>';
-    return `<span style="color:#22d3ee;font-weight:600">${Math.max(0, y).toFixed(1)} yrs</span>`;
+    return `<span style="color:#22d3ee;font-weight:600">${y.toFixed(1)} yrs</span>`;
 }
 
-// ESC KEY LISTENER TO CLOSE POPUPS
+// ESC KEY LISTENER
 document.addEventListener('keydown', function(event) {
     if (event.key === 'Escape') {
         closeModal('drillModal');
@@ -410,42 +456,11 @@ function setStatus(msg, type='info'){
   }
 }
 
-function formatDateFast(d) {
-    if (!d || isNaN(d.getTime())) return 'N/A';
-    return (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear();
-}
-
-function fastParseDate(str){
-  const DEFAULT = new Date(2025,0,1);
-  if(!str) return DEFAULT;
-  if(str instanceof Date) return isNaN(str.getTime()) ? DEFAULT : str;
-  if(typeof str==='number') return new Date((str-25569)*86400000);
-  const s=String(str).trim(); if(!s) return DEFAULT;
-  if(s.length>=10&&s[4]==='-'&&s[7]==='-') return new Date(+s.slice(0,4),+s.slice(5,7)-1,+s.slice(8,10));
-  const d=new Date(s); if(!isNaN(d.getTime())) return d;
-  const p=s.split(/[\/\-\.]/);
-  if(p.length===3){
-      const a=+p[0],b=+p[1],c=+p[2],y=c<100?2000+c:c;
-      const pd = a>12 ? new Date(y,b-1,a) : new Date(y,a-1,b);
-      return isNaN(pd.getTime()) ? DEFAULT : pd;
-  }
-  return DEFAULT;
-}
-
-function decodeArrayBufferSmart(buffer){
-  const bytes=new Uint8Array(buffer); if(bytes.length<2)return '';
-  if(bytes[0]===0xFF&&bytes[1]===0xFE)return new TextDecoder('utf-16le').decode(bytes.subarray(2));
-  if(bytes[0]===0xFE&&bytes[1]===0xFF)return new TextDecoder('utf-16be').decode(bytes.subarray(2));
-  if(bytes.length>100){let n=0;for(let i=1;i<100;i+=2)if(bytes[i]===0)n++;if(n>35)return new TextDecoder('utf-16le').decode(bytes);}
-  if(bytes.length>=3&&bytes[0]===0xEF&&bytes[1]===0xBB&&bytes[2]===0xBF)return new TextDecoder('utf-8').decode(bytes.subarray(3));
-  return new TextDecoder('utf-8').decode(bytes).replace(/\0/g,'');
-}
-
 function parseArrayOfRows(rows,headers,source){
   let ci=-1,si=-1,gi=-1,ei=-1,pi=-1,ii=-1,cati=-1,ludi=-1;
   headers.forEach((h,i)=>{const l=String(h).toLowerCase().replace(/[^a-z0-9]/g,'');
     if(l.includes('guid')||l.includes('comp'))ci=i; else if(l.includes('sub')||l.includes('number'))si=i;
-    else if(l.includes('gst'))gi=i; else if(l.includes('expiry')||l.includes('bls'))ei=i;
+    else if(l.includes('gst'))gi=i; else if((l.includes('expiry')||l.includes('bls'))&&!l.includes('install'))ei=i;
     else if(l.includes('owner')||l.includes('partner'))pi=i; else if(l.includes('install'))ii=i;
     else if(l.includes('category')||l.includes('product'))cati=i;
     else if(l.includes('last')&&(l.includes('use')||l.includes('active')))ludi=i;
@@ -453,16 +468,16 @@ function parseArrayOfRows(rows,headers,source){
   if(ci===-1)ci=0; if(si===-1)si=1; if(gi===-1)gi=2; if(ei===-1)ei=3;
   return rows.map(cols=>{
     if(!cols || !cols.length) return null;
-    const dt = fastParseDate(cols[ei]);
+    const dt = parseDateRobust(cols[ei]) || new Date(2025, 0, 1);
     return {
       compGUID:String(cols[ci]||'').trim(), subscriptionId:String(cols[si]||'').trim(),
       gstin:String(cols[gi]||'').trim().length>=8?String(cols[gi]||'').trim():null,
       comboKey: `${String(cols[gi]||'NO_GST').trim()}_${String(cols[ci]||'').trim()}`,
       currentBlsExpiry:dt, expStr:formatDateFast(dt),
-      ownerPartner:pi!==-1?String(cols[pi]||'Direct').trim():'Direct',
-      installDate:ii!==-1?fastParseDate(cols[ii]):null,
-      categoryName:cati!==-1?String(cols[cati]||'Standard').trim():'Standard',
-      lastUseDate:ludi!==-1?fastParseDate(cols[ludi]):null,
+      ownerPartner:pi!==-1&&cols[pi]?String(cols[pi]).trim():'Direct',
+      installDate:ii!==-1?parseDateRobust(cols[ii]):null,
+      categoryName:cati!==-1&&cols[cati]?String(cols[cati]).trim():'Standard',
+      lastUseDate:ludi!==-1?parseDateRobust(cols[ludi]):null,
       source
     };
   }).filter(Boolean);
@@ -514,6 +529,7 @@ async function autoLoadFromRepo() {
     try {
         expiredData = await fetchDataset('expired_customers');
         activeData = await fetchDataset('active_customers');
+
         if (expiredData.length > 0 && activeData.length > 0) {
             setStatus(`✅ Real Data Loaded: ${expiredData.length.toLocaleString()} expired + ${activeData.length.toLocaleString()} active records`, 'success');
             runAnalysis();
@@ -521,7 +537,7 @@ async function autoLoadFromRepo() {
             throw new Error(`Could not parse records.`);
         }
     } catch(err) {
-        setStatus(`⚠️ Auto-load failed. Click below to upload CSV files manually.`, 'error');
+        setStatus(`⚠️ Auto-load failed. Upload CSV files manually below.`, 'error');
     }
 }
 
@@ -567,7 +583,10 @@ function analyzeData(){
     }
     const pk=d.ownerPartner; if(!partStats[pk])partStats[pk]={expired:0,active:0}; partStats[pk].expired++;
     const ck=d.categoryName; if(!catStats[ck])catStats[ck]={expired:0,active:0}; catStats[ck].expired++;
-    const tl=getTenureLabel(d); if(tl)tenStats[tl]++;
+    
+    // Tenure categorization
+    const tl = getTenureLabel(d);
+    tenStats[tl] = (tenStats[tl] || 0) + 1;
   });
 
   let ghosts=0, nsActive=0; const nsComp=new Set();
@@ -1007,7 +1026,7 @@ function renderCharts(){
   const stEl = document.getElementById('stateChart');
   if(stEl){
       const states = Object.keys(r.stateChurn).sort();
-      dc('st'); charts.st = new Chart(stEl,{type:'bar',data:{labels:states,datasets:[{label:'Expired',data:states.map(s=>r.stateChurn[s].expired),backgroundColor:'rgba(244,92,67,.6)'},{label:'Active',data:states.map(s=>r.stateChurn[s].active),backgroundColor:'rgba(102,126,234,.6)'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{stacked:true,ticks:{color:'#888',maxRotation:45}},y:{stacked:true,grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#888'}}}}}); 
+      dc('st'); charts.st = new Chart(stEl,{type:'bar',data:{labels:states,datasets:[{label:'Expired',data:states.map(s=>r.stateChurn[s].expired),backgroundColor:'rgba(244,92,67,.6)'},{label:'Active',data:states.map(s=>r.stateChurn[s].active),backgroundColor:'rgba(102,126,234,.6)'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa',maxRotation:45}},y:{stacked:true,grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#888'}}}}}); 
   }
 }
 
@@ -1052,13 +1071,7 @@ function runAnalysis(){
   if(ov) ov.classList.add('show');
   setTimeout(()=>{
     try{
-      analyzeData(); 
-      renderKPIs(); 
-      renderInsights(); 
-      renderVenn(); 
-      renderFlowDiagram(); 
-      renderCharts(); 
-      setMainTab('all'); 
+      analyzeData(); renderKPIs(); renderInsights(); renderVenn(); renderFlowDiagram(); renderCharts(); setMainTab('all');
     }catch(err){
       console.error(err);
       setStatus('⚠️ Computation error: ' + err.message, 'error');
