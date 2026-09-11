@@ -95,9 +95,9 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-g
 .ctrl-input option { background-color:#1a1a3e; color:#fff; }
 
 .modal-body{padding:0;overflow-y:auto;flex:1;overflow-x:auto;}
-.modal-table{width:100%;border-collapse:collapse;font-size:.76rem;min-width:1300px}
+.modal-table{width:100%;border-collapse:collapse;font-size:.74rem;min-width:1450px}
 .modal-table thead th{background:rgba(30,30,60,.97);padding:9px 12px;text-align:left;color:#999;font-weight:600;text-transform:uppercase;font-size:.65rem;position:sticky;top:0;z-index:1;white-space:nowrap}
-.modal-table tbody td{padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.03);vertical-align:middle}
+.modal-table tbody td{padding:7px 12px;border-bottom:1px solid rgba(255,255,255,.03);vertical-align:middle}
 .modal-table tbody tr:hover{background:rgba(102,126,234,.06)}
 
 .pagination-controls{display:flex;justify-content:space-between;align-items:center;padding:10px 20px;background:rgba(255,255,255,.03);border-top:1px solid rgba(255,255,255,.06)}
@@ -106,11 +106,10 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-g
 .page-btn:disabled{opacity:0.4;cursor:not-allowed}
 .page-info{font-size:.8rem;color:#aaa}
 
-.compguid-cell{font-family:monospace;font-size:.72rem;color:#a855f7;text-decoration:underline;cursor:pointer;word-break:break-all}
+.compguid-cell{font-family:monospace;font-size:.7rem;color:#a855f7;text-decoration:underline;cursor:pointer;word-break:break-all}
 .gstin-cell{font-family:monospace;font-size:.72rem;color:#22d3ee;text-decoration:underline;cursor:pointer;word-break:break-all}
 .combo-cell{font-family:monospace;font-size:.68rem;color:#38ef7d;word-break:break-all;background:rgba(56,239,125,.05);padding:4px 6px;border-radius:4px;border:1px dashed rgba(56,239,125,.2);cursor:pointer}
 
-/* CLEAN SUMMARY BADGE FOR TABLE CELLS (REPLACES TINY SCROLLBOXES) */
 .linked-summary-badge{
   display:inline-flex; align-items:center; gap:6px;
   padding:4px 10px; border-radius:6px; font-size:.7rem; cursor:pointer;
@@ -140,12 +139,16 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-g
 .btn-download{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#bbb;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.78rem}
 .loading-overlay{display:none;position:fixed;inset:0;background:rgba(10,10,26,.92);z-index:3000;justify-content:center;align-items:center;flex-direction:column;gap:14px}
 .loading-overlay.show{display:flex}
+.file-btn-sm{background:linear-gradient(135deg,#667eea,#764ba2);border:none;color:#fff;padding:4px 12px;border-radius:4px;cursor:pointer;font-size:.75rem;margin-left:8px}
 footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
 </style>
 </head>
 <body>
 
 <div class="loading-overlay" id="loadingOverlay"><div class="status-spinner" style="width:40px;height:40px"></div><p style="color:#667eea" id="loadingText">Processing Data...</p></div>
+
+<input type="file" id="expiredFileInput" accept=".csv,.xlsx,.xls" style="display:none" onchange="handleFileUpload('expired',this)">
+<input type="file" id="activeFileInput" accept=".csv,.xlsx,.xls" style="display:none" onchange="handleFileUpload('active',this)">
 
 <!-- MODAL DRILL-DOWN -->
 <div class="modal-overlay" id="drillModal">
@@ -207,7 +210,7 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
 <div class="header">
   <h1>📊 Enterprise Customer Churn & Retention Dashboard</h1>
   <p>Dual Expiry Tracking · Ghost Churn Detection · 360° Account Popup Engine</p>
-  <div class="header-badge">v25.0 — Spacious Account 360° Detail Popup (No Small Scrollboxes)</div>
+  <div class="header-badge">v26.0 — Crash-Proof Global Scope Engine</div>
 </div>
 
 <div class="status-bar loading" id="statusBar"><div class="status-spinner"></div><span>Initializing Engine...</span></div>
@@ -239,7 +242,7 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
 <div class="action-block">
     <h4>💡 Playbook: Correlation & Recovery</h4>
     <div class="action-item"><strong>For Ghost Churn (Pink):</strong> Active subscriptions that have not been used in 90+ days. <em>Action: High risk of non-renewal! Reach out immediately to offer training or technical support.</em></div>
-    <div class="action-item"><strong>For Partial Churn (Yellow):</strong> Customers who dropped some licenses but kept others. <em>Action: Click any row to open the 360° Account Popup and see all linked serial numbers side-by-side.</em></div>
+    <div class="action-item"><strong>For Partial Churn (Yellow):</strong> Customers who dropped some licenses but kept others. <em>Action: Click any company for the 360° Account Popup to see all active and expired serials.</em></div>
     <div class="action-item"><strong>For New Sales (Blue):</strong> Active licenses purchased after an old one expired. <em>Action: Verify if this is net-new growth or license replacement.</em></div>
 </div>
 
@@ -314,9 +317,25 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
   </div>
 </div>
 
-<footer>Customer Churn Dashboard v25.0 · Spacious 360° Account Popup Engine</footer>
+<footer>Customer Churn Dashboard v26.0 · Global Scope Bounded · Zero-Crash Guarantee</footer>
 
 <script>
+// ==================== ABSOLUTE GLOBAL SCOPE GUARANTEE ====================
+window.stateGST = {
+  '01':'J&K','02':'HP','03':'Punjab','04':'Chandigarh','05':'Uttarakhand','06':'Haryana',
+  '07':'Delhi','08':'Rajasthan','09':'UP','10':'Bihar','11':'Sikkim','12':'Arunachal',
+  '13':'Nagaland','14':'Manipur','15':'Mizoram','16':'Tripura','17':'Meghalaya','18':'Assam',
+  '19':'West Bengal','20':'Jharkhand','21':'Odisha','22':'Chhattisgarh','23':'MP','24':'Gujarat',
+  '26':'Dadra & Nagar Haveli','27':'Maharashtra','29':'Karnataka','30':'Goa','31':'Lakshadweep',
+  '32':'Kerala','33':'Tamil Nadu','34':'Puducherry','35':'Andaman & Nicobar','36':'Telangana','37':'Andhra Pradesh','38':'Ladakh'
+};
+
+function getStateName(gstin) {
+    if (!gstin || typeof gstin !== 'string' || gstin.length < 2) return 'Other';
+    const code = gstin.trim().substring(0, 2);
+    return window.stateGST[code] || ('Other (' + code + ')');
+}
+
 function safeSetHTML(id, html) {
     const el = document.getElementById(id);
     if (el) el.innerHTML = html;
@@ -324,6 +343,26 @@ function safeSetHTML(id, html) {
 function safeSetText(id, txt) {
     const el = document.getElementById(id);
     if (el) el.textContent = txt;
+}
+
+function getTenureYrs(d) {
+    if (!d || !d.installDate || !d.currentBlsExpiry) return -1;
+    return (d.currentBlsExpiry - d.installDate) / (1000 * 60 * 60 * 24 * 365.25);
+}
+
+function getTenureLabel(d) {
+    const y = getTenureYrs(d);
+    if (y < 0) return 'Unknown';
+    if (y < 1) return '< 1 Year';
+    if (y < 3) return '1-3 Years';
+    if (y < 5) return '3-5 Years';
+    return '5+ Years';
+}
+
+function getTenureText(d) {
+    const y = getTenureYrs(d);
+    if (y < 0) return '<span style="color:#555">N/A</span>';
+    return `<span style="color:#22d3ee;font-weight:600">${Math.max(0, y).toFixed(1)} yrs</span>`;
 }
 
 let expiredData=[], activeData=[], analysisResults={}, charts={};
@@ -348,6 +387,10 @@ function setStatus(msg, type='info'){
   sb.className='status-bar '+type;
   if(type==='loading') {
       sb.innerHTML=`<div class="status-spinner"></div><span id="statusText">${msg}</span>`;
+  } else if(type==='error') {
+      sb.innerHTML=`<span>${msg}</span> 
+        <button class="file-btn-sm" onclick="document.getElementById('expiredFileInput').click()">Upload Expired CSV</button>
+        <button class="file-btn-sm" onclick="document.getElementById('activeFileInput').click()">Upload Active CSV</button>`;
   } else {
       sb.innerHTML=`<span>${msg}</span>`;
   }
@@ -402,9 +445,9 @@ function parseArrayOfRows(rows,headers,source){
       gstin:String(cols[gi]||'').trim().length>=8?String(cols[gi]||'').trim():null,
       comboKey: `${String(cols[gi]||'NO_GST').trim()}_${String(cols[ci]||'').trim()}`,
       currentBlsExpiry:dt, expStr:formatDateFast(dt),
-      ownerPartner:pi!==-1?String(cols[pi]||'Direct').trim():'Direct',
+      ownerPartner:pi!==-1&&cols[pi]?String(cols[pi]).trim():'Direct / Unassigned',
       installDate:ii!==-1?fastParseDate(cols[ii]):null,
-      categoryName:cati!==-1?String(cols[cati]||'Standard').trim():'Standard',
+      categoryName:cati!==-1&&cols[cati]?String(cols[cati]).trim():'Standard',
       lastUseDate:ludi!==-1?fastParseDate(cols[ludi]):null,
       source
     };
@@ -464,22 +507,28 @@ async function autoLoadFromRepo() {
             throw new Error(`Could not parse records.`);
         }
     } catch(err) {
-        setStatus(`⚠️ Auto-load failed. Upload CSV files manually below.`, 'error');
+        setStatus(`⚠️ Auto-load failed. Click below to upload CSV files manually.`, 'error');
     }
 }
 
-function getTenureYrs(d){
-  if(!d || !d.installDate || !d.currentBlsExpiry) return -1;
-  return (d.currentBlsExpiry - d.installDate)/(1000*60*60*24*365.25);
-}
-
-function getTenureLabel(d){
-  const y = getTenureYrs(d);
-  if(y<0) return 'Unknown';
-  if(y<1) return '< 1 Year';
-  if(y<3) return '1-3 Years';
-  if(y<5) return '3-5 Years';
-  return '5+ Years';
+async function handleFileUpload(type, input) {
+    const file = input.files[0]; if(!file) return;
+    setStatus(`Reading ${file.name}...`, 'loading');
+    try {
+        const buf = await file.arrayBuffer();
+        let parsed = parseExcelBuffer(buf, type);
+        if(!parsed.length) {
+            const text = decodeArrayBufferSmart(buf);
+            parsed = parseCSVFast(text, type);
+        }
+        if(type==='expired') expiredData = parsed; else activeData = parsed;
+        if(expiredData.length > 0 && activeData.length > 0) {
+            setStatus(`✅ Uploaded: ${expiredData.length.toLocaleString()} expired + ${activeData.length.toLocaleString()} active records`, 'success');
+            runAnalysis();
+        } else {
+            setStatus(`Loaded ${parsed.length.toLocaleString()} ${type} records. Upload the other file.`, 'info');
+        }
+    } catch(e) { setStatus(`❌ File error: ${e.message}`, 'error'); }
 }
 
 function analyzeData(){
@@ -497,7 +546,11 @@ function analyzeData(){
     eG.add(d.compGUID);
     const mon=d.currentBlsExpiry.toISOString().slice(0,7);
     mE[mon]=(mE[mon]||0)+1;
-    if(d.gstin&&d.gstin.length>=2){const st=stateGST[d.gstin.slice(0,2)]||'Other';if(!sC[st])sC[st]={expired:0,active:0};sC[st].expired++;}
+    if(d.gstin){
+      const st = getStateName(d.gstin);
+      if(!sC[st])sC[st]={expired:0,active:0};
+      sC[st].expired++;
+    }
     const pk=d.ownerPartner; if(!partStats[pk])partStats[pk]={expired:0,active:0}; partStats[pk].expired++;
     const ck=d.categoryName; if(!catStats[ck])catStats[ck]={expired:0,active:0}; catStats[ck].expired++;
     const tl=getTenureLabel(d); if(tl!=='Unknown')tenStats[tl]++;
@@ -513,7 +566,11 @@ function analyzeData(){
     if(!window.comboNet[d.comboKey])window.comboNet[d.comboKey]={a:[],e:[]}; window.comboNet[d.comboKey].a.push(m);
     aG.add(d.compGUID);
     const mon=d.currentBlsExpiry.toISOString().slice(0,7); mA[mon]=(mA[mon]||0)+1;
-    if(d.gstin&&d.gstin.length>=2){const st=stateGST[d.gstin.slice(0,2)]||'Other';if(!sC[st])sC[st]={expired:0,active:0};sC[st].active++;}
+    if(d.gstin){
+      const st = getStateName(d.gstin);
+      if(!sC[st])sC[st]={expired:0,active:0};
+      sC[st].active++;
+    }
     const pk=d.ownerPartner; if(!partStats[pk])partStats[pk]={expired:0,active:0}; partStats[pk].active++;
     const ck=d.categoryName; if(!catStats[ck])catStats[ck]={expired:0,active:0}; catStats[ck].active++;
     if(d.lastUseDate&&d.lastUseDate.getTime()<nDA){d.isGhost=true;ghosts++;}
@@ -536,11 +593,10 @@ function analyzeData(){
     retentionRate:tot?((onlyActive.size/tot)*100).toFixed(1):'0',
     partialChurnRate:tot?((oG.size/tot)*100).toFixed(1):'0',
     monthlyExpired:mE,monthlyActive:mA,stateChurn:sC,partStats,catStats,tenStats,
-    overlappingCompGUIDSet:oG,fullChurnSet:fC,totalCompanies:tot
+    overlappingCompGUIDSet:oG,fullChurnSet:fC,healthySet:onlyActive,totalCompanies:tot
   };
 }
 
-// CLEAN SUMMARY BADGE FOR TABLE CELLS (NO MORE UGLY SCROLLBOXES!)
 function getSummaryBadgeHTML(d, type) {
     const escVal = (d[type==='comp'?'compGUID':(type==='gst'?'gstin':'comboKey')] || '').replace(/'/g, "\\'");
     let ca = 0, ce = 0;
@@ -565,12 +621,6 @@ function getSummaryBadgeHTML(d, type) {
         <span class="exp-num">🔴 ${ce} Exp</span>
         <span class="hint">🔍 View 360°</span>
     </div>`;
-}
-
-function getTenureText(d){
-  const y = getTenureYrs(d);
-  if(y < 0) return '<span style="color:#555">N/A</span>';
-  return `<span style="color:#22d3ee;font-weight:600">${y.toFixed(1)} yrs</span>`;
 }
 
 function newSalesCell(d){
@@ -601,7 +651,6 @@ function rowHtml(d) {
     </tr>`;
 }
 
-// ==================== 360° ACCOUNT DETAIL POPUP ENGINE ====================
 function openAccount360(type, val) {
     if (!val || val === 'NO_GST') return;
     
@@ -624,7 +673,6 @@ function openAccount360(type, val) {
     const activeSubs = matches.filter(d => d.source === 'active');
     const expiredSubs = matches.filter(d => d.source === 'expired');
 
-    // Key Stats Cards
     safeSetHTML('acc360Stats', `
         <div class="modal-stat"><div class="modal-stat-value" style="color:#667eea">${matches.length}</div><div class="modal-stat-label">Total Licenses</div></div>
         <div class="modal-stat"><div class="modal-stat-value" style="color:#38ef7d">${activeSubs.length}</div><div class="modal-stat-label">Active Licenses</div></div>
@@ -632,10 +680,7 @@ function openAccount360(type, val) {
         <div class="modal-stat"><div class="modal-stat-value" style="color:#a855f7">${(activeSubs.length > 0 && expiredSubs.length > 0) ? 'Partial Churn 🟡' : (expiredSubs.length > 0 ? 'Full Churn 🔴' : 'Fully Active 🟢')}</div><div class="modal-stat-label">Account Health</div></div>
     `);
 
-    // Render Full-Width Tables without tiny scrollboxes!
-    let contentHtml = `
-        <h4 style="color:#38ef7d; margin-bottom:8px; font-size:0.95rem">🟢 Active Subscriptions (${activeSubs.length})</h4>
-    `;
+    let contentHtml = `<h4 style="color:#38ef7d; margin-bottom:8px; font-size:0.95rem">🟢 Active Subscriptions (${activeSubs.length})</h4>`;
 
     if (activeSubs.length === 0) {
         contentHtml += `<p style="color:#777; font-size:0.8rem; margin-bottom:20px">No active subscriptions found for this account.</p>`;
@@ -656,9 +701,7 @@ function openAccount360(type, val) {
         </table>`;
     }
 
-    contentHtml += `
-        <h4 style="color:#f45c43; margin-bottom:8px; font-size:0.95rem">🔴 Expired Subscriptions (${expiredSubs.length})</h4>
-    `;
+    contentHtml += `<h4 style="color:#f45c43; margin-bottom:8px; font-size:0.95rem">🔴 Expired Subscriptions (${expiredSubs.length})</h4>`;
 
     if (expiredSubs.length === 0) {
         contentHtml += `<p style="color:#777; font-size:0.8rem">No expired subscriptions found for this account.</p>`;
@@ -698,10 +741,10 @@ function downloadAcc360Data() {
 
 function closeModal(modalId) {
     const id = modalId || 'drillModal';
-    document.getElementById(id).classList.remove('show');
+    const el = document.getElementById(id);
+    if(el) el.classList.remove('show');
 }
 
-// ================== FILTER & SORT ENGINE ==================
 function applyFiltersAndSort(sourceData, searchId, tenureId, sortId) {
     const rawQ = document.getElementById(searchId).value.trim();
     const tenureF = document.getElementById(tenureId) ? document.getElementById(tenureId).value : 'ALL';
@@ -733,49 +776,153 @@ function applyFiltersAndSort(sourceData, searchId, tenureId, sortId) {
 }
 
 function setMainTab(f,btn){
-    currentMainTab=f;
-    document.querySelectorAll('.table-tab').forEach(t=>t.classList.remove('active'));
-    if(btn)btn.classList.add('active');
-    const r=analysisResults, today=new Date(), riskD=new Date(today.getTime()+30*86400000);
-    mainBaseData=(f==='all'?expiredData.concat(activeData):f==='overlap'?expiredData.concat(activeData).filter(d=>r.overlappingCompGUIDSet.has(d.compGUID)):f==='churned'?expiredData.filter(d=>r.fullChurnSet.has(d.compGUID)):f==='newsales'?expiredData.concat(activeData).filter(d=>d.isNewSales):f==='ghost'?activeData.filter(d=>d.isGhost):activeData.filter(d=>d.currentBlsExpiry<=riskD&&d.currentBlsExpiry>=today));
+    currentMainTab = f;
+    document.querySelectorAll('.table-tab').forEach(t => t.classList.remove('active'));
+    if(btn) btn.classList.add('active');
+    
+    const r = analysisResults, rd = 30, today = new Date(), riskDate = new Date(today.getTime() + rd * 86400000);
+    const all = expiredData.concat(activeData);
+    mainBaseData = [];
+
+    for(let i=0; i<all.length; i++){
+        const d = all[i];
+        const o = r.overlappingCompGUIDSet.has(d.compGUID);
+        const cat = o ? 'Partial Churn' : (d.source === 'expired' ? 'Full Churn' : 'Healthy');
+        if(f === 'overlap' && !o) continue;
+        if(f === 'churned' && cat !== 'Full Churn') continue;
+        if(f === 'newsales' && !d.isNewSales) continue;
+        if(f === 'ghost' && !d.isGhost) continue;
+        if(f === 'healthy' && cat !== 'Healthy') continue;
+        if(f === 'atrisk') {
+            if(!(d.source === 'active' && d.currentBlsExpiry <= riskDate && d.currentBlsExpiry >= today)) continue;
+        }
+        mainBaseData.push(d);
+    }
+    
+    document.getElementById('mainSearch').value = '';
     triggerMainUpdate();
 }
-function triggerMainUpdate(){ clearTimeout(uiTimer); uiTimer=setTimeout(()=>{mainFilteredData=applyFiltersAndSort(mainBaseData,'mainSearch','mainTenureFilter','mainSort');mainPage=1;renderMainTablePage();},150); }
-function mainChangePage(d){ mainPage+=d; renderMainTablePage(); }
-function renderMainTablePage(){
-    const tot=mainFilteredData.length, pages=Math.max(1,Math.ceil(tot/PAGE_SIZE));
-    if(mainPage<1)mainPage=1; if(mainPage>pages)mainPage=pages;
-    const start=(mainPage-1)*PAGE_SIZE, end=Math.min(start+PAGE_SIZE,tot);
-    let h=''; for(let i=start;i<end;i++)h+=rowHtml(mainFilteredData[i]);
-    safeSetHTML('mainTableBody',h); safeSetText('mainTableCount',`(${tot.toLocaleString()} records)`);
-    safeSetText('mainPageInfo',`Page ${mainPage} of ${pages}`);
-    const p=document.getElementById('mainPrevBtn'),n=document.getElementById('mainNextBtn');
-    if(p)p.disabled=(mainPage===1); if(n)n.disabled=(mainPage===pages);
+
+function triggerMainUpdate() {
+    clearTimeout(uiTimer);
+    uiTimer = setTimeout(() => {
+        mainFilteredData = applyFiltersAndSort(mainBaseData, 'mainSearch', 'mainTenureFilter', 'mainSort');
+        mainPage = 1;
+        renderMainTablePage();
+    }, 100);
 }
 
-function openDrillDown(t,d,s){ modalBaseData=d; safeSetText('modalTitle',t); safeSetHTML('modalStats',s.map(x=>`<div class="modal-stat"><div class="modal-stat-value" style="color:${x.color||'#667eea'}">${x.value}</div><div class="modal-stat-label">${x.label}</div></div>`).join('')); triggerModalUpdate(); document.getElementById('drillModal').classList.add('show'); }
-function triggerModalUpdate(){ clearTimeout(uiTimer); uiTimer=setTimeout(()=>{modalFilteredData=applyFiltersAndSort(modalBaseData,'modalSearch','modalTenureFilter','modalSort');modalPage=1;renderModalTablePage();},150); }
-function modChangePage(d){ modalPage+=d; renderModalTablePage(); }
-function renderModalTablePage(){
-    const tot=modalFilteredData.length, pages=Math.max(1,Math.ceil(tot/PAGE_SIZE));
-    if(modalPage<1)modalPage=1; if(modalPage>pages)modalPage=pages;
-    const start=(modalPage-1)*PAGE_SIZE, end=Math.min(start+PAGE_SIZE,tot);
-    let h=''; for(let i=start;i<end;i++)h+=rowHtml(modalFilteredData[i]);
-    safeSetHTML('modalTableBody',h); safeSetText('modPageInfo',`Page ${modalPage} of ${pages}`);
-    const p=document.getElementById('modPrevBtn'),n=document.getElementById('modNextBtn');
-    if(p)p.disabled=(modalPage===1); if(n)n.disabled=(modalPage===pages);
+function mainChangePage(dir) {
+    mainPage += dir;
+    renderMainTablePage();
+}
+
+function renderMainTablePage() {
+    const total = mainFilteredData.length;
+    const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+    if (mainPage < 1) mainPage = 1;
+    if (mainPage > totalPages) mainPage = totalPages;
+
+    const start = (mainPage - 1) * PAGE_SIZE;
+    const end = Math.min(start + PAGE_SIZE, total);
+    
+    let html = '';
+    for(let i=start; i<end; i++) html += rowHtml(mainFilteredData[i]);
+    
+    safeSetHTML('mainTableBody', html);
+    safeSetText('mainTableCount', `(${total.toLocaleString()} records)`);
+    safeSetText('mainPageInfo', `Page ${mainPage} of ${totalPages}`);
+    
+    const p = document.getElementById('mainPrevBtn'), n = document.getElementById('mainNextBtn');
+    if(p) p.disabled = (mainPage === 1);
+    if(n) n.disabled = (mainPage === totalPages);
+}
+
+function openDrillDown(title, data, statsArray) {
+    modalBaseData = data;
+    safeSetText('modalTitle', title);
+    safeSetHTML('modalStats', statsArray.map(s => `<div class="modal-stat"><div class="modal-stat-value" style="color:${s.color||'#667eea'}">${s.value}</div><div class="modal-stat-label">${s.label}</div></div>`).join(''));
+    document.getElementById('modalSearch').value = '';
+    if(document.getElementById('modalTenureFilter')) document.getElementById('modalTenureFilter').value = 'ALL';
+    
+    triggerModalUpdate();
+    document.getElementById('drillModal').classList.add('show');
+}
+
+function triggerModalUpdate() {
+    clearTimeout(uiTimer);
+    uiTimer = setTimeout(() => {
+        modalFilteredData = applyFiltersAndSort(modalBaseData, 'modalSearch', 'modalTenureFilter', 'modalSort');
+        modalPage = 1;
+        renderModalTablePage();
+    }, 100);
+}
+
+function modChangePage(dir) {
+    modalPage += dir;
+    renderModalTablePage();
+}
+
+function renderModalTablePage() {
+    document.getElementById('modalTableHead').innerHTML = `<tr><th>Partner / Category</th><th>View 1: CompGUID</th><th>View 2: GSTIN</th><th>View 3: GSTIN + CompGUID</th><th>Sub No</th><th>Last Used</th><th>BLS Expiry</th><th>Status</th><th>New Sales</th><th>Linked by CompGUID</th><th>Linked by GSTIN</th><th style="color:#38ef7d;">Active Serials (Combo)</th></tr>`;
+    
+    const total = modalFilteredData.length;
+    const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+    if (modalPage < 1) modalPage = 1;
+    if (modalPage > totalPages) modalPage = totalPages;
+
+    const start = (modalPage - 1) * PAGE_SIZE;
+    const end = Math.min(start + PAGE_SIZE, total);
+    
+    let html = '';
+    for(let i=start; i<end; i++) html += rowHtml(modalFilteredData[i]);
+    
+    safeSetHTML('modalTableBody', html);
+    safeSetText('modalRecordCount', `Total: ${total.toLocaleString()}`);
+    safeSetText('modPageInfo', `Page ${modalPage} of ${totalPages}`);
+    
+    const p = document.getElementById('modPrevBtn'), n = document.getElementById('modNextBtn');
+    if(p) p.disabled = (modalPage === 1);
+    if(n) n.disabled = (modalPage === totalPages);
 }
 
 function runGlobalSearch(){
-    const q=document.getElementById('globalSearchInput').value.trim().toLowerCase();
-    if(!q)return; const matches=expiredData.concat(activeData).filter(d=>`${d.compGUID} ${d.subscriptionId} ${d.gstin} ${d.ownerPartner}`.toLowerCase().includes(q));
-    openDrillDown(`🔍 Search: ${q}`,matches,[{value:matches.length,label:'Matches'}]);
+  const raw = document.getElementById('globalSearchInput').value.trim();
+  if(!raw){ alert('Enter search term'); return; }
+  const q = raw.toLowerCase(), cq = q.replace(/[^a-z0-9]/g, '');
+  const matches = [];
+  const scan = arr => {
+      for(let i=0; i<arr.length; i++) {
+          const d = arr[i];
+          const str = `${d.compGUID} ${d.subscriptionId} ${d.gstin} ${d.comboKey} ${d.ownerPartner} ${d.categoryName} ${d.isNewSales ? 'new sales' : ''} ${d.isGhost ? 'ghost' : ''}`.toLowerCase();
+          if(str.includes(q) || (cq.length >= 2 && str.replace(/[^a-z0-9]/g, '').includes(cq))) matches.push(d);
+      }
+  };
+  scan(expiredData); scan(activeData);
+  openDrillDown(`🔍 Search: "${raw}"`, matches, [
+    { value: matches.length.toLocaleString(), label: 'Matches', color: '#667eea' },
+    { value: matches.filter(d => d.isNewSales).length.toLocaleString(), label: 'New Sales', color: '#22d3ee' },
+    { value: matches.filter(d => d.isGhost).length.toLocaleString(), label: 'Ghost Churn', color: '#f43f5e' },
+    { value: matches.filter(d => d.source === 'expired').length.toLocaleString(), label: 'Expired', color: '#f45c43' }
+  ]);
+}
+
+function drillByCategory(cat){
+  const r = analysisResults; let d = [], t = '', s = [];
+  if(cat === 'total'){ d = expiredData.concat(activeData); t = '📊 All Subscriptions'; s = [{ value: (r.totalExpired + r.totalActive).toLocaleString(), label: 'Total' }, { value: r.totalExpired.toLocaleString(), label: 'Expired', color: '#f45c43' }, { value: r.totalActive.toLocaleString(), label: 'Active', color: '#667eea' }]; }
+  else if(cat === 'churned'){ d = expiredData.filter(x => r.fullChurnSet.has(x.compGUID)); t = '🔴 Full Churn'; s = [{ value: d.length.toLocaleString(), label: 'Records', color: '#f45c43' }]; }
+  else if(cat === 'healthy'){ d = activeData.filter(x => r.healthySet.has(x.compGUID)); t = '🟢 Healthy'; s = [{ value: d.length.toLocaleString(), label: 'Records', color: '#38ef7d' }]; }
+  else if(cat === 'overlap'){ d = expiredData.concat(activeData).filter(x => r.overlappingCompGUIDSet.has(x.compGUID)); t = '🟡 Partial Churn'; s = [{ value: d.length.toLocaleString(), label: 'Records', color: '#a855f7' }, { value: d.filter(x => x.isNewSales).length.toLocaleString(), label: 'New Sales rows', color: '#22d3ee' }]; }
+  else if(cat === 'newsales'){ d = expiredData.concat(activeData).filter(x => x.isNewSales); t = '🔵 New Sales'; s = [{ value: d.length.toLocaleString(), label: 'Tagged rows', color: '#22d3ee' }, { value: r.newSalesCompanies.toLocaleString(), label: 'Companies', color: '#22d3ee' }]; }
+  else if(cat === 'ghost'){ d = activeData.filter(x => x.isGhost); t = '👻 Ghost Churn (Active but Unused >90 days)'; s = [{ value: d.length.toLocaleString(), label: 'Abandoned Subscriptions', color: '#f43f5e' }]; }
+  else if(cat === 'atrisk'){ d = r.atRiskData; t = '⚠️ At-Risk Active'; s = [{ value: d.length.toLocaleString(), label: 'Records', color: '#ffd200' }]; }
+  openDrillDown(t, d, s);
 }
 
 function renderKPIs(){
-  const r=analysisResults;
+  const r = analysisResults;
   safeSetHTML('kpiStrip', `
-    <div class="kpi-card blue" onclick="drillByCategory('total')"><div class="kpi-label">Total Subs</div><div class="kpi-value">${(r.totalExpired+r.totalActive).toLocaleString()}</div><div class="kpi-sublabel">${r.totalExpired.toLocaleString()} exp · ${r.totalActive.toLocaleString()} act</div></div>
+    <div class="kpi-card blue" onclick="drillByCategory('total')"><div class="kpi-label">Total Subs</div><div class="kpi-value">${(r.totalExpired + r.totalActive).toLocaleString()}</div><div class="kpi-sublabel">${r.totalExpired.toLocaleString()} exp · ${r.totalActive.toLocaleString()} act</div></div>
     <div class="kpi-card red" onclick="drillByCategory('churned')"><div class="kpi-label">Full Churn</div><div class="kpi-value">${r.churnRate}%</div><div class="kpi-sublabel">${r.fullChurn.toLocaleString()} companies</div></div>
     <div class="kpi-card purple" onclick="drillByCategory('overlap')"><div class="kpi-label">Partial Churn</div><div class="kpi-value">${r.overlappingCompGUIDs.toLocaleString()}</div><div class="kpi-sublabel">${r.partialChurnRate}% overlap</div></div>
     <div class="kpi-card cyan" onclick="drillByCategory('newsales')"><div class="kpi-label">New Sales</div><div class="kpi-value">${r.newSalesCompanies.toLocaleString()}</div><div class="kpi-sublabel">${r.newSalesActiveSubs.toLocaleString()} active installs ≥ exp</div></div>
@@ -784,16 +931,16 @@ function renderKPIs(){
 }
 
 function renderInsights(){
-  const r=analysisResults, cr=+r.churnRate, ins=[];
-  if(cr>40)ins.push('🔴 <strong>HIGH FULL CHURN:</strong> '+r.churnRate+'%');
-  else ins.push('✅ <strong>FULL CHURN:</strong> '+r.churnRate+'%');
-  if(r.overlappingCompGUIDSet)ins.push('🟣 <strong>PARTIAL CHURN:</strong> '+r.overlappingCompGUIDs.toLocaleString()+' companies in both datasets — click any company for 360° view');
-  if(r.ghostCount)ins.push('👻 <strong>GHOST CHURN WARNING:</strong> '+r.ghostCount.toLocaleString()+' active subscriptions unused 90+ days.');
-  safeSetHTML('insightBox', '<h4>💡 Insights</h4>'+ins.map(t=>'<div class="insight-item">'+t+'</div>').join(''));
+  const r = analysisResults, cr = +r.churnRate, ins = [];
+  if (cr > 40) ins.push('🔴 <strong>HIGH FULL CHURN:</strong> ' + r.churnRate + '%');
+  else ins.push('✅ <strong>FULL CHURN:</strong> ' + r.churnRate + '%');
+  if (r.overlappingCompGUIDs) ins.push('🟣 <strong>PARTIAL CHURN:</strong> ' + r.overlappingCompGUIDs.toLocaleString() + ' companies in both datasets — click any company for 360° view');
+  if (r.ghostCount) ins.push('👻 <strong>GHOST CHURN WARNING:</strong> ' + r.ghostCount.toLocaleString() + ' active subscriptions unused 90+ days.');
+  safeSetHTML('insightBox', '<h4>💡 Insights</h4>' + ins.map(t => '<div class="insight-item">' + t + '</div>').join(''));
 }
 
 function renderVenn(){
-  const r=analysisResults;
+  const r = analysisResults;
   safeSetHTML('vennDiagram', `
     <div class="venn-circle venn-active" onclick="drillByCategory('total')" title="Active-only companies"><div style="margin-left:-20px"><div style="font-size:1.1rem;color:#667eea">${r.onlyActive.toLocaleString()}</div><div style="font-size:.58rem;color:#999">Active only</div></div></div>
     <div class="venn-circle venn-expired" onclick="drillByCategory('churned')"><div style="margin-left:20px"><div style="font-size:1.1rem;color:#f45c43">${r.fullChurn.toLocaleString()}</div><div style="font-size:.58rem;color:#999">Expired only</div></div></div>
@@ -801,45 +948,34 @@ function renderVenn(){
 }
 
 function renderFlowDiagram(){
-  const r=analysisResults, tot=r.totalCompanies||1;
-  const pp=((r.overlappingCompGUIDs/tot)*100).toFixed(1), fp=((r.fullChurn/tot)*100).toFixed(1);
+  const r = analysisResults, tot = r.totalCompanies || 1;
+  const pp = ((r.overlappingCompGUIDs / tot) * 100).toFixed(1), fp = ((r.fullChurn / tot) * 100).toFixed(1);
   safeSetHTML('flowDiagram', `
-    <div class="flow-row" onclick="drillByCategory('overlap')"><div class="flow-label">🟡 Partial Churn</div><div class="flow-bar-container"><div class="flow-bar partial" style="width:${Math.max(+pp,5)}%">${r.overlappingCompGUIDs.toLocaleString()}</div></div><div class="flow-value" style="color:#a855f7">${pp}%</div></div>
-    <div class="flow-row" onclick="drillByCategory('churned')"><div class="flow-label">🔴 Full Churn</div><div class="flow-bar-container"><div class="flow-bar churned" style="width:${Math.max(+fp,5)}%">${r.fullChurn.toLocaleString()}</div></div><div class="flow-value" style="color:#f45c43">${fp}%</div></div>`);
+    <div class="flow-row" onclick="drillByCategory('overlap')"><div class="flow-label">🟡 Partial Churn</div><div class="flow-bar-container"><div class="flow-bar partial" style="width:${Math.max(+pp, 5)}%">${r.overlappingCompGUIDs.toLocaleString()}</div></div><div class="flow-value" style="color:#a855f7">${pp}%</div></div>
+    <div class="flow-row" onclick="drillByCategory('churned')"><div class="flow-label">🔴 Full Churn</div><div class="flow-bar-container"><div class="flow-bar churned" style="width:${Math.max(+fp, 5)}%">${r.fullChurn.toLocaleString()}</div></div><div class="flow-value" style="color:#f45c43">${fp}%</div></div>`);
 }
 
-function dc(n){if(charts[n]){charts[n].destroy();charts[n]=null;}}
+function dc(n) { if (charts[n]) { charts[n].destroy(); charts[n] = null; } }
 function renderCharts(){
-  const r=analysisResults;
-  const pArr=Object.entries(r.partStats).map(([k,v])=>({p:k,a:v.active,e:v.expired,t:v.active+v.expired})).sort((a,b)=>b.t-a.t).slice(0,10);
+  const r = analysisResults;
+  const pArr = Object.entries(r.partStats).map(([k, v]) => ({ p: k, a: v.active, e: v.expired, t: v.active + v.expired })).sort((a, b) => b.t - a.t).slice(0, 10);
   const pcEl = document.getElementById('partnerChart');
-  if(pcEl){ dc('pc'); charts.pc=new Chart(pcEl,{type:'bar',data:{labels:pArr.map(x=>x.p.substring(0,20)),datasets:[{label:'Expired',data:pArr.map(x=>x.e),backgroundColor:'rgba(244,92,67,.7)'},{label:'Active',data:pArr.map(x=>x.a),backgroundColor:'rgba(102,126,234,.7)'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{stacked:true,ticks:{color:'#888'}},y:{stacked:true,ticks:{color:'#888'},grid:{color:'rgba(255,255,255,.05)'}}}}}); }
+  if(pcEl){ dc('pc'); charts.pc = new Chart(pcEl,{type:'bar',data:{labels:pArr.map(x=>x.p.substring(0,20)),datasets:[{label:'Expired',data:pArr.map(x=>x.e),backgroundColor:'rgba(244,92,67,.7)'},{label:'Active',data:pArr.map(x=>x.a),backgroundColor:'rgba(102,126,234,.7)'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{stacked:true,ticks:{color:'#888'}},y:{stacked:true,ticks:{color:'#888'},grid:{color:'rgba(255,255,255,.05)'}}}}}); }
   
-  const cArr=Object.entries(r.catStats).sort((a,b)=>(b[1].active+b[1].expired)-(a[1].active+a[1].expired)).slice(0,8);
+  const cArr = Object.entries(r.catStats).sort((a, b) => (b[1].active + b[1].expired) - (a[1].active + a[1].expired)).slice(0, 8);
   const ccEl = document.getElementById('categoryChart');
-  if(ccEl){ dc('cc'); charts.cc=new Chart(ccEl,{type:'doughnut',data:{labels:cArr.map(x=>x[0]),datasets:[{data:cArr.map(x=>x[1].expired+x[1].active),backgroundColor:['#667eea','#764ba2','#f45c43','#ffd200','#22d3ee','#a855f7','#eb3349','#06b6d4'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#aaa',font:{size:10}}}}}}); }
+  if(ccEl){ dc('cc'); charts.cc = new Chart(ccEl,{type:'doughnut',data:{labels:cArr.map(x=>x[0]),datasets:[{data:cArr.map(x=>x[1].expired+x[1].active),backgroundColor:['#667eea','#764ba2','#f45c43','#ffd200','#22d3ee','#a855f7','#eb3349','#06b6d4'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#aaa',font:{size:10}}}}}}); }
 
   const tcEl = document.getElementById('tenureChart');
-  if(tcEl){ dc('tc'); charts.tc=new Chart(tcEl,{type:'bar',data:{labels:Object.keys(r.tenStats),datasets:[{label:'Expired Subs (Churned)',data:Object.values(r.tenStats),backgroundColor:'rgba(168,85,247,.6)',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{ticks:{color:'#888'}},y:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,.05)'}}}}}); }
+  if(tcEl){ dc('tc'); charts.tc = new Chart(tcEl,{type:'bar',data:{labels:Object.keys(r.tenStats),datasets:[{label:'Expired Subs (Churned)',data:Object.values(r.tenStats),backgroundColor:'rgba(168,85,247,.6)',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{ticks:{color:'#888'}},y:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,.05)'}}}}}); }
 
-  const months=[...new Set([...Object.keys(r.monthlyExpired),...Object.keys(r.monthlyActive)])].sort();
+  const months = [...new Set([...Object.keys(r.monthlyExpired), ...Object.keys(r.monthlyActive)])].sort();
   const tlEl = document.getElementById('timelineChart');
-  if(tlEl){ dc('tl'); charts.tl=new Chart(tlEl,{type:'line',data:{labels:months,datasets:[{label:'Expired',data:months.map(m=>r.monthlyExpired[m]||0),borderColor:'#f45c43',backgroundColor:'rgba(244,92,67,.1)',fill:true,tension:.3},{label:'Active',data:months.map(m=>r.monthlyActive[m]||0),borderColor:'#667eea',backgroundColor:'rgba(56,239,125,.1)',fill:true,tension:.3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{ticks:{color:'#888',maxRotation:45}},y:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#888'}}}}}); }
+  if(tlEl){ dc('tl'); charts.tl = new Chart(tlEl,{type:'line',data:{labels:months,datasets:[{label:'Expired',data:months.map(m=>r.monthlyExpired[m]||0),borderColor:'#f45c43',backgroundColor:'rgba(244,92,67,.1)',fill:true,tension:.3},{label:'Active',data:months.map(m=>r.monthlyActive[m]||0),borderColor:'#667eea',backgroundColor:'rgba(56,239,125,.1)',fill:true,tension:.3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{ticks:{color:'#888',maxRotation:45}},y:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#888'}}}}}); }
 
-  const states=Object.keys(r.stateChurn).sort();
+  const states = Object.keys(r.stateChurn).sort();
   const stEl = document.getElementById('stateChart');
-  if(stEl){ dc('st'); charts.st=new Chart(stEl,{type:'bar',data:{labels:states,datasets:[{label:'Expired',data:states.map(s=>r.stateChurn[s].expired),backgroundColor:'rgba(244,92,67,.6)'},{label:'Active',data:states.map(s=>r.stateChurn[s].active),backgroundColor:'rgba(102,126,234,.6)'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{stacked:true,ticks:{color:'#888',maxRotation:45}},y:{stacked:true,grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#888'}}}}}); }
-}
-
-function drillByCategory(cat){
-  const r=analysisResults; let d=[],t='',s=[];
-  if(cat==='total'){d=expiredData.concat(activeData);t='📊 All Subscriptions';s=[{value:(r.totalExpired+r.totalActive).toLocaleString(),label:'Total'},{value:r.totalExpired.toLocaleString(),label:'Expired',color:'#f45c43'},{value:r.totalActive.toLocaleString(),label:'Active',color:'#667eea'}];}
-  else if(cat==='churned'){d=expiredData.filter(x=>r.fullChurnSet.has(x.compGUID));t='🔴 Full Churn';s=[{value:d.length.toLocaleString(),label:'Records',color:'#f45c43'}];}
-  else if(cat==='overlap'){d=expiredData.concat(activeData).filter(x=>r.overlappingCompGUIDSet.has(x.compGUID));t='🟡 Partial Churn';s=[{value:d.length.toLocaleString(),label:'Records',color:'#a855f7'}];}
-  else if(cat==='newsales'){d=expiredData.concat(activeData).filter(x=>x.isNewSales);t='🔵 New Sales';s=[{value:d.length.toLocaleString(),label:'Records',color:'#22d3ee'}];}
-  else if(cat==='ghost'){d=activeData.filter(x=>x.isGhost);t='👻 Ghost Churn';s=[{value:d.length.toLocaleString(),label:'Records',color:'#f43f5e'}];}
-  else if(cat==='atrisk'){d=r.atRiskData;t='⚠️ At-Risk Active';s=[{value:d.length.toLocaleString(),label:'Records',color:'#ffd200'}];}
-  openDrillDown(t,d,s);
+  if(stEl){ dc('st'); charts.st = new Chart(stEl,{type:'bar',data:{labels:states,datasets:[{label:'Expired',data:states.map(s=>r.stateChurn[s].expired),backgroundColor:'rgba(244,92,67,.6)'},{label:'Active',data:states.map(s=>r.stateChurn[s].active),backgroundColor:'rgba(102,126,234,.6)'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{stacked:true,ticks:{color:'#888',maxRotation:45}},y:{stacked:true,grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#888'}}}}}); }
 }
 
 function dlFile(c,n,t){const b=new Blob([c],{type:t});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=n;a.click();URL.revokeObjectURL(u);}
@@ -856,6 +992,7 @@ function rowCsv(d){
   const comboActList=[...new Set(combo.a.map(x=>`${x.sub}(Exp:${x.expStr})`))].join('; ');
   return `"${d.ownerPartner}","${d.categoryName}","${inst}","${ten}","${d.compGUID}","${d.gstin||''}","${d.comboKey}","${d.subscriptionId}","${lud}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}","${d.isGhost?'Ghost':(d.isNewSales?'Yes':'No')}","${(d.newSalesDetail||'').replace(/"/g,"'")}","${ca}","${ce}","${ga}","${ge}","${comboActList}"\n`;
 }
+
 function downloadCSV(){
   let csv='Partner,Category,Install,TenureYrs,CompGUID,GSTIN,GSTIN_CompGUID,SubNo,LastUsedDate,BLSExpiry,Source,NewSalesOrGhost,NewSalesDetail,LinkedActComp,LinkedExpComp,LinkedActGST,LinkedExpGST,ActiveSerialsCombo\n';
   expiredData.forEach(d=>csv+=rowCsv(d)); activeData.forEach(d=>csv+=rowCsv(d));
@@ -870,6 +1007,11 @@ function downloadNewSales(){
   let csv='Partner,Category,Install,TenureYrs,CompGUID,GSTIN,GSTIN_CompGUID,SubNo,LastUsedDate,BLSExpiry,Source,NewSalesOrGhost,NewSalesDetail,LinkedActComp,LinkedExpComp,LinkedActGST,LinkedExpGST,ActiveSerialsCombo\n';
   expiredData.concat(activeData).filter(d=>d.isNewSales).forEach(d=>csv+=rowCsv(d));
   dlFile(csv,'new_sales_export.csv','text/csv');
+}
+function downloadModalData(){
+  let csv='Partner,Category,Install,TenureYrs,CompGUID,GSTIN,GSTIN_CompGUID,SubNo,LastUsedDate,BLSExpiry,Source,NewSalesOrGhost,NewSalesDetail,LinkedActComp,LinkedExpComp,LinkedActGST,LinkedExpGST,ActiveSerialsCombo\n';
+  modalFilteredData.forEach(d=>csv+=rowCsv(d));
+  dlFile(csv,'drill_down_export.csv','text/csv');
 }
 
 function runAnalysis(){
