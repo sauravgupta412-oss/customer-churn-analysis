@@ -92,6 +92,16 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:var(--bg
 .summary-table td.data-cell:hover { background: rgba(102,126,234,0.15); }
 .summary-table th.active-base-header, .summary-table td.active-base-cell { border-left: 2px solid rgba(102, 126, 234, 0.4); }
 
+/* NEW SUMMARY TABLE STYLES */
+.summary-table .total-row { background: rgba(102, 126, 234, 0.12); font-weight: 700; }
+.summary-table .total-row td { font-weight: 700; }
+.summary-table .sub-row { background: rgba(102, 126, 234, 0.05); }
+.summary-table .sub-row td:first-child { padding-left: 30px; font-weight: 600; }
+.summary-table .pct-row { background: rgba(56, 239, 125, 0.08); }
+.summary-table .pct-row td { font-weight: 600; }
+.summary-table .pct-sub-row { background: rgba(56, 239, 125, 0.04); }
+.summary-table .pct-sub-row td:first-child { padding-left: 30px; }
+
 /* INTERACTIVE FILTER MODAL STYLES */
 .modal-summary-table th, .modal-summary-table td { cursor: pointer; }
 .active-filter-col { background: rgba(102, 126, 234, 0.15) !important; box-shadow: inset 0 0 0 1px rgba(102, 126, 234, 0.5); }
@@ -1186,45 +1196,71 @@ function drillByTenureChart(tl) {
   openDrillDown(`⏳ Portfolio: Tenure = ${tl}`, matches, 'EXPIRED');
 }
 
+// NEW RESTRUCTURED SUMMARY TABLE BUILDER
 function buildDynamicSummaryTable(data) {
     const r = analysisResults;
     const m = getMetrics(data, r);
-    const pct = (num, den) => den ? ((num/den)*100).toFixed(1) : 0;
+    const pct = (num, den) => den ? ((num/den)*100).toFixed(1) : '0.0';
     
-    const buildRow = (label, type, isPct = false) => {
+    // Helper to build absolute value row
+    const buildAbsoluteRow = (label, type, rowClass, clickPrefix) => {
         const d = m[type];
-        if (isPct) {
-            return `<tr>
-              <td style="color:#a855f7;font-weight:700;cursor:pointer" onclick="setModalCategory('ALL', '${type}')">${label}</td>
-              <td class="mod-col-total_expired" style="color:var(--text-muted);cursor:pointer" onclick="setModalCategory('TOTAL_EXPIRED', '${type}')">100%</td>
-              <td class="mod-col-full_churn" style="color:var(--text-muted);cursor:pointer" onclick="setModalCategory('FULL_CHURN', '${type}')">${pct(d.fc, d.exp)}%<br><span style="font-size:.65rem">(of Expired)</span></td>
-              <td class="mod-col-partial_churn" style="color:var(--text-muted);cursor:pointer" onclick="setModalCategory('PARTIAL_CHURN', '${type}')">${pct(d.pc, d.exp)}%<br><span style="font-size:.65rem">(of Expired)</span></td>
-              <td class="mod-col-rdp" style="color:var(--text-muted);cursor:pointer" onclick="setModalCategory('RDP', '${type}')">${pct(d.rdp, d.exp)}%<br><span style="font-size:.65rem">(of Expired)</span></td>
-              <td class="mod-col-new_sales" style="color:var(--text-muted);cursor:pointer" onclick="setModalCategory('NEW_SALES', '${type}')">${pct(d.ns, d.exp)}%<br><span style="font-size:.65rem">(of Expired)</span></td>
-              <td class="active-base-cell mod-col-total_active" style="color:var(--text-muted);cursor:pointer" onclick="setModalCategory('TOTAL_ACTIVE', '${type}')">100%</td>
-              <td class="mod-col-ghost" style="color:var(--text-muted);cursor:pointer" onclick="setModalCategory('GHOST', '${type}')">${pct(d.ghost, d.act)}%<br><span style="font-size:.65rem">(of Active)</span></td>
-              <td class="mod-col-at_risk" style="color:var(--text-muted);cursor:pointer" onclick="setModalCategory('AT_RISK', '${type}')">${pct(d.risk, d.act)}%<br><span style="font-size:.65rem">(of Active)</span></td>
-            </tr>`;
-        } else {
-            return `<tr>
-              <td style="color:#a855f7;font-weight:700;cursor:pointer" onclick="setModalCategory('ALL', '${type}')">${label}</td>
-              <td class="data-cell mod-col-total_expired" style="font-size:1.1rem;font-weight:bold;cursor:pointer" onclick="setModalCategory('TOTAL_EXPIRED', '${type}')">${d.exp.toLocaleString()}</td>
-              <td class="data-cell mod-col-full_churn" style="font-size:1.1rem;font-weight:bold;cursor:pointer" onclick="setModalCategory('FULL_CHURN', '${type}')">${d.fc.toLocaleString()}</td>
-              <td class="data-cell mod-col-partial_churn" style="font-size:1.1rem;font-weight:bold;cursor:pointer" onclick="setModalCategory('PARTIAL_CHURN', '${type}')">${d.pc.toLocaleString()}</td>
-              <td class="data-cell mod-col-rdp" style="font-size:1.1rem;font-weight:bold;cursor:pointer" onclick="setModalCategory('RDP', '${type}')">${d.rdp.toLocaleString()}</td>
-              <td class="data-cell mod-col-new_sales" style="font-size:1.1rem;font-weight:bold;cursor:pointer" onclick="setModalCategory('NEW_SALES', '${type}')">${d.ns.toLocaleString()}</td>
-              <td class="data-cell active-base-cell mod-col-total_active" style="font-size:1.1rem;font-weight:bold;cursor:pointer" onclick="setModalCategory('TOTAL_ACTIVE', '${type}')">${d.act.toLocaleString()}</td>
-              <td class="data-cell mod-col-ghost" style="font-size:1.1rem;font-weight:bold;cursor:pointer" onclick="setModalCategory('GHOST', '${type}')">${d.ghost.toLocaleString()}</td>
-              <td class="data-cell mod-col-at_risk" style="font-size:1.1rem;font-weight:bold;cursor:pointer" onclick="setModalCategory('AT_RISK', '${type}')">${d.risk.toLocaleString()}</td>
-            </tr>`;
-        }
+        return `<tr class="${rowClass}">
+          <td style="cursor:pointer" onclick="setModalCategory('ALL', '${type}')">${label}</td>
+          <td class="data-cell mod-col-total_expired" style="font-size:1.05rem;font-weight:bold;cursor:pointer" onclick="setModalCategory('TOTAL_EXPIRED', '${type}')">${d.exp.toLocaleString()}</td>
+          <td class="data-cell mod-col-full_churn" style="font-size:1.05rem;font-weight:bold;cursor:pointer" onclick="setModalCategory('FULL_CHURN', '${type}')">${d.fc.toLocaleString()}</td>
+          <td class="data-cell mod-col-partial_churn" style="font-size:1.05rem;font-weight:bold;cursor:pointer" onclick="setModalCategory('PARTIAL_CHURN', '${type}')">${d.pc.toLocaleString()}</td>
+          <td class="data-cell mod-col-rdp" style="font-size:1.05rem;font-weight:bold;cursor:pointer" onclick="setModalCategory('RDP', '${type}')">${d.rdp.toLocaleString()}</td>
+          <td class="data-cell mod-col-new_sales" style="font-size:1.05rem;font-weight:bold;cursor:pointer" onclick="setModalCategory('NEW_SALES', '${type}')">${d.ns.toLocaleString()}</td>
+          <td class="data-cell active-base-cell mod-col-total_active" style="font-size:1.05rem;font-weight:bold;cursor:pointer" onclick="setModalCategory('TOTAL_ACTIVE', '${type}')">${d.act.toLocaleString()}</td>
+          <td class="data-cell mod-col-ghost" style="font-size:1.05rem;font-weight:bold;cursor:pointer" onclick="setModalCategory('GHOST', '${type}')">${d.ghost.toLocaleString()}</td>
+          <td class="data-cell mod-col-at_risk" style="font-size:1.05rem;font-weight:bold;cursor:pointer" onclick="setModalCategory('AT_RISK', '${type}')">${d.risk.toLocaleString()}</td>
+        </tr>`;
     };
+    
+    // Helper to build percentage row
+    const buildPctRow = (label, type, rowClass) => {
+        const d = m[type];
+        const expPct = d.exp ? ((d.fc + d.pc) / d.exp * 100).toFixed(1) : '0.0'; // Churn % (full + partial of expired)
+        return `<tr class="${rowClass}">
+          <td style="color:var(--text-muted);cursor:pointer" onclick="setModalCategory('ALL', '${type}')">${label}</td>
+          <td class="mod-col-total_expired" style="color:var(--text-muted);cursor:pointer" onclick="setModalCategory('TOTAL_EXPIRED', '${type}')">100%</td>
+          <td class="mod-col-full_churn" style="color:var(--text-muted);cursor:pointer" onclick="setModalCategory('FULL_CHURN', '${type}')">${pct(d.fc, d.exp)}%</td>
+          <td class="mod-col-partial_churn" style="color:var(--text-muted);cursor:pointer" onclick="setModalCategory('PARTIAL_CHURN', '${type}')">${pct(d.pc, d.exp)}%</td>
+          <td class="mod-col-rdp" style="color:var(--text-muted);cursor:pointer" onclick="setModalCategory('RDP', '${type}')">${pct(d.rdp, d.exp)}%</td>
+          <td class="mod-col-new_sales" style="color:var(--text-muted);cursor:pointer" onclick="setModalCategory('NEW_SALES', '${type}')">${pct(d.ns, d.exp)}%</td>
+          <td class="active-base-cell mod-col-total_active" style="color:var(--text-muted);cursor:pointer" onclick="setModalCategory('TOTAL_ACTIVE', '${type}')">100%</td>
+          <td class="mod-col-ghost" style="color:var(--text-muted);cursor:pointer" onclick="setModalCategory('GHOST', '${type}')">${pct(d.ghost, d.act)}%</td>
+          <td class="mod-col-at_risk" style="color:var(--text-muted);cursor:pointer" onclick="setModalCategory('AT_RISK', '${type}')">${pct(d.risk, d.act)}%</td>
+        </tr>`;
+    };
+
+    // Build table rows
+    let rowsHtml = '';
+    
+    // === TOTAL BASE SECTION (Absolute Numbers) ===
+    rowsHtml += buildAbsoluteRow('Total Base', 'ALL', 'total-row', 'total');
+    if (m['Perpetual'].exp > 0) {
+        rowsHtml += buildAbsoluteRow('<span style="color:#7c3aed;margin-left:15px">(-) Perpetual</span>', 'Perpetual', 'sub-row', 'perp');
+    }
+    if (m['Subscription'].exp > 0) {
+        rowsHtml += buildAbsoluteRow('<span style="color:#0284c7;margin-left:15px">(-) Subscription</span>', 'Subscription', 'sub-row', 'sub');
+    }
+    
+    // === TOTAL BASE % SECTION ===
+    rowsHtml += buildPctRow('Total Base %', 'ALL', 'pct-row');
+    if (m['Perpetual'].exp > 0) {
+        rowsHtml += buildPctRow('<span style="color:#7c3aed;margin-left:15px">(-) Perpetual %</span>', 'Perpetual', 'pct-sub-row');
+    }
+    if (m['Subscription'].exp > 0) {
+        rowsHtml += buildPctRow('<span style="color:#0284c7;margin-left:15px">(-) Subscription %</span>', 'Subscription', 'pct-sub-row');
+    }
 
     return `
     <div class="summary-table-container" style="margin:0;border-radius:0;box-shadow:none;border-left:none;border-right:none;border-top:none">
       <table class="summary-table modal-summary-table">
         <thead><tr>
-          <th onclick="setModalCategory('ALL', 'ALL')" style="cursor:pointer">Metrics Base<br><span style="font-size:.65rem;font-weight:normal">(Reset)</span></th>
+          <th onclick="setModalCategory('ALL', 'ALL')" style="cursor:pointer;min-width:180px">Metrics Base<br><span style="font-size:.65rem;font-weight:normal">(Click to reset)</span></th>
           <th class="txt-purple mod-col-total_expired" onclick="setModalCategory('TOTAL_EXPIRED', 'ALL')" style="cursor:pointer">Total Expired</th>
           <th class="txt-red mod-col-full_churn" onclick="setModalCategory('FULL_CHURN', 'ALL')" style="cursor:pointer">Full Churn</th>
           <th class="txt-purple mod-col-partial_churn" onclick="setModalCategory('PARTIAL_CHURN', 'ALL')" style="cursor:pointer">Partial Churn</th>
@@ -1235,10 +1271,7 @@ function buildDynamicSummaryTable(data) {
           <th class="txt-yellow mod-col-at_risk" onclick="setModalCategory('AT_RISK', 'ALL')" style="cursor:pointer">At Risk</th>
         </tr></thead>
         <tbody>
-          ${buildRow('Absolute Numbers', 'ALL', false)}
-          ${buildRow('%age Base Logic', 'ALL', true)}
-          ${m['Perpetual'].exp > 0 ? buildRow('Perpetual Base', 'Perpetual', false) : ''}
-          ${m['Subscription'].exp > 0 ? buildRow('Subscription Base', 'Subscription', false) : ''}
+          ${rowsHtml}
         </tbody>
       </table>
     </div>`;
