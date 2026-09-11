@@ -63,8 +63,9 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:var(--bg
 /* SUMMARY TABLE CSS */
 .summary-table-container { margin: 18px 30px; background: var(--card-bg); border: 1px solid rgba(102, 126, 234, 0.4); border-radius: 12px; overflow-x: auto; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
 .summary-table { width: 100%; border-collapse: collapse; text-align: center; font-size: 0.95rem; min-width: 800px; }
-.summary-table th { background: rgba(102, 126, 234, 0.1); padding: 14px 12px; font-weight: 600; border-bottom: 1px solid rgba(102, 126, 234, 0.3); border-right: 1px solid var(--table-border); white-space: nowrap; }
-.summary-table td { padding: 14px 12px; border-bottom: 1px solid var(--table-border); border-right: 1px solid var(--table-border); color: var(--text-main); }
+.summary-table th { background: rgba(102, 126, 234, 0.1); padding: 14px 12px; font-weight: 600; border-bottom: 1px solid rgba(102, 126, 234, 0.3); border-right: 1px solid var(--table-border); white-space: nowrap; transition: background 0.2s; }
+.summary-table th:hover { background: rgba(102, 126, 234, 0.2); }
+.summary-table td { padding: 14px 12px; border-bottom: 1px solid var(--table-border); border-right: 1px solid var(--table-border); color: var(--text-main); transition: background 0.2s; }
 .summary-table td:first-child { text-align: left; font-weight: 700; background: rgba(102, 126, 234, 0.05); color: #667eea; }
 .summary-table th:last-child, .summary-table td:last-child { border-right: none; }
 .summary-table tbody tr:hover { background: var(--hover-bg); }
@@ -72,6 +73,11 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:var(--bg
 
 /* Column Separation for Active Base */
 .summary-table th.active-base-header, .summary-table td.active-base-cell { border-left: 2px solid rgba(102, 126, 234, 0.4); }
+
+/* INTERACTIVE FILTER MODAL STYLES */
+.modal-summary-table th, .modal-summary-table td { cursor: pointer; }
+.active-filter-col { background: rgba(102, 126, 234, 0.15) !important; box-shadow: inset 0 0 0 1px rgba(102, 126, 234, 0.5); }
+[data-theme="dark"] .active-filter-col { background: rgba(102, 126, 234, 0.25) !important; }
 
 .section-header{margin:22px 30px 4px;display:flex;align-items:center;gap:10px}
 .section-header h2{font-size:1.15rem;color:var(--text-main)}
@@ -190,9 +196,9 @@ footer{text-align:center;padding:20px;color:var(--text-muted);font-size:.72rem}
 /* Specific text color classes to map properly in Light/Dark mode */
 .txt-red { color: #e11d48; font-weight: bold; } [data-theme="dark"] .txt-red { color: #f45c43; font-weight: bold; }
 .txt-green { color: #059669; font-weight: bold; } [data-theme="dark"] .txt-green { color: #38ef7d; font-weight: bold; }
-.txt-cyan { color: #0284c7; } [data-theme="dark"] .txt-cyan { color: #22d3ee; }
+.txt-cyan { color: #0284c7; font-weight: bold; } [data-theme="dark"] .txt-cyan { color: #22d3ee; font-weight: bold; }
 .txt-purple { color: #7e22ce; font-weight: bold;} [data-theme="dark"] .txt-purple { color: #a855f7; font-weight: bold;}
-.txt-yellow { color: #d97706; } [data-theme="dark"] .txt-yellow { color: #ffd200; }
+.txt-yellow { color: #d97706; font-weight: bold; } [data-theme="dark"] .txt-yellow { color: #ffd200; font-weight: bold; }
 </style>
 </head>
 <body>
@@ -533,6 +539,7 @@ let currentMainTab = 'all';
 let modalBaseData = []; 
 let modalFilteredData = [];
 let modalPage = 1;
+let currentModalCategory = 'ALL'; // NEW: Modal category tracking
 let currentAcc360Data = [];
 let uiTimer=null;
 
@@ -963,6 +970,49 @@ function applyFiltersAndSort(sourceData, searchId, tenureId, sortId, rdpId, base
     return res;
 }
 
+// NEW: Dynamically filter modal dataset based on clicking the Top Summary Table categories
+function applyModalCategoryFilter(data, cat) {
+    if (cat === 'ALL') return data;
+    const r = analysisResults;
+    const today = new Date();
+    const riskDate = new Date(today.getTime() + 30*86400000);
+    
+    return data.filter(d => {
+        const isExp = d.source === 'expired';
+        const isAct = d.source === 'active';
+        
+        if (cat === 'TOTAL_EXPIRED') return isExp;
+        if (cat === 'FULL_CHURN') return isExp && r.fullChurnSet.has(d.compGUID);
+        if (cat === 'PARTIAL_CHURN') return isExp && r.overlappingCompGUIDSet.has(d.compGUID);
+        if (cat === 'RDP') return isExp && d.shiftedToRDP;
+        if (cat === 'NEW_SALES') return isExp && d.shiftedToNewSales;
+        
+        if (cat === 'TOTAL_ACTIVE') return isAct;
+        if (cat === 'GHOST') return isAct && d.isGhost;
+        if (cat === 'AT_RISK') return isAct && d.currentBlsExpiry && d.currentBlsExpiry.getTime() >= today.getTime() && d.currentBlsExpiry.getTime() <= riskDate.getTime();
+        
+        return true;
+    });
+}
+
+// Function called when user clicks on a cell in the Modal's top summary table
+function setModalCategory(cat) {
+    currentModalCategory = cat;
+    
+    // Visually highlight the selected column
+    document.querySelectorAll('.modal-summary-table th, .modal-summary-table td').forEach(el => el.classList.remove('active-filter-col'));
+    if(cat !== 'ALL') {
+        document.querySelectorAll(`.mod-col-${cat.toLowerCase()}`).forEach(el => el.classList.add('active-filter-col'));
+    }
+    
+    // When clicking a strict category filter, temporarily reset the base dropdown filter to avoid conflicts
+    if(document.getElementById('modalBaseFilter')) {
+        document.getElementById('modalBaseFilter').value = 'ALL';
+    }
+    
+    triggerModalUpdate();
+}
+
 function setMainTab(f,btn){
     currentMainTab = f;
     document.querySelectorAll('.table-tab').forEach(t => t.classList.remove('active'));
@@ -1015,6 +1065,7 @@ function drillByPartnerChart(partner) {
 
 function openDrillDown(title, data, defaultBase = 'EXPIRED') {
     modalBaseData = data; 
+    currentModalCategory = 'ALL'; // Reset subset filter when opening
     safeSetText('modalTitle', title);
     
     // STRICT MATH ENGINE FOR POPUP SUMMARY
@@ -1047,42 +1098,42 @@ function openDrillDown(title, data, defaultBase = 'EXPIRED') {
 
     const summaryHtml = `
     <div class="summary-table-container" style="margin: 0; border-radius: 0; box-shadow: none; border-left: none; border-right: none; border-top: none;">
-      <table class="summary-table">
+      <table class="summary-table modal-summary-table" id="modalSummaryTable">
         <thead>
           <tr>
-            <th>Metrics Base</th>
-            <th class="txt-purple">Total Expired Base</th>
-            <th class="txt-red">Full Churn</th>
-            <th class="txt-purple">Partial Churn</th>
-            <th class="txt-cyan">Shifted to RDP</th>
-            <th class="txt-cyan">Shift to New Sales</th>
-            <th class="txt-green active-base-header">Total Active Base</th>
-            <th class="txt-red">Ghost Churn</th>
-            <th class="txt-yellow">At Risk</th>
+            <th style="cursor:pointer;" onclick="setModalCategory('ALL')" title="Click to Reset Filters">Metrics Base<br><span style="font-size:0.65rem; font-weight:normal;">(Click to Reset)</span></th>
+            <th class="txt-purple mod-col-total_expired" style="cursor:pointer;" onclick="setModalCategory('TOTAL_EXPIRED')" title="Click to filter rows below">Total Expired Base</th>
+            <th class="txt-red mod-col-full_churn" style="cursor:pointer;" onclick="setModalCategory('FULL_CHURN')" title="Click to filter rows below">Full Churn</th>
+            <th class="txt-purple mod-col-partial_churn" style="cursor:pointer;" onclick="setModalCategory('PARTIAL_CHURN')" title="Click to filter rows below">Partial Churn</th>
+            <th class="txt-cyan mod-col-rdp" style="cursor:pointer;" onclick="setModalCategory('RDP')" title="Click to filter rows below">Shifted to RDP</th>
+            <th class="txt-cyan mod-col-new_sales" style="cursor:pointer;" onclick="setModalCategory('NEW_SALES')" title="Click to filter rows below">Shift to New Sales</th>
+            <th class="txt-green active-base-header mod-col-total_active" style="cursor:pointer;" onclick="setModalCategory('TOTAL_ACTIVE')" title="Click to filter rows below">Total Active Base</th>
+            <th class="txt-red mod-col-ghost" style="cursor:pointer;" onclick="setModalCategory('GHOST')" title="Click to filter rows below">Ghost Churn</th>
+            <th class="txt-yellow mod-col-at_risk" style="cursor:pointer;" onclick="setModalCategory('AT_RISK')" title="Click to filter rows below">At Risk</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td style="color:#a855f7; font-weight:700;">Absolute Numbers</td>
-            <td style="font-size:1.1rem; font-weight:bold;">${expSubs.toLocaleString()}</td>
-            <td style="font-size:1.1rem; font-weight:bold;">${fullChurnSubs.toLocaleString()}</td>
-            <td style="font-size:1.1rem; font-weight:bold;">${partialChurnSubs.toLocaleString()}</td>
-            <td style="font-size:1.1rem; font-weight:bold;">${rdpSubs.toLocaleString()}</td>
-            <td style="font-size:1.1rem; font-weight:bold;">${nsSubs.toLocaleString()}</td>
-            <td class="active-base-cell" style="font-size:1.1rem; font-weight:bold;">${actSubs.toLocaleString()}</td>
-            <td style="font-size:1.1rem; font-weight:bold;">${ghostSubs.toLocaleString()}</td>
-            <td style="font-size:1.1rem; font-weight:bold;">${riskSubs.toLocaleString()}</td>
+            <td style="color:#a855f7; font-weight:700; cursor:pointer;" onclick="setModalCategory('ALL')">Absolute Numbers</td>
+            <td class="data-cell mod-col-total_expired" style="font-size:1.1rem; font-weight:bold; cursor:pointer;" onclick="setModalCategory('TOTAL_EXPIRED')">${expSubs.toLocaleString()}</td>
+            <td class="data-cell mod-col-full_churn" style="font-size:1.1rem; font-weight:bold; cursor:pointer;" onclick="setModalCategory('FULL_CHURN')">${fullChurnSubs.toLocaleString()}</td>
+            <td class="data-cell mod-col-partial_churn" style="font-size:1.1rem; font-weight:bold; cursor:pointer;" onclick="setModalCategory('PARTIAL_CHURN')">${partialChurnSubs.toLocaleString()}</td>
+            <td class="data-cell mod-col-rdp" style="font-size:1.1rem; font-weight:bold; cursor:pointer;" onclick="setModalCategory('RDP')">${rdpSubs.toLocaleString()}</td>
+            <td class="data-cell mod-col-new_sales" style="font-size:1.1rem; font-weight:bold; cursor:pointer;" onclick="setModalCategory('NEW_SALES')">${nsSubs.toLocaleString()}</td>
+            <td class="data-cell active-base-cell mod-col-total_active" style="font-size:1.1rem; font-weight:bold; cursor:pointer;" onclick="setModalCategory('TOTAL_ACTIVE')">${actSubs.toLocaleString()}</td>
+            <td class="data-cell mod-col-ghost" style="font-size:1.1rem; font-weight:bold; cursor:pointer;" onclick="setModalCategory('GHOST')">${ghostSubs.toLocaleString()}</td>
+            <td class="data-cell mod-col-at_risk" style="font-size:1.1rem; font-weight:bold; cursor:pointer;" onclick="setModalCategory('AT_RISK')">${riskSubs.toLocaleString()}</td>
           </tr>
           <tr>
-            <td style="color:#a855f7; font-weight:700;">%age Base Logic</td>
-            <td style="color:var(--text-muted);">100%</td>
-            <td style="color:var(--text-muted);">${fcPct}% <br><span style="font-size:0.65rem">(of Expired Base)</span></td>
-            <td style="color:var(--text-muted);">${pcPct}% <br><span style="font-size:0.65rem">(of Expired Base)</span></td>
-            <td style="color:var(--text-muted);">${rdpPct}% <br><span style="font-size:0.65rem">(of Expired Base)</span></td>
-            <td style="color:var(--text-muted);">${nsPct}% <br><span style="font-size:0.65rem">(of Expired Base)</span></td>
-            <td class="active-base-cell" style="color:var(--text-muted);">100%</td>
-            <td style="color:var(--text-muted);">${ghPct}% <br><span style="font-size:0.65rem">(of Active Base)</span></td>
-            <td style="color:var(--text-muted);">${rkPct}% <br><span style="font-size:0.65rem">(of Active Base)</span></td>
+            <td style="color:#a855f7; font-weight:700; cursor:pointer;" onclick="setModalCategory('ALL')">%age Base Logic</td>
+            <td class="mod-col-total_expired" style="color:var(--text-muted); cursor:pointer;" onclick="setModalCategory('TOTAL_EXPIRED')">100%</td>
+            <td class="mod-col-full_churn" style="color:var(--text-muted); cursor:pointer;" onclick="setModalCategory('FULL_CHURN')">${fcPct}% <br><span style="font-size:0.65rem">(of Expired Base)</span></td>
+            <td class="mod-col-partial_churn" style="color:var(--text-muted); cursor:pointer;" onclick="setModalCategory('PARTIAL_CHURN')">${pcPct}% <br><span style="font-size:0.65rem">(of Expired Base)</span></td>
+            <td class="mod-col-rdp" style="color:var(--text-muted); cursor:pointer;" onclick="setModalCategory('RDP')">${rdpPct}% <br><span style="font-size:0.65rem">(of Expired Base)</span></td>
+            <td class="mod-col-new_sales" style="color:var(--text-muted); cursor:pointer;" onclick="setModalCategory('NEW_SALES')">${nsPct}% <br><span style="font-size:0.65rem">(of Expired Base)</span></td>
+            <td class="active-base-cell mod-col-total_active" style="color:var(--text-muted); cursor:pointer;" onclick="setModalCategory('TOTAL_ACTIVE')">100%</td>
+            <td class="mod-col-ghost" style="color:var(--text-muted); cursor:pointer;" onclick="setModalCategory('GHOST')">${ghPct}% <br><span style="font-size:0.65rem">(of Active Base)</span></td>
+            <td class="mod-col-at_risk" style="color:var(--text-muted); cursor:pointer;" onclick="setModalCategory('AT_RISK')">${rkPct}% <br><span style="font-size:0.65rem">(of Active Base)</span></td>
           </tr>
         </tbody>
       </table>
@@ -1114,7 +1165,16 @@ function openDrillDown(title, data, defaultBase = 'EXPIRED') {
     triggerModalUpdate(); document.getElementById('drillModal').classList.add('show');
 }
 
-function triggerModalUpdate() { clearTimeout(uiTimer); uiTimer = setTimeout(() => { modalFilteredData = applyFiltersAndSort(modalBaseData, 'modalSearch', 'modalTenureFilter', 'modalSort', 'modalRdpFilter', 'modalBaseFilter'); modalPage = 1; renderModalTablePage(); }, 100); }
+function triggerModalUpdate() { 
+    clearTimeout(uiTimer); 
+    uiTimer = setTimeout(() => { 
+        let baseFiltered = applyFiltersAndSort(modalBaseData, 'modalSearch', 'modalTenureFilter', 'modalSort', 'modalRdpFilter', 'modalBaseFilter'); 
+        modalFilteredData = applyModalCategoryFilter(baseFiltered, currentModalCategory);
+        modalPage = 1; 
+        renderModalTablePage(); 
+    }, 100); 
+}
+
 function modChangePage(dir) { modalPage += dir; renderModalTablePage(); }
 function renderModalTablePage() {
     const total = modalFilteredData.length, totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
@@ -1239,12 +1299,12 @@ function renderCharts(){
               datasets:[
                   {
                       label:'Pure Churn (Expired)', data:pArr.map(x=>x.pureChurn), 
-                      backgroundColor:'rgba(244,92,67,.75)', borderColor: '#e11d48', borderWidth: 1, stack: 'churn',
+                      backgroundColor:'rgba(244,92,67,.75)', borderColor: '#e11d48', borderWidth: 1,
                       datalabels: { display: false }
                   },
                   {
                       label:'Shifted to RDP (Expired)', data:pArr.map(x=>x.rdpShifted), 
-                      backgroundColor:'rgba(56,189,248,.8)', borderColor: tc.cyan, borderWidth: 1, stack: 'churn',
+                      backgroundColor:'rgba(56,189,248,.8)', borderColor: tc.cyan, borderWidth: 1,
                       datalabels: { display: false }
                   },
                   {
@@ -1262,8 +1322,8 @@ function renderCharts(){
               },
               plugins:{ legend:{display:true, labels:{color:tc.text, font:{size:10}}} },
               scales:{
-                  x:{stacked:true, ticks:{color:tc.text}},
-                  y:{stacked:true, ticks:{color:tc.text}, grid:{color:tc.grid}, title:{display:true, text:'Expired Subs', color:tc.text}},
+                  x:{ticks:{color:tc.text}},
+                  y:{ticks:{color:tc.text}, grid:{color:tc.grid}, title:{display:true, text:'Expired Subs', color:tc.text}},
                   y1:{position:'right', ticks:{color:tc.yellow}, grid:{display:false}, max:100}
               }
           }
@@ -1295,12 +1355,12 @@ function renderCharts(){
               datasets:[
                   {
                       label:'Pure Churn (Expired)', data:pArr.map(x=>x.pureChurn), 
-                      backgroundColor:'rgba(244,92,67,.75)', borderColor: '#e11d48', borderWidth: 1, stack: 'churn',
+                      backgroundColor:'rgba(244,92,67,.75)', borderColor: '#e11d48', borderWidth: 1,
                       datalabels: { display: false }
                   },
                   {
                       label:'Shifted to New Sale (Expired)', data:pArr.map(x=>x.nsShifted), 
-                      backgroundColor:'rgba(168,85,247,.8)', borderColor: tc.purple, borderWidth: 1, stack: 'churn',
+                      backgroundColor:'rgba(168,85,247,.8)', borderColor: tc.purple, borderWidth: 1,
                       datalabels: { display: false }
                   },
                   {
@@ -1318,8 +1378,8 @@ function renderCharts(){
               },
               plugins:{ legend:{display:true, labels:{color:tc.text, font:{size:10}}} },
               scales:{
-                  x:{stacked:true, ticks:{color:tc.text}},
-                  y:{stacked:true, ticks:{color:tc.text}, grid:{color:tc.grid}, title:{display:true, text:'Expired Subs', color:tc.text}},
+                  x:{ticks:{color:tc.text}},
+                  y:{ticks:{color:tc.text}, grid:{color:tc.grid}, title:{display:true, text:'Expired Subs', color:tc.text}},
                   y1:{position:'right', ticks:{color:tc.yellow}, grid:{display:false}, max:100}
               }
           }
