@@ -787,8 +787,8 @@ function getMetrics(data, r) {
         types.forEach(t => {
             if (d.source === 'expired') {
                 res[t].exp++;
-                if (r.fullChurnSet.has(d.compGUID)) res[t].fc++;
-                if (r.overlappingCompGUIDSet.has(d.compGUID)) res[t].pc++;
+                if (r.fullChurnSet && r.fullChurnSet.has(d.compGUID)) res[t].fc++;
+                if (r.overlappingCompGUIDSet && r.overlappingCompGUIDSet.has(d.compGUID)) res[t].pc++;
                 if (d.shiftedToRDP) res[t].rdp++;
                 if (d.shiftedToNewSales) res[t].ns++;
             } else {
@@ -1118,13 +1118,28 @@ function applyModalCategoryFilter(data, cat, lic) {
     return true;
   });
 }
+
+function handleMainSummaryClick(cat, lic) {
+  const defaultBase = ['TOTAL_ACTIVE', 'GHOST', 'AT_RISK'].includes(cat) ? 'ACTIVE' : (cat === 'ALL' ? 'ALL' : 'EXPIRED');
+  openDrillDown('📊 Unified Dashboard Portfolio', expiredData.concat(activeData), defaultBase);
+  setModalCategory(cat, lic);
+}
+
 function setModalCategory(cat, lic='ALL') {
   currentModalCategory = cat;
   currentModalLicense = lic;
   document.querySelectorAll('.modal-summary-table th, .modal-summary-table td').forEach(el => el.classList.remove('active-filter-col'));
   
   if (cat !== 'ALL') document.querySelectorAll(`.mod-col-${cat.toLowerCase()}`).forEach(el => el.classList.add('active-filter-col'));
-  if (document.getElementById('modalBaseFilter')) document.getElementById('modalBaseFilter').value = 'ALL';
+  if (document.getElementById('modalBaseFilter')) {
+      if (['TOTAL_ACTIVE', 'GHOST', 'AT_RISK'].includes(cat)) {
+          document.getElementById('modalBaseFilter').value = 'ACTIVE';
+      } else if (cat === 'ALL') {
+          document.getElementById('modalBaseFilter').value = 'ALL';
+      } else {
+          document.getElementById('modalBaseFilter').value = 'EXPIRED';
+      }
+  }
   triggerModalUpdate();
 }
 function setMainTab(f, btn) {
@@ -1197,41 +1212,42 @@ function drillByTenureChart(tl) {
 }
 
 // NEW RESTRUCTURED SUMMARY TABLE BUILDER
-function buildDynamicSummaryTable(data) {
+function buildDynamicSummaryTable(data, isMain = false) {
     const r = analysisResults;
     const m = getMetrics(data, r);
     const pct = (num, den) => den ? ((num/den)*100).toFixed(1) : '0.0';
     
+    const clickFn = isMain ? 'handleMainSummaryClick' : 'setModalCategory';
+    
     // Helper to build absolute value row
-    const buildAbsoluteRow = (label, type, rowClass, clickPrefix) => {
+    const buildAbsoluteRow = (label, type, rowClass) => {
         const d = m[type];
         return `<tr class="${rowClass}">
-          <td style="cursor:pointer" onclick="setModalCategory('ALL', '${type}')">${label}</td>
-          <td class="data-cell mod-col-total_expired" style="font-size:1.05rem;font-weight:bold;cursor:pointer" onclick="setModalCategory('TOTAL_EXPIRED', '${type}')">${d.exp.toLocaleString()}</td>
-          <td class="data-cell mod-col-full_churn" style="font-size:1.05rem;font-weight:bold;cursor:pointer" onclick="setModalCategory('FULL_CHURN', '${type}')">${d.fc.toLocaleString()}</td>
-          <td class="data-cell mod-col-partial_churn" style="font-size:1.05rem;font-weight:bold;cursor:pointer" onclick="setModalCategory('PARTIAL_CHURN', '${type}')">${d.pc.toLocaleString()}</td>
-          <td class="data-cell mod-col-rdp" style="font-size:1.05rem;font-weight:bold;cursor:pointer" onclick="setModalCategory('RDP', '${type}')">${d.rdp.toLocaleString()}</td>
-          <td class="data-cell mod-col-new_sales" style="font-size:1.05rem;font-weight:bold;cursor:pointer" onclick="setModalCategory('NEW_SALES', '${type}')">${d.ns.toLocaleString()}</td>
-          <td class="data-cell active-base-cell mod-col-total_active" style="font-size:1.05rem;font-weight:bold;cursor:pointer" onclick="setModalCategory('TOTAL_ACTIVE', '${type}')">${d.act.toLocaleString()}</td>
-          <td class="data-cell mod-col-ghost" style="font-size:1.05rem;font-weight:bold;cursor:pointer" onclick="setModalCategory('GHOST', '${type}')">${d.ghost.toLocaleString()}</td>
-          <td class="data-cell mod-col-at_risk" style="font-size:1.05rem;font-weight:bold;cursor:pointer" onclick="setModalCategory('AT_RISK', '${type}')">${d.risk.toLocaleString()}</td>
+          <td style="cursor:pointer" onclick="${clickFn}('ALL', '${type}')">${label}</td>
+          <td class="data-cell mod-col-total_expired" style="font-size:1.05rem;font-weight:bold;cursor:pointer" onclick="${clickFn}('TOTAL_EXPIRED', '${type}')">${d.exp.toLocaleString()}</td>
+          <td class="data-cell mod-col-full_churn" style="font-size:1.05rem;font-weight:bold;cursor:pointer" onclick="${clickFn}('FULL_CHURN', '${type}')">${d.fc.toLocaleString()}</td>
+          <td class="data-cell mod-col-partial_churn" style="font-size:1.05rem;font-weight:bold;cursor:pointer" onclick="${clickFn}('PARTIAL_CHURN', '${type}')">${d.pc.toLocaleString()}</td>
+          <td class="data-cell mod-col-rdp" style="font-size:1.05rem;font-weight:bold;cursor:pointer" onclick="${clickFn}('RDP', '${type}')">${d.rdp.toLocaleString()}</td>
+          <td class="data-cell mod-col-new_sales" style="font-size:1.05rem;font-weight:bold;cursor:pointer" onclick="${clickFn}('NEW_SALES', '${type}')">${d.ns.toLocaleString()}</td>
+          <td class="data-cell active-base-cell mod-col-total_active" style="font-size:1.05rem;font-weight:bold;cursor:pointer" onclick="${clickFn}('TOTAL_ACTIVE', '${type}')">${d.act.toLocaleString()}</td>
+          <td class="data-cell mod-col-ghost" style="font-size:1.05rem;font-weight:bold;cursor:pointer" onclick="${clickFn}('GHOST', '${type}')">${d.ghost.toLocaleString()}</td>
+          <td class="data-cell mod-col-at_risk" style="font-size:1.05rem;font-weight:bold;cursor:pointer" onclick="${clickFn}('AT_RISK', '${type}')">${d.risk.toLocaleString()}</td>
         </tr>`;
     };
     
     // Helper to build percentage row
     const buildPctRow = (label, type, rowClass) => {
         const d = m[type];
-        const expPct = d.exp ? ((d.fc + d.pc) / d.exp * 100).toFixed(1) : '0.0'; // Churn % (full + partial of expired)
         return `<tr class="${rowClass}">
-          <td style="color:var(--text-muted);cursor:pointer" onclick="setModalCategory('ALL', '${type}')">${label}</td>
-          <td class="mod-col-total_expired" style="color:var(--text-muted);cursor:pointer" onclick="setModalCategory('TOTAL_EXPIRED', '${type}')">100%</td>
-          <td class="mod-col-full_churn" style="color:var(--text-muted);cursor:pointer" onclick="setModalCategory('FULL_CHURN', '${type}')">${pct(d.fc, d.exp)}%</td>
-          <td class="mod-col-partial_churn" style="color:var(--text-muted);cursor:pointer" onclick="setModalCategory('PARTIAL_CHURN', '${type}')">${pct(d.pc, d.exp)}%</td>
-          <td class="mod-col-rdp" style="color:var(--text-muted);cursor:pointer" onclick="setModalCategory('RDP', '${type}')">${pct(d.rdp, d.exp)}%</td>
-          <td class="mod-col-new_sales" style="color:var(--text-muted);cursor:pointer" onclick="setModalCategory('NEW_SALES', '${type}')">${pct(d.ns, d.exp)}%</td>
-          <td class="active-base-cell mod-col-total_active" style="color:var(--text-muted);cursor:pointer" onclick="setModalCategory('TOTAL_ACTIVE', '${type}')">100%</td>
-          <td class="mod-col-ghost" style="color:var(--text-muted);cursor:pointer" onclick="setModalCategory('GHOST', '${type}')">${pct(d.ghost, d.act)}%</td>
-          <td class="mod-col-at_risk" style="color:var(--text-muted);cursor:pointer" onclick="setModalCategory('AT_RISK', '${type}')">${pct(d.risk, d.act)}%</td>
+          <td style="color:var(--text-muted);cursor:pointer" onclick="${clickFn}('ALL', '${type}')">${label}</td>
+          <td class="mod-col-total_expired" style="color:var(--text-muted);cursor:pointer" onclick="${clickFn}('TOTAL_EXPIRED', '${type}')">100%</td>
+          <td class="mod-col-full_churn" style="color:var(--text-muted);cursor:pointer" onclick="${clickFn}('FULL_CHURN', '${type}')">${pct(d.fc, d.exp)}%</td>
+          <td class="mod-col-partial_churn" style="color:var(--text-muted);cursor:pointer" onclick="${clickFn}('PARTIAL_CHURN', '${type}')">${pct(d.pc, d.exp)}%</td>
+          <td class="mod-col-rdp" style="color:var(--text-muted);cursor:pointer" onclick="${clickFn}('RDP', '${type}')">${pct(d.rdp, d.exp)}%</td>
+          <td class="mod-col-new_sales" style="color:var(--text-muted);cursor:pointer" onclick="${clickFn}('NEW_SALES', '${type}')">${pct(d.ns, d.exp)}%</td>
+          <td class="active-base-cell mod-col-total_active" style="color:var(--text-muted);cursor:pointer" onclick="${clickFn}('TOTAL_ACTIVE', '${type}')">100%</td>
+          <td class="mod-col-ghost" style="color:var(--text-muted);cursor:pointer" onclick="${clickFn}('GHOST', '${type}')">${pct(d.ghost, d.act)}%</td>
+          <td class="mod-col-at_risk" style="color:var(--text-muted);cursor:pointer" onclick="${clickFn}('AT_RISK', '${type}')">${pct(d.risk, d.act)}%</td>
         </tr>`;
     };
 
@@ -1239,20 +1255,20 @@ function buildDynamicSummaryTable(data) {
     let rowsHtml = '';
     
     // === TOTAL BASE SECTION (Absolute Numbers) ===
-    rowsHtml += buildAbsoluteRow('Total Base', 'ALL', 'total-row', 'total');
-    if (m['Perpetual'].exp > 0) {
-        rowsHtml += buildAbsoluteRow('<span style="color:#7c3aed;margin-left:15px">(-) Perpetual</span>', 'Perpetual', 'sub-row', 'perp');
+    rowsHtml += buildAbsoluteRow('Total Base', 'ALL', 'total-row');
+    if (m['Perpetual'].exp > 0 || m['Perpetual'].act > 0) {
+        rowsHtml += buildAbsoluteRow('<span style="color:#7c3aed;margin-left:15px">(-) Perpetual</span>', 'Perpetual', 'sub-row');
     }
-    if (m['Subscription'].exp > 0) {
-        rowsHtml += buildAbsoluteRow('<span style="color:#0284c7;margin-left:15px">(-) Subscription</span>', 'Subscription', 'sub-row', 'sub');
+    if (m['Subscription'].exp > 0 || m['Subscription'].act > 0) {
+        rowsHtml += buildAbsoluteRow('<span style="color:#0284c7;margin-left:15px">(-) Subscription</span>', 'Subscription', 'sub-row');
     }
     
     // === TOTAL BASE % SECTION ===
     rowsHtml += buildPctRow('Total Base %', 'ALL', 'pct-row');
-    if (m['Perpetual'].exp > 0) {
+    if (m['Perpetual'].exp > 0 || m['Perpetual'].act > 0) {
         rowsHtml += buildPctRow('<span style="color:#7c3aed;margin-left:15px">(-) Perpetual %</span>', 'Perpetual', 'pct-sub-row');
     }
-    if (m['Subscription'].exp > 0) {
+    if (m['Subscription'].exp > 0 || m['Subscription'].act > 0) {
         rowsHtml += buildPctRow('<span style="color:#0284c7;margin-left:15px">(-) Subscription %</span>', 'Subscription', 'pct-sub-row');
     }
 
@@ -1260,15 +1276,15 @@ function buildDynamicSummaryTable(data) {
     <div class="summary-table-container" style="margin:0;border-radius:0;box-shadow:none;border-left:none;border-right:none;border-top:none">
       <table class="summary-table modal-summary-table">
         <thead><tr>
-          <th onclick="setModalCategory('ALL', 'ALL')" style="cursor:pointer;min-width:180px">Metrics Base<br><span style="font-size:.65rem;font-weight:normal">(Click to reset)</span></th>
-          <th class="txt-purple mod-col-total_expired" onclick="setModalCategory('TOTAL_EXPIRED', 'ALL')" style="cursor:pointer">Total Expired</th>
-          <th class="txt-red mod-col-full_churn" onclick="setModalCategory('FULL_CHURN', 'ALL')" style="cursor:pointer">Full Churn</th>
-          <th class="txt-purple mod-col-partial_churn" onclick="setModalCategory('PARTIAL_CHURN', 'ALL')" style="cursor:pointer">Partial Churn</th>
-          <th class="txt-cyan mod-col-rdp" onclick="setModalCategory('RDP', 'ALL')" style="cursor:pointer">RDP Shift</th>
-          <th class="txt-cyan mod-col-new_sales" onclick="setModalCategory('NEW_SALES', 'ALL')" style="cursor:pointer">New Sales</th>
-          <th class="txt-green active-base-header mod-col-total_active" onclick="setModalCategory('TOTAL_ACTIVE', 'ALL')" style="cursor:pointer">Total Active</th>
-          <th class="txt-red mod-col-ghost" onclick="setModalCategory('GHOST', 'ALL')" style="cursor:pointer">Ghost</th>
-          <th class="txt-yellow mod-col-at_risk" onclick="setModalCategory('AT_RISK', 'ALL')" style="cursor:pointer">At Risk</th>
+          <th onclick="${clickFn}('ALL', 'ALL')" style="cursor:pointer;min-width:180px">Metrics Base<br><span style="font-size:.65rem;font-weight:normal">(Click to reset)</span></th>
+          <th class="txt-purple mod-col-total_expired" onclick="${clickFn}('TOTAL_EXPIRED', 'ALL')" style="cursor:pointer">Total Expired</th>
+          <th class="txt-red mod-col-full_churn" onclick="${clickFn}('FULL_CHURN', 'ALL')" style="cursor:pointer">Full Churn</th>
+          <th class="txt-purple mod-col-partial_churn" onclick="${clickFn}('PARTIAL_CHURN', 'ALL')" style="cursor:pointer">Partial Churn</th>
+          <th class="txt-cyan mod-col-rdp" onclick="${clickFn}('RDP', 'ALL')" style="cursor:pointer">RDP Shift</th>
+          <th class="txt-cyan mod-col-new_sales" onclick="${clickFn}('NEW_SALES', 'ALL')" style="cursor:pointer">New Sales</th>
+          <th class="txt-green active-base-header mod-col-total_active" onclick="${clickFn}('TOTAL_ACTIVE', 'ALL')" style="cursor:pointer">Total Active</th>
+          <th class="txt-red mod-col-ghost" onclick="${clickFn}('GHOST', 'ALL')" style="cursor:pointer">Ghost</th>
+          <th class="txt-yellow mod-col-at_risk" onclick="${clickFn}('AT_RISK', 'ALL')" style="cursor:pointer">At Risk</th>
         </tr></thead>
         <tbody>
           ${rowsHtml}
@@ -1281,7 +1297,7 @@ function openDrillDown(title, data, defaultBase='EXPIRED') {
   modalBaseData = data; currentModalCategory = 'ALL'; currentModalLicense = 'ALL';
   safeSetText('modalTitle', title);
   
-  safeSetHTML('modalStats', buildDynamicSummaryTable(data));
+  safeSetHTML('modalStats', buildDynamicSummaryTable(data, false));
   
   safeSetHTML('modalTableHead', `<tr>
     <th>Partner / Cat. / Type / Tenure</th><th>View 1: CompGUID</th><th>View 2: GSTIN</th><th>View 3: Combo</th><th>Sub No</th>
@@ -1595,7 +1611,7 @@ function renderCharts() {
 }
 
 function renderKPIs() {
-  safeSetHTML('topTableContainer', buildDynamicSummaryTable(expiredData.concat(activeData)));
+  safeSetHTML('topTableContainer', buildDynamicSummaryTable(expiredData.concat(activeData), true));
 }
 
 function renderInsights() {
@@ -1646,7 +1662,7 @@ function rowCsv(d) {
   return `"${d.ownerPartner}","${d.categoryName}","${inst}","${ten}","${d.compGUID}","${d.subscriptionId}","${d.gstin||''}","${d.comboKey}","${d.rdpLicense||''}","${lud}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}","${d.shiftedToRDP?'Yes':'No'}","${d.shiftedToNewSales?'Yes':'No'}","${d.isNewSales?'Yes':'No'}","${d.renewalCount||0}","${d.licenseType||'Unknown'}"\n`;
 }
 function downloadCSV(){ let csv='Partner,Category,Install,TenureYrs,CompGUID,SubNo,GSTIN,Combo,RDP,LastUsed,Expiry,Source,ShiftedToRDP,ShiftedToNS,IsNewSales,RenewalCount,LicenseType\n'; expiredData.forEach(d=>csv+=rowCsv(d)); activeData.forEach(d=>csv+=rowCsv(d)); dlFile(csv,'churn_full_export.csv','text/csv'); }
-function downloadOverlap(){ const r=analysisResults; let csv='Partner,Category,Install,TenureYrs,CompGUID,SubNo,GSTIN,Combo,RDP,LastUsed,Expiry,Source,ShiftedToRDP,ShiftedToNS,IsNewSales,RenewalCount,LicenseType\n'; expiredData.concat(activeData).filter(d=>r.overlappingCompGUIDSet.has(d.compGUID)).forEach(d=>csv+=rowCsv(d)); dlFile(csv,'partial_churn_export.csv','text/csv'); }
+function downloadOverlap(){ const r=analysisResults; let csv='Partner,Category,Install,TenureYrs,CompGUID,SubNo,GSTIN,Combo,RDP,LastUsed,Expiry,Source,ShiftedToRDP,ShiftedToNS,IsNewSales,RenewalCount,LicenseType\n'; expiredData.concat(activeData).filter(d=>r.overlappingCompGUIDSet.has(d.compGUID)).forEach(d=>rowCsv(d)); dlFile(csv,'partial_churn_export.csv','text/csv'); }
 function downloadNewSales(){ let csv='Partner,Category,Install,TenureYrs,CompGUID,SubNo,GSTIN,Combo,RDP,LastUsed,Expiry,Source,ShiftedToRDP,ShiftedToNS,IsNewSales,RenewalCount,LicenseType\n'; expiredData.filter(d=>d.shiftedToNewSales).concat(activeData.filter(d=>d.isNewSales)).forEach(d=>csv+=rowCsv(d)); dlFile(csv,'new_sales_export.csv','text/csv'); }
 function downloadModalData(){ let csv='Partner,Category,Install,TenureYrs,CompGUID,SubNo,GSTIN,Combo,RDP,LastUsed,Expiry,Source,ShiftedToRDP,ShiftedToNS,IsNewSales,RenewalCount,LicenseType\n'; modalFilteredData.forEach(d=>csv+=rowCsv(d)); dlFile(csv,'drill_down_export.csv','text/csv'); }
 
