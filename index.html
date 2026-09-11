@@ -8,23 +8,8 @@
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
-/* THEME VARIABLES */
+/* LIGHT MODE (DEFAULT) VARIABLES */
 :root {
-  --bg-gradient: linear-gradient(135deg, #0a0a1a, #1a1a3e, #0d0d2b);
-  --text-main: #e0e0e0;
-  --text-muted: #aaa;
-  --card-bg: rgba(255,255,255,0.04);
-  --card-border: rgba(255,255,255,0.08);
-  --modal-bg: #1a1a3e;
-  --table-head-bg: rgba(30,30,60,0.97);
-  --table-border: rgba(255,255,255,0.05);
-  --input-bg: rgba(255,255,255,0.06);
-  --input-border: rgba(255,255,255,0.15);
-  --hover-bg: rgba(102,126,234,0.08);
-  --chart-grid: rgba(255,255,255,0.05);
-  --chart-text: #888;
-}
-[data-theme="light"] {
   --bg-gradient: linear-gradient(135deg, #f4f7f6, #e2e8f0, #f4f7f6);
   --text-main: #2d3748;
   --text-muted: #4a5568;
@@ -38,6 +23,22 @@
   --hover-bg: rgba(102,126,234,0.15);
   --chart-grid: rgba(0,0,0,0.08);
   --chart-text: #4a5568;
+}
+/* DARK MODE VARIABLES */
+[data-theme="dark"] {
+  --bg-gradient: linear-gradient(135deg, #0a0a1a, #1a1a3e, #0d0d2b);
+  --text-main: #e0e0e0;
+  --text-muted: #aaa;
+  --card-bg: rgba(255,255,255,0.04);
+  --card-border: rgba(255,255,255,0.08);
+  --modal-bg: #1a1a3e;
+  --table-head-bg: rgba(30,30,60,0.97);
+  --table-border: rgba(255,255,255,0.05);
+  --input-bg: rgba(255,255,255,0.06);
+  --input-border: rgba(255,255,255,0.15);
+  --hover-bg: rgba(102,126,234,0.08);
+  --chart-grid: rgba(255,255,255,0.05);
+  --chart-text: #888;
 }
 
 *{margin:0;padding:0;box-sizing:border-box}
@@ -62,14 +63,17 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:var(--bg
 .global-search-btn{background:linear-gradient(135deg,#667eea,#764ba2);border:none;color:#fff;padding:8px 18px;border-radius:8px;cursor:pointer;font-weight:600}
 
 /* SUMMARY TABLE CSS */
-.summary-table-container { margin: 18px 30px; background: var(--card-bg); border: 1px solid rgba(102, 126, 234, 0.4); border-radius: 12px; overflow-x: auto; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+.summary-table-container { margin: 18px 30px; background: var(--card-bg); border: 1px solid rgba(102, 126, 234, 0.4); border-radius: 12px; overflow-x: auto; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
 .summary-table { width: 100%; border-collapse: collapse; text-align: center; font-size: 0.95rem; min-width: 800px; }
 .summary-table th { background: rgba(102, 126, 234, 0.1); padding: 14px 12px; font-weight: 600; border-bottom: 1px solid rgba(102, 126, 234, 0.3); border-right: 1px solid var(--table-border); white-space: nowrap; }
 .summary-table td { padding: 14px 12px; border-bottom: 1px solid var(--table-border); border-right: 1px solid var(--table-border); color: var(--text-main); }
-.summary-table td:first-child { text-align: left; font-weight: 700; background: rgba(102, 126, 234, 0.05); color: #a855f7; }
+.summary-table td:first-child { text-align: left; font-weight: 700; background: rgba(102, 126, 234, 0.05); color: #667eea; }
 .summary-table th:last-child, .summary-table td:last-child { border-right: none; }
 .summary-table tbody tr:hover { background: var(--hover-bg); }
 .summary-table td.data-cell:hover { background: rgba(102,126,234,0.15); }
+
+/* Column Separation for Active Base */
+.summary-table th.active-base-header, .summary-table td.active-base-cell { border-left: 2px solid rgba(102, 126, 234, 0.4); }
 
 .section-header{margin:22px 30px 4px;display:flex;align-items:center;gap:10px}
 .section-header h2{font-size:1.15rem;color:var(--text-main)}
@@ -107,7 +111,7 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:var(--bg
 /* MODAL & 360 POPUP */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:2000;justify-content:center;align-items:center;padding:16px}
 .modal-overlay.show{display:flex}
-.modal{background:var(--modal-bg);border:1px solid var(--card-border);border-radius:12px;width:100%;max-width:1550px;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.modal{background:var(--modal-bg);border:1px solid var(--card-border);border-radius:12px;width:100%;max-width:1550px;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.3)}
 .modal-header{background:linear-gradient(135deg,#667eea,#764ba2);padding:14px 20px;display:flex;justify-content:space-between;align-items:center}
 .modal-header h3{color:#fff;font-size:1.05rem}
 .modal-close{background:rgba(255,255,255,.2);border:none;color:#fff;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:background 0.2s}
@@ -208,7 +212,6 @@ footer{text-align:center;padding:20px;color:var(--text-muted);font-size:.72rem}
     <div class="table-controls">
       <input type="text" class="ctrl-input" style="flex:1" id="modalSearch" placeholder="🔍 Search GSTIN+CompGUID, Sub ID, Partner, RDP..." oninput="triggerModalUpdate()">
       
-      <!-- NEW: Base Filter to easily toggle visual row duplicates -->
       <select class="ctrl-input" id="modalBaseFilter" onchange="triggerModalUpdate()">
         <option value="EXPIRED">Show: Expired Base Rows</option>
         <option value="ACTIVE">Show: Active Base Rows</option>
@@ -275,7 +278,7 @@ footer{text-align:center;padding:20px;color:var(--text-muted);font-size:.72rem}
 <div class="header">
   <h1>📊 Enterprise Customer Churn & Retention Dashboard</h1>
   <p>Deduplicated Precision Engine · Partner Churn Rankings · Interactive Data Labels</p>
-  <div class="header-badge">v47.0 — Expired Base Sync & Light Mode Default</div>
+  <div class="header-badge">v48.0 — Absolute Math Sync & Light Mode Default</div>
   <button id="themeToggleBtn" class="theme-toggle" onclick="toggleTheme()">🌙 Dark Mode</button>
 </div>
 
@@ -327,7 +330,7 @@ footer{text-align:center;padding:20px;color:var(--text-muted);font-size:.72rem}
   <div class="chart-card">
     <div class="chart-title" style="cursor:pointer" title="Click to interact">🔄 Top Partners by RDP Shift (vs Expired Base)</div>
     <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 8px;">
-        <strong>Red:</strong> Pure Churn &nbsp;|&nbsp; <strong>Cyan:</strong> Shifted to RDP &nbsp;|&nbsp; <strong>Line:</strong> RDP Shift %<br>
+        <strong>Red:</strong> Pure Churn (Expired) &nbsp;|&nbsp; <strong>Cyan:</strong> Shifted to RDP (Expired) &nbsp;|&nbsp; <strong>Line:</strong> RDP Shift %<br>
         <strong>Click a bar</strong> to view Partner's complete base.
     </div>
     <div class="chart-container"><canvas id="partnerRdpChart"></canvas></div>
@@ -336,7 +339,7 @@ footer{text-align:center;padding:20px;color:var(--text-muted);font-size:.72rem}
   <div class="chart-card">
     <div class="chart-title" style="cursor:pointer" title="Click to interact">🆕 Top Partners by New Sales Shift (vs Expired Base)</div>
     <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 8px;">
-        <strong>Red:</strong> Pure Churn &nbsp;|&nbsp; <strong>Purple:</strong> Shifted to New Sale &nbsp;|&nbsp; <strong>Line:</strong> NS Shift %<br>
+        <strong>Red:</strong> Pure Churn (Expired) &nbsp;|&nbsp; <strong>Purple:</strong> Shifted to New Sale (Expired) &nbsp;|&nbsp; <strong>Line:</strong> NS Shift %<br>
         <strong>Click a bar</strong> to view Partner's complete base.
     </div>
     <div class="chart-container"><canvas id="partnerNsChart"></canvas></div>
@@ -423,7 +426,7 @@ footer{text-align:center;padding:20px;color:var(--text-muted);font-size:.72rem}
   </div>
 </div>
 
-<footer>Customer Churn Dashboard v47.0 · Math-Synced Omni-Click Engine & Light Mode Default</footer>
+<footer>Customer Churn Dashboard v48.0 · Absolute Math Sync Engine & Native Light Theme</footer>
 
 <script>
 Chart.register(ChartDataLabels);
@@ -445,7 +448,8 @@ function getThemeColors() {
         grid: isLight ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.05)',
         yellow: isLight ? '#d97706' : '#ffd200',
         cyan: isLight ? '#0284c7' : '#38bdf8',
-        purple: isLight ? '#7e22ce' : '#a855f7'
+        purple: isLight ? '#7e22ce' : '#a855f7',
+        red: isLight ? '#e11d48' : '#f45c43'
     };
 }
 
@@ -744,12 +748,6 @@ function analyzeData(){
           sC[st].expired++;
       }
 
-      const pk=d.ownerPartner||'Direct / Unassigned'; 
-      if(!partStats[pk]) partStats[pk]={totalExpired:0, rdpShifted:0, nsShifted:0}; 
-      partStats[pk].totalExpired++;
-      if(d.shiftedToRDP) partStats[pk].rdpShifted++;
-      if(d.shiftedToNewSales) partStats[pk].nsShifted++;
-
       const ck=d.categoryName||'Standard'; if(!catStats[ck])catStats[ck]={expired:0,active:0}; catStats[ck].expired++;
       const tl = getTenureLabel(d); if(tl) tenStats[tl]++;
   });
@@ -777,24 +775,26 @@ function analyzeData(){
   const onlyActive = new Set(); aG.forEach(x => { if (!eG.has(x)) onlyActive.add(x); });
   
   const tot = fC.size + onlyActive.size + oG.size;
-
   const nsComps = new Set();
   expiredData.forEach(d => { if(d.shiftedToNewSales) nsComps.add(d.compGUID); });
+  const atRiskData = activeData.filter(d => { return d.currentBlsExpiry && d.currentBlsExpiry.getTime() >= today.getTime() && d.currentBlsExpiry.getTime() <= thirtyDaysFromNow; });
 
-  const atRiskData = activeData.filter(d => {
-      return d.currentBlsExpiry && d.currentBlsExpiry.getTime() >= today.getTime() && d.currentBlsExpiry.getTime() <= thirtyDaysFromNow;
-  });
-
-  Object.keys(partStats).forEach(k => { partStats[k].pureChurnCount = 0; partStats[k].totalActive = 0; });
+  // STRICT MATH ENGINE FOR PARTNERS
+  Object.keys(partStats).forEach(k => { partStats[k].pureChurnCount = 0; partStats[k].partialChurnCount = 0; partStats[k].totalActive = 0; });
   expiredData.forEach(d => {
-      if(fC.has(d.compGUID)){
-          const pk = d.ownerPartner || 'Direct / Unassigned';
-          if(partStats[pk]) partStats[pk].pureChurnCount++;
-      }
+      const pk = d.ownerPartner || 'Direct / Unassigned';
+      if(!partStats[pk]) partStats[pk]={totalExpired:0, rdpShifted:0, nsShifted:0, pureChurnCount:0, partialChurnCount:0, totalActive:0};
+      
+      partStats[pk].totalExpired++;
+      if(fC.has(d.compGUID)) partStats[pk].pureChurnCount++;
+      else partStats[pk].partialChurnCount++;
+      
+      if(d.shiftedToRDP) partStats[pk].rdpShifted++;
+      if(d.shiftedToNewSales) partStats[pk].nsShifted++;
   });
   activeData.forEach(d => {
       const pk = d.ownerPartner || 'Direct / Unassigned';
-      if(!partStats[pk]) partStats[pk]={totalExpired:0, rdpShifted:0, nsShifted:0, pureChurnCount:0, totalActive:0};
+      if(!partStats[pk]) partStats[pk]={totalExpired:0, rdpShifted:0, nsShifted:0, pureChurnCount:0, partialChurnCount:0, totalActive:0};
       partStats[pk].totalActive++;
   });
 
@@ -934,7 +934,6 @@ function applyFiltersAndSort(sourceData, searchId, tenureId, sortId, rdpId, base
     for (let i = 0; i < sourceData.length; i++) {
         const d = sourceData[i];
         
-        // BASE FILTER LOGIC (To prevent visual duplicates)
         if (baseF === 'EXPIRED' && d.source !== 'expired') continue;
         if (baseF === 'ACTIVE' && d.source !== 'active') continue;
 
@@ -971,7 +970,7 @@ function setMainTab(f,btn){
     
     mainBaseData = [];
     
-    // STRICTLY EXPIRED BASE FOR MAIN TABLES TO PREVENT DUPLICATES
+    // EXPIRED BASE FOR MAIN TABLES
     if (f === 'ghost') {
         mainBaseData = activeData.filter(d => d.isGhost);
     } else if (f === 'atrisk') {
@@ -999,7 +998,7 @@ function renderMainTablePage() {
     const start = (mainPage - 1) * PAGE_SIZE, end = Math.min(start + PAGE_SIZE, total);
     let html = ''; for(let i=start; i<end; i++) html += rowHtml(mainFilteredData[i]);
     safeSetHTML('mainTableBody', html);
-    safeSetText('mainTableCount', `(${total.toLocaleString()} unique row entries)`);
+    safeSetText('mainTableCount', `(${total.toLocaleString()} rows)`);
     safeSetText('mainPageInfo', `Page ${mainPage} of ${totalPages}`);
     const p = document.getElementById('mainPrevBtn'), n = document.getElementById('mainNextBtn');
     if(p) p.disabled = (mainPage === 1); if(n) n.disabled = (mainPage === totalPages);
@@ -1017,8 +1016,7 @@ function openDrillDown(title, data, defaultBase = 'EXPIRED') {
     modalBaseData = data; 
     safeSetText('modalTitle', title);
     
-    // Dynamic Table Calculations based on exactly what Chart equations use!
-    const totSubs = data.length;
+    // STRICT MATH ENGINE FOR POPUP SUMMARY
     let expSubs = 0, actSubs = 0;
     let fullChurnSubs = 0, partialChurnSubs = 0, rdpSubs = 0, nsSubs = 0, ghostSubs = 0, riskSubs = 0;
     
@@ -1034,14 +1032,13 @@ function openDrillDown(title, data, defaultBase = 'EXPIRED') {
             if(d.shiftedToNewSales) nsSubs++;
         } else {
             actSubs++;
-            if(analysisResults.overlappingCompGUIDSet.has(d.compGUID)) partialChurnSubs++;
             if(d.isGhost) ghostSubs++;
             if(d.currentBlsExpiry && d.currentBlsExpiry.getTime() >= today.getTime() && d.currentBlsExpiry.getTime() <= thirtyDaysFromNow) riskSubs++;
         }
     });
 
     const fcPct = expSubs ? ((fullChurnSubs / expSubs) * 100).toFixed(1) : 0;
-    const pcPct = totSubs ? ((partialChurnSubs / totSubs) * 100).toFixed(1) : 0;
+    const pcPct = expSubs ? ((partialChurnSubs / expSubs) * 100).toFixed(1) : 0;
     const rdpPct = expSubs ? ((rdpSubs / expSubs) * 100).toFixed(1) : 0;
     const nsPct = expSubs ? ((nsSubs / expSubs) * 100).toFixed(1) : 0;
     const ghPct = actSubs ? ((ghostSubs / actSubs) * 100).toFixed(1) : 0;
@@ -1053,11 +1050,12 @@ function openDrillDown(title, data, defaultBase = 'EXPIRED') {
         <thead>
           <tr>
             <th>Metrics Base</th>
-            <th class="txt-purple">Total Subs</th>
+            <th class="txt-purple">Total Expired Base</th>
             <th class="txt-red">Full Churn</th>
             <th class="txt-purple">Partial Churn</th>
             <th class="txt-cyan">Shifted to RDP</th>
             <th class="txt-cyan">Shift to New Sales</th>
+            <th class="txt-green active-base-header">Total Active Base</th>
             <th class="txt-red">Ghost Churn</th>
             <th class="txt-yellow">At Risk</th>
           </tr>
@@ -1065,23 +1063,25 @@ function openDrillDown(title, data, defaultBase = 'EXPIRED') {
         <tbody>
           <tr>
             <td style="color:#a855f7; font-weight:700;">Absolute Numbers</td>
-            <td style="font-size:1.1rem; font-weight:bold;">${totSubs.toLocaleString()}</td>
+            <td style="font-size:1.1rem; font-weight:bold;">${expSubs.toLocaleString()}</td>
             <td style="font-size:1.1rem; font-weight:bold;">${fullChurnSubs.toLocaleString()}</td>
             <td style="font-size:1.1rem; font-weight:bold;">${partialChurnSubs.toLocaleString()}</td>
             <td style="font-size:1.1rem; font-weight:bold;">${rdpSubs.toLocaleString()}</td>
             <td style="font-size:1.1rem; font-weight:bold;">${nsSubs.toLocaleString()}</td>
+            <td class="active-base-cell" style="font-size:1.1rem; font-weight:bold;">${actSubs.toLocaleString()}</td>
             <td style="font-size:1.1rem; font-weight:bold;">${ghostSubs.toLocaleString()}</td>
             <td style="font-size:1.1rem; font-weight:bold;">${riskSubs.toLocaleString()}</td>
           </tr>
           <tr>
             <td style="color:#a855f7; font-weight:700;">%age Base Logic</td>
             <td style="color:var(--text-muted);">100%</td>
-            <td style="color:var(--text-muted);">${fcPct}% <br><span style="font-size:0.65rem">(of Expired Base: ${expSubs})</span></td>
-            <td style="color:var(--text-muted);">${pcPct}% <br><span style="font-size:0.65rem">(of Total Base: ${totSubs})</span></td>
-            <td style="color:var(--text-muted);">${rdpPct}% <br><span style="font-size:0.65rem">(of Expired Base: ${expSubs})</span></td>
-            <td style="color:var(--text-muted);">${nsPct}% <br><span style="font-size:0.65rem">(of Expired Base: ${expSubs})</span></td>
-            <td style="color:var(--text-muted);">${ghPct}% <br><span style="font-size:0.65rem">(of Active Base: ${actSubs})</span></td>
-            <td style="color:var(--text-muted);">${rkPct}% <br><span style="font-size:0.65rem">(of Active Base: ${actSubs})</span></td>
+            <td style="color:var(--text-muted);">${fcPct}% <br><span style="font-size:0.65rem">(of Expired Base)</span></td>
+            <td style="color:var(--text-muted);">${pcPct}% <br><span style="font-size:0.65rem">(of Expired Base)</span></td>
+            <td style="color:var(--text-muted);">${rdpPct}% <br><span style="font-size:0.65rem">(of Expired Base)</span></td>
+            <td style="color:var(--text-muted);">${nsPct}% <br><span style="font-size:0.65rem">(of Expired Base)</span></td>
+            <td class="active-base-cell" style="color:var(--text-muted);">100%</td>
+            <td style="color:var(--text-muted);">${ghPct}% <br><span style="font-size:0.65rem">(of Active Base)</span></td>
+            <td style="color:var(--text-muted);">${rkPct}% <br><span style="font-size:0.65rem">(of Active Base)</span></td>
           </tr>
         </tbody>
       </table>
@@ -1148,7 +1148,7 @@ function renderCharts(){
   const r = analysisResults;
   const tc = getThemeColors();
   
-  // CHART 1: MASTER OMNI-CHART
+  // CHART 1: MASTER OMNI-CHART (Expired Base + Pure Churn % + RDP % + NS %)
   const pcEl1 = document.getElementById('partnerChurnChart');
   if(pcEl1){
       const pArr = Object.entries(r.partStats).map(([k, v]) => {
@@ -1217,14 +1217,18 @@ function renderCharts(){
   const pcEl2 = document.getElementById('partnerRdpChart');
   if(pcEl2){
       const pArr = Object.entries(r.partStats).map(([k, v]) => {
-          const totChurn = v.totalExpired;
+          const pureChurn = v.pureChurnCount || 0;
+          const totExpired = v.totalExpired || 0; 
+          const rdpShifted = v.rdpShifted || 0;
+
           return { 
-              p: k, tChurn: totChurn, 
-              rdpShifted: v.rdpShifted, 
-              pureChurn: Math.max(0, totChurn - v.rdpShifted),
-              rdpRate: totChurn > 0 ? (v.rdpShifted / totChurn) * 100 : 0
+              p: k, 
+              pureChurn: pureChurn, 
+              totExpired: totExpired,
+              rdpShifted: rdpShifted, 
+              rdpRate: totExpired > 0 ? (rdpShifted / totExpired) * 100 : 0
           };
-      }).filter(x => x.tChurn >= 5 && x.p !== 'Direct / Unassigned' && x.p !== 'Direct' && x.rdpShifted > 0)
+      }).filter(x => x.totExpired >= 5 && x.p !== 'Direct / Unassigned' && x.p !== 'Direct' && x.rdpShifted > 0)
         .sort((a, b) => b.rdpRate - a.rdpRate).slice(0, 10);
 
       dc('pc2'); charts.pc2 = new Chart(pcEl2,{
@@ -1234,12 +1238,12 @@ function renderCharts(){
               datasets:[
                   {
                       label:'Pure Churn (Expired)', data:pArr.map(x=>x.pureChurn), 
-                      backgroundColor:'rgba(244,92,67,.75)', borderColor: '#e11d48', borderWidth: 1, stack: 'churn',
+                      backgroundColor:'rgba(244,92,67,.75)', borderColor: '#e11d48', borderWidth: 1,
                       datalabels: { display: false }
                   },
                   {
                       label:'Shifted to RDP (Expired)', data:pArr.map(x=>x.rdpShifted), 
-                      backgroundColor:'rgba(56,189,248,.8)', borderColor: tc.cyan, borderWidth: 1, stack: 'churn',
+                      backgroundColor:'rgba(56,189,248,.8)', borderColor: tc.cyan, borderWidth: 1,
                       datalabels: { display: false }
                   },
                   {
@@ -1257,8 +1261,8 @@ function renderCharts(){
               },
               plugins:{ legend:{display:true, labels:{color:tc.text, font:{size:10}}} },
               scales:{
-                  x:{stacked:true, ticks:{color:tc.text}},
-                  y:{stacked:true, ticks:{color:tc.text}, grid:{color:tc.grid}, title:{display:true, text:'Expired Subs', color:tc.text}},
+                  x:{ticks:{color:tc.text}},
+                  y:{ticks:{color:tc.text}, grid:{color:tc.grid}, title:{display:true, text:'Expired Subs', color:tc.text}},
                   y1:{position:'right', ticks:{color:tc.yellow}, grid:{display:false}, max:100}
               }
           }
@@ -1269,14 +1273,18 @@ function renderCharts(){
   const pcEl3 = document.getElementById('partnerNsChart');
   if(pcEl3){
       const pArr = Object.entries(r.partStats).map(([k, v]) => {
-          const totChurn = v.totalExpired;
+          const pureChurn = v.pureChurnCount || 0;
+          const totExpired = v.totalExpired || 0; 
+          const nsShifted = v.nsShifted || 0;
+
           return { 
-              p: k, tChurn: totChurn, 
-              nsShifted: v.nsShifted, 
-              pureChurn: Math.max(0, totChurn - v.nsShifted),
-              nsRate: totChurn > 0 ? (v.nsShifted / totChurn) * 100 : 0
+              p: k, 
+              pureChurn: pureChurn, 
+              totExpired: totExpired,
+              nsShifted: nsShifted, 
+              nsRate: totExpired > 0 ? (nsShifted / totExpired) * 100 : 0
           };
-      }).filter(x => x.tChurn >= 5 && x.p !== 'Direct / Unassigned' && x.p !== 'Direct' && x.nsShifted > 0)
+      }).filter(x => x.totExpired >= 5 && x.p !== 'Direct / Unassigned' && x.p !== 'Direct' && x.nsShifted > 0)
         .sort((a, b) => b.nsRate - a.nsRate).slice(0, 10);
 
       dc('pc3'); charts.pc3 = new Chart(pcEl3,{
@@ -1286,12 +1294,12 @@ function renderCharts(){
               datasets:[
                   {
                       label:'Pure Churn (Expired)', data:pArr.map(x=>x.pureChurn), 
-                      backgroundColor:'rgba(244,92,67,.75)', borderColor: '#e11d48', borderWidth: 1, stack: 'churn',
+                      backgroundColor:'rgba(244,92,67,.75)', borderColor: '#e11d48', borderWidth: 1,
                       datalabels: { display: false }
                   },
                   {
                       label:'Shifted to New Sale (Expired)', data:pArr.map(x=>x.nsShifted), 
-                      backgroundColor:'rgba(168,85,247,.8)', borderColor: tc.purple, borderWidth: 1, stack: 'churn',
+                      backgroundColor:'rgba(168,85,247,.8)', borderColor: tc.purple, borderWidth: 1,
                       datalabels: { display: false }
                   },
                   {
@@ -1309,8 +1317,8 @@ function renderCharts(){
               },
               plugins:{ legend:{display:true, labels:{color:tc.text, font:{size:10}}} },
               scales:{
-                  x:{stacked:true, ticks:{color:tc.text}},
-                  y:{stacked:true, ticks:{color:tc.text}, grid:{color:tc.grid}, title:{display:true, text:'Expired Subs', color:tc.text}},
+                  x:{ticks:{color:tc.text}},
+                  y:{ticks:{color:tc.text}, grid:{color:tc.grid}, title:{display:true, text:'Expired Subs', color:tc.text}},
                   y1:{position:'right', ticks:{color:tc.yellow}, grid:{display:false}, max:100}
               }
           }
@@ -1331,28 +1339,28 @@ function renderCharts(){
 
 function renderKPIs() {
     const r = analysisResults;
-    const totSubs = r.totalExpired + r.totalActive;
+    
+    // STRICT MATH FOR TOP TABLE
     const expSubs = r.totalExpired;
     const actSubs = r.totalActive;
     
-    let fullChurnSubs = 0, partialChurnSubs = 0, rdpSubs = 0, nsSubs = 0, ghostSubs = 0, riskSubs = 0;
-
+    let fullChurnSubs = 0, partialChurnSubs = 0, rdpSubs = 0, nsSubs = 0;
     expiredData.forEach(d => {
         if(r.fullChurnSet.has(d.compGUID)) fullChurnSubs++;
         if(r.overlappingCompGUIDSet.has(d.compGUID)) partialChurnSubs++;
         if(d.shiftedToRDP) rdpSubs++;
         if(d.shiftedToNewSales) nsSubs++;
     });
-    activeData.forEach(d => {
-        if(r.overlappingCompGUIDSet.has(d.compGUID)) partialChurnSubs++;
-        if(d.isGhost) ghostSubs++;
-    });
+
+    let ghostSubs = 0, riskSubs = 0;
+    activeData.forEach(d => { if(d.isGhost) ghostSubs++; });
     riskSubs = r.atRisk;
 
     const fcPct = expSubs ? ((fullChurnSubs / expSubs) * 100).toFixed(1) : 0;
-    const pcPct = totSubs ? ((partialChurnSubs / totSubs) * 100).toFixed(1) : 0;
+    const pcPct = expSubs ? ((partialChurnSubs / expSubs) * 100).toFixed(1) : 0;
     const rdpPct = expSubs ? ((rdpSubs / expSubs) * 100).toFixed(1) : 0;
     const nsPct = expSubs ? ((nsSubs / expSubs) * 100).toFixed(1) : 0;
+    
     const ghPct = actSubs ? ((ghostSubs / actSubs) * 100).toFixed(1) : 0;
     const rkPct = actSubs ? ((riskSubs / actSubs) * 100).toFixed(1) : 0;
 
@@ -1362,11 +1370,12 @@ function renderKPIs() {
         <thead>
           <tr>
             <th>Metrics Base</th>
-            <th class="txt-purple" style="cursor:pointer;" onclick="drillByCategory('total')" title="Click to view all">Total Subs</th>
+            <th class="txt-purple" style="cursor:pointer;" onclick="drillByCategory('total')" title="Click to view all">Total Expired Base</th>
             <th class="txt-red" style="cursor:pointer;" onclick="drillByCategory('churned')" title="Click to view full churn">Full Churn</th>
             <th class="txt-purple" style="cursor:pointer;" onclick="drillByCategory('overlap')" title="Click to view partial churn">Partial Churn</th>
             <th class="txt-cyan" style="cursor:pointer;" onclick="drillByCategory('rdp')" title="Click to view RDP shifts">Shifted to RDP</th>
             <th class="txt-cyan" style="cursor:pointer;" onclick="drillByCategory('newsales')" title="Click to view New Sales shifts">Shift to New Sales</th>
+            <th class="txt-green active-base-header" style="cursor:pointer;" onclick="drillByCategory('healthy')" title="Click to view Active Base">Total Active Base</th>
             <th class="txt-red" style="cursor:pointer;" onclick="drillByCategory('ghost')" title="Click to view Ghost churn">Ghost Churn</th>
             <th class="txt-yellow" style="cursor:pointer;" onclick="drillByCategory('atrisk')" title="Click to view At-Risk">At Risk</th>
           </tr>
@@ -1374,23 +1383,25 @@ function renderKPIs() {
         <tbody>
           <tr>
             <td style="color:#a855f7; font-weight:700;">Absolute Numbers</td>
-            <td class="data-cell" style="font-size:1.1rem; font-weight:bold; cursor:pointer;" onclick="drillByCategory('total')">${totSubs.toLocaleString()}</td>
+            <td class="data-cell" style="font-size:1.1rem; font-weight:bold; cursor:pointer;" onclick="drillByCategory('total')">${expSubs.toLocaleString()}</td>
             <td class="data-cell" style="font-size:1.1rem; font-weight:bold; cursor:pointer;" onclick="drillByCategory('churned')">${fullChurnSubs.toLocaleString()}</td>
             <td class="data-cell" style="font-size:1.1rem; font-weight:bold; cursor:pointer;" onclick="drillByCategory('overlap')">${partialChurnSubs.toLocaleString()}</td>
             <td class="data-cell" style="font-size:1.1rem; font-weight:bold; cursor:pointer;" onclick="drillByCategory('rdp')">${rdpSubs.toLocaleString()}</td>
             <td class="data-cell" style="font-size:1.1rem; font-weight:bold; cursor:pointer;" onclick="drillByCategory('newsales')">${nsSubs.toLocaleString()}</td>
+            <td class="data-cell active-base-cell" style="font-size:1.1rem; font-weight:bold; cursor:pointer;" onclick="drillByCategory('healthy')">${actSubs.toLocaleString()}</td>
             <td class="data-cell" style="font-size:1.1rem; font-weight:bold; cursor:pointer;" onclick="drillByCategory('ghost')">${ghostSubs.toLocaleString()}</td>
             <td class="data-cell" style="font-size:1.1rem; font-weight:bold; cursor:pointer;" onclick="drillByCategory('atrisk')">${riskSubs.toLocaleString()}</td>
           </tr>
           <tr>
             <td style="color:#a855f7; font-weight:700;">%age Base Logic</td>
             <td style="color:var(--text-muted);">100%</td>
-            <td style="color:var(--text-muted);">${fcPct}% <br><span style="font-size:0.65rem">(of Expired Base: ${expSubs.toLocaleString()})</span></td>
-            <td style="color:var(--text-muted);">${pcPct}% <br><span style="font-size:0.65rem">(of Total Base: ${totSubs.toLocaleString()})</span></td>
-            <td style="color:var(--text-muted);">${rdpPct}% <br><span style="font-size:0.65rem">(of Expired Base: ${expSubs.toLocaleString()})</span></td>
-            <td style="color:var(--text-muted);">${nsPct}% <br><span style="font-size:0.65rem">(of Expired Base: ${expSubs.toLocaleString()})</span></td>
-            <td style="color:var(--text-muted);">${ghPct}% <br><span style="font-size:0.65rem">(of Active Base: ${actSubs.toLocaleString()})</span></td>
-            <td style="color:var(--text-muted);">${rkPct}% <br><span style="font-size:0.65rem">(of Active Base: ${actSubs.toLocaleString()})</span></td>
+            <td style="color:var(--text-muted);">${fcPct}% <br><span style="font-size:0.65rem">(of Expired Base)</span></td>
+            <td style="color:var(--text-muted);">${pcPct}% <br><span style="font-size:0.65rem">(of Expired Base)</span></td>
+            <td style="color:var(--text-muted);">${rdpPct}% <br><span style="font-size:0.65rem">(of Expired Base)</span></td>
+            <td style="color:var(--text-muted);">${nsPct}% <br><span style="font-size:0.65rem">(of Expired Base)</span></td>
+            <td class="active-base-cell" style="color:var(--text-muted);">100%</td>
+            <td style="color:var(--text-muted);">${ghPct}% <br><span style="font-size:0.65rem">(of Active Base)</span></td>
+            <td style="color:var(--text-muted);">${rkPct}% <br><span style="font-size:0.65rem">(of Active Base)</span></td>
           </tr>
         </tbody>
       </table>
