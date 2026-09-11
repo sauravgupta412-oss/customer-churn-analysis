@@ -338,7 +338,7 @@ footer{text-align:center;padding:20px;color:var(--text-muted);font-size:.72rem}
     <div class="chart-title" style="cursor:pointer" title="Click to interact">🔄 Top Partners by RDP Shift (vs Expired Base)</div>
     <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 8px;">
         <strong>Red:</strong> Pure Churn &nbsp;|&nbsp; <strong>Cyan:</strong> Shifted to RDP &nbsp;|&nbsp; <strong>Line:</strong> RDP Shift %<br>
-        <strong>Click a bar</strong> to view Partner's complete base.
+        <strong>Click a bar or line</strong> to view Partner's complete base.
     </div>
     <div class="chart-container"><canvas id="partnerRdpChart"></canvas></div>
   </div>
@@ -347,7 +347,7 @@ footer{text-align:center;padding:20px;color:var(--text-muted);font-size:.72rem}
     <div class="chart-title" style="cursor:pointer" title="Click to interact">🆕 Top Partners by New Sales Shift (vs Expired Base)</div>
     <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 8px;">
         <strong>Red:</strong> Pure Churn &nbsp;|&nbsp; <strong>Purple:</strong> Shifted to New Sale &nbsp;|&nbsp; <strong>Line:</strong> NS Shift %<br>
-        <strong>Click a bar</strong> to view Partner's complete base.
+        <strong>Click a bar or line</strong> to view Partner's complete base.
     </div>
     <div class="chart-container"><canvas id="partnerNsChart"></canvas></div>
   </div>
@@ -433,7 +433,7 @@ footer{text-align:center;padding:20px;color:var(--text-muted);font-size:.72rem}
   </div>
 </div>
 
-<footer>Expired base Churn Analysis · v49.0</footer>
+<footer>Expired base Churn Analysis · v50.0</footer>
 
 <script>
 Chart.register(ChartDataLabels);
@@ -1274,7 +1274,7 @@ function renderCharts(){
       }); 
   }
   
-  // CHART 2: RDP SHIFT VS EXPIRED
+  // CHART 2: RDP SHIFT VS EXPIRED (STACKED)
   const pcEl2 = document.getElementById('partnerRdpChart');
   if(pcEl2){
       const pArr = Object.entries(r.partStats).map(([k, v]) => {
@@ -1299,19 +1299,19 @@ function renderCharts(){
               datasets:[
                   {
                       label:'Pure Churn (Expired)', data:pArr.map(x=>x.pureChurn), 
-                      backgroundColor:'rgba(244,92,67,.75)', borderColor: '#e11d48', borderWidth: 1,
+                      backgroundColor:'rgba(244,92,67,.75)', borderColor: '#e11d48', borderWidth: 1, stack: 'stackBase',
                       datalabels: { display: false }
                   },
                   {
                       label:'Shifted to RDP (Expired)', data:pArr.map(x=>x.rdpShifted), 
-                      backgroundColor:'rgba(56,189,248,.8)', borderColor: tc.cyan, borderWidth: 1,
+                      backgroundColor:'rgba(56,189,248,.8)', borderColor: tc.cyan, borderWidth: 1, stack: 'stackBase',
                       datalabels: { display: false }
                   },
                   {
                       label:'RDP Shift %', data:pArr.map(x=>x.rdpRate.toFixed(1)), 
                       type: 'line', borderColor:tc.yellow, backgroundColor:'transparent',
-                      borderWidth:2, pointBackgroundColor:tc.yellow, pointRadius:3, yAxisID:'y1', tension:0.3,
-                      datalabels: { display: true, color: tc.text, align: 'top', anchor: 'end', formatter: v => v + '%' }
+                      borderWidth:2, pointBackgroundColor:tc.yellow, pointRadius:4, yAxisID:'y1', tension:0.3,
+                      datalabels: { display: true, color: tc.text, align: 'top', anchor: 'bottom', offset: 8, formatter: v => v + '%' }
                   }
               ]
           },
@@ -1322,15 +1322,15 @@ function renderCharts(){
               },
               plugins:{ legend:{display:true, labels:{color:tc.text, font:{size:10}}} },
               scales:{
-                  x:{ticks:{color:tc.text}},
-                  y:{ticks:{color:tc.text}, grid:{color:tc.grid}, title:{display:true, text:'Expired Subs', color:tc.text}},
+                  x:{stacked:true, ticks:{color:tc.text}},
+                  y:{stacked:true, ticks:{color:tc.text}, grid:{color:tc.grid}, title:{display:true, text:'Expired Subs', color:tc.text}},
                   y1:{position:'right', ticks:{color:tc.yellow}, grid:{display:false}, max:100}
               }
           }
       }); 
   }
 
-  // CHART 3: NEW SALES SHIFT VS EXPIRED
+  // CHART 3: NEW SALES SHIFT VS EXPIRED (STACKED)
   const pcEl3 = document.getElementById('partnerNsChart');
   if(pcEl3){
       const pArr = Object.entries(r.partStats).map(([k, v]) => {
@@ -1355,19 +1355,19 @@ function renderCharts(){
               datasets:[
                   {
                       label:'Pure Churn (Expired)', data:pArr.map(x=>x.pureChurn), 
-                      backgroundColor:'rgba(244,92,67,.75)', borderColor: '#e11d48', borderWidth: 1,
+                      backgroundColor:'rgba(244,92,67,.75)', borderColor: '#e11d48', borderWidth: 1, stack: 'stackBase',
                       datalabels: { display: false }
                   },
                   {
                       label:'Shifted to New Sale (Expired)', data:pArr.map(x=>x.nsShifted), 
-                      backgroundColor:'rgba(168,85,247,.8)', borderColor: tc.purple, borderWidth: 1,
+                      backgroundColor:'rgba(168,85,247,.8)', borderColor: tc.purple, borderWidth: 1, stack: 'stackBase',
                       datalabels: { display: false }
                   },
                   {
                       label:'New Sales Shift %', data:pArr.map(x=>x.nsRate.toFixed(1)), 
                       type: 'line', borderColor:tc.yellow, backgroundColor:'transparent',
-                      borderWidth:2, pointBackgroundColor:tc.yellow, pointRadius:3, yAxisID:'y1', tension:0.3,
-                      datalabels: { display: true, color: tc.text, align: 'top', anchor: 'end', formatter: v => v + '%' }
+                      borderWidth:2, pointBackgroundColor:tc.yellow, pointRadius:4, yAxisID:'y1', tension:0.3,
+                      datalabels: { display: true, color: tc.text, align: 'top', anchor: 'bottom', offset: 8, formatter: v => v + '%' }
                   }
               ]
           },
@@ -1378,8 +1378,8 @@ function renderCharts(){
               },
               plugins:{ legend:{display:true, labels:{color:tc.text, font:{size:10}}} },
               scales:{
-                  x:{ticks:{color:tc.text}},
-                  y:{ticks:{color:tc.text}, grid:{color:tc.grid}, title:{display:true, text:'Expired Subs', color:tc.text}},
+                  x:{stacked:true, ticks:{color:tc.text}},
+                  y:{stacked:true, ticks:{color:tc.text}, grid:{color:tc.grid}, title:{display:true, text:'Expired Subs', color:tc.text}},
                   y1:{position:'right', ticks:{color:tc.yellow}, grid:{display:false}, max:100}
               }
           }
