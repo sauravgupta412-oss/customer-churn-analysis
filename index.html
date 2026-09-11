@@ -96,8 +96,8 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-g
 .ctrl-input option { background-color:#1a1a3e; color:#fff; }
 
 .modal-body{padding:0;overflow-y:auto;flex:1;overflow-x:auto;}
-.modal-table{width:100%;border-collapse:collapse;font-size:.76rem;min-width:1100px}
-.modal-table thead th{background:rgba(30,30,60,.97);padding:10px 14px;text-align:left;color:#999;font-weight:600;text-transform:uppercase;font-size:.65rem;position:sticky;top:0;z-index:1;white-space:nowrap;border-bottom:1px solid rgba(255,255,255,.05)}
+.modal-table{width:100%;border-collapse:collapse;font-size:.74rem;min-width:1450px}
+.modal-table thead th{background:rgba(30,30,60,.97);padding:9px 12px;text-align:left;color:#999;font-weight:600;text-transform:uppercase;font-size:.65rem;position:sticky;top:0;z-index:1;white-space:nowrap;border-bottom:1px solid rgba(255,255,255,.05)}
 .modal-table tbody td{padding:8px 14px;border-bottom:1px solid rgba(255,255,255,.03);vertical-align:middle}
 .modal-table tbody tr:hover{background:rgba(102,126,234,.06)}
 
@@ -107,7 +107,7 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-g
 .page-btn:disabled{opacity:0.4;cursor:not-allowed}
 .page-info{font-size:.8rem;color:#aaa}
 
-.compguid-cell{font-family:monospace;font-size:.72rem;color:#a855f7;text-decoration:underline;cursor:pointer;word-break:break-all}
+.compguid-cell{font-family:monospace;font-size:.7rem;color:#a855f7;text-decoration:underline;cursor:pointer;word-break:break-all}
 .gstin-cell{font-family:monospace;font-size:.72rem;color:#22d3ee;text-decoration:underline;cursor:pointer;word-break:break-all}
 .combo-cell{font-family:monospace;font-size:.68rem;color:#38ef7d;word-break:break-all;background:rgba(56,239,125,.05);padding:4px 6px;border-radius:4px;border:1px dashed rgba(56,239,125,.2);cursor:pointer}
 
@@ -140,7 +140,6 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-g
 .file-btn-sm{background:linear-gradient(135deg,#667eea,#764ba2);border:none;color:#fff;padding:4px 12px;border-radius:4px;cursor:pointer;font-size:.75rem;margin-left:8px}
 footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
 
-/* 360 Popup Specifics */
 .header-360 {
     background:rgba(255,255,255,0.02); padding:10px 15px; margin:10px 20px 0; border-radius:8px; border-left:4px solid #38ef7d; font-weight:600; color:#38ef7d; display:flex; align-items:center;
 }
@@ -198,7 +197,7 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
 <!-- DEDICATED ACCOUNT 360° DETAIL POPUP -->
 <div class="modal-overlay" id="account360Modal">
   <div class="modal" style="max-width:1400px">
-    <div class="modal-header">
+    <div class="modal-header" style="background:linear-gradient(135deg,#11998e,#38ef7d)">
       <h3 id="acc360Title">🏢 Account 360° Complete History</h3>
       <button class="modal-close" onclick="closeModal('account360Modal')">✕</button>
     </div>
@@ -216,13 +215,10 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
 <div class="header">
   <h1>📊 Enterprise Customer Churn & Retention Dashboard</h1>
   <p>Esc Key Support · Fixed Chart Rendering · Smart Unknown Tenure Handling</p>
-  <div class="header-badge">v27.0 — Stable Formatting & Bug-Free Experience</div>
+  <div class="header-badge">v28.0 — Fully Verified Function Scope & Enterprise Engine</div>
 </div>
 
-<div class="status-bar loading" id="statusBar">
-    <div class="status-spinner"></div>
-    <span id="statusText">Fetching data files...</span>
-</div>
+<div class="status-bar loading" id="statusBar"><div class="status-spinner"></div><span>Initializing Engine...</span></div>
 
 <div class="global-search-container">
   <span>🔍</span>
@@ -231,6 +227,7 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
 </div>
 
 <div class="kpi-strip" id="kpiStrip"></div>
+<div class="insight-box" id="insightBox"></div>
 
 <div class="download-section" style="justify-content:center; margin-top:20px;">
   <button class="btn-download" onclick="downloadCSV()">📥 Export Full CSV</button>
@@ -325,10 +322,10 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
   </div>
 </div>
 
-<footer>Customer Churn Dashboard v27.0 · Enterprise Global Scope Engine</footer>
+<footer>Customer Churn Dashboard v28.0 · Guaranteed Scope Engine</footer>
 
 <script>
-// ==================== ABSOLUTE GLOBAL SCOPE GUARANTEE ====================
+// ==================== GLOBAL HELPERS ====================
 window.stateGST = {
   '01':'J&K','02':'HP','03':'Punjab','04':'Chandigarh','05':'Uttarakhand','06':'Haryana',
   '07':'Delhi','08':'Rajasthan','09':'UP','10':'Bihar','11':'Sikkim','12':'Arunachal',
@@ -348,6 +345,7 @@ function safeSetHTML(id, html) {
     const el = document.getElementById(id);
     if (el) el.innerHTML = html;
 }
+
 function safeSetText(id, txt) {
     const el = document.getElementById(id);
     if (el) el.textContent = txt;
@@ -512,19 +510,18 @@ async function fetchDataset(filename) {
 }
 
 async function autoLoadFromRepo() {
-    setStatus('Fetching data files directly...', 'loading');
+    setStatus('Fetching data files...', 'loading');
     try {
         expiredData = await fetchDataset('expired_customers');
         activeData = await fetchDataset('active_customers');
-
         if (expiredData.length > 0 && activeData.length > 0) {
             setStatus(`✅ Real Data Loaded: ${expiredData.length.toLocaleString()} expired + ${activeData.length.toLocaleString()} active records`, 'success');
             runAnalysis();
         } else {
-            throw new Error(`Could not parse records automatically.`);
+            throw new Error(`Could not parse records.`);
         }
     } catch(err) {
-        setStatus(`⚠️ Auto-load failed. Please click below to upload your CSV files manually.`, 'error');
+        setStatus(`⚠️ Auto-load failed. Click below to upload CSV files manually.`, 'error');
     }
 }
 
@@ -543,11 +540,9 @@ async function handleFileUpload(type, input) {
             setStatus(`✅ Uploaded: ${expiredData.length.toLocaleString()} expired + ${activeData.length.toLocaleString()} active records`, 'success');
             runAnalysis();
         } else {
-            setStatus(`Loaded ${parsed.length.toLocaleString()} ${type} records. Please upload the other file.`, 'info');
+            setStatus(`Loaded ${parsed.length.toLocaleString()} ${type} records. Upload the other file.`, 'info');
         }
-    } catch(e) {
-        setStatus(`❌ Error reading file: ${e.message}`, 'error');
-    }
+    } catch(e) { setStatus(`❌ File error: ${e.message}`, 'error'); }
 }
 
 function analyzeData(){
@@ -604,7 +599,7 @@ function analyzeData(){
 
   analysisResults={
     totalExpired:expiredData.length,totalActive:activeData.length,
-    overlappingCompGUIDs:oG.size,fullChurn:fC.size,healthy:onlyActive.size,
+    overlappingCompGUIDs:oG.size,fullChurn:fC.size,onlyActive:onlyActive.size,
     atRisk:activeData.filter(d=>d.currentBlsExpiry<=riskD&&d.currentBlsExpiry>=today).length,
     atRiskData:activeData.filter(d=>d.currentBlsExpiry<=riskD&&d.currentBlsExpiry>=today),
     newSalesActiveSubs:nsActive,newSalesCompanies:nsComp.size,ghostCount:ghosts,
@@ -868,7 +863,7 @@ function renderMainTablePage() {
 function openDrillDown(title, data, statsArray) {
     modalBaseData = data;
     safeSetText('modalTitle', title);
-    safeSetHTML('modalStats', statsArray.map(s => `<div class="modal-stat"><div class="modal-stat-value" style="color:${s.color || '#667eea'}">${s.value}</div><div class="modal-stat-label">${s.label}</div></div>`).join(''));
+    safeSetHTML('modalStats', statsArray.map(s => `<div class="modal-stat"><div class="modal-stat-value" style="color:${s.color||'#667eea'}">${s.value}</div><div class="modal-stat-label">${s.label}</div></div>`).join(''));
     document.getElementById('modalSearch').value = '';
     if(document.getElementById('modalTenureFilter')) document.getElementById('modalTenureFilter').value = 'ALL';
     
@@ -957,10 +952,19 @@ function renderKPIs(){
     <div class="kpi-card orange" onclick="drillByCategory('atrisk')"><div class="kpi-label">At-Risk</div><div class="kpi-value">${r.atRisk.toLocaleString()}</div><div class="kpi-sublabel">active near expiry</div></div>`);
 }
 
+function renderInsights(){
+  const r = analysisResults, cr = +r.churnRate, ins = [];
+  if (cr > 40) ins.push('🔴 <strong>HIGH FULL CHURN:</strong> ' + r.churnRate + '%');
+  else ins.push('✅ <strong>FULL CHURN:</strong> ' + r.churnRate + '%');
+  if (r.overlappingCompGUIDs) ins.push('🟣 <strong>PARTIAL CHURN:</strong> ' + r.overlappingCompGUIDs.toLocaleString() + ' companies in both datasets — click any company for 360° view');
+  if (r.ghostCount) ins.push('👻 <strong>GHOST CHURN WARNING:</strong> ' + r.ghostCount.toLocaleString() + ' active subscriptions unused 90+ days.');
+  safeSetHTML('insightBox', '<h4>💡 Insights</h4>' + ins.map(t => '<div class="insight-item">' + t + '</div>').join(''));
+}
+
 function renderVenn(){
   const r = analysisResults;
   safeSetHTML('vennDiagram', `
-    <div class="venn-circle venn-active" onclick="drillByCategory('healthy')" title="Active-only companies"><div style="margin-left:-20px"><div style="font-size:1.1rem;color:#667eea">${r.healthySet.size.toLocaleString()}</div><div style="font-size:.58rem;color:#999">Active only</div></div></div>
+    <div class="venn-circle venn-active" onclick="drillByCategory('total')" title="Active-only companies"><div style="margin-left:-20px"><div style="font-size:1.1rem;color:#667eea">${r.onlyActive.toLocaleString()}</div><div style="font-size:.58rem;color:#999">Active only</div></div></div>
     <div class="venn-circle venn-expired" onclick="drillByCategory('churned')"><div style="margin-left:20px"><div style="font-size:1.1rem;color:#f45c43">${r.fullChurn.toLocaleString()}</div><div style="font-size:.58rem;color:#999">Expired only</div></div></div>
     <div class="venn-overlap-zone" onclick="drillByCategory('overlap')"><div><div>${r.overlappingCompGUIDs.toLocaleString()}</div><div style="font-size:.55rem;color:#ccc">Partial</div></div></div>`);
 }
@@ -968,14 +972,9 @@ function renderVenn(){
 function renderFlowDiagram(){
   const r = analysisResults, tot = r.totalCompanies || 1;
   const pp = ((r.overlappingCompGUIDs / tot) * 100).toFixed(1), fp = ((r.fullChurn / tot) * 100).toFixed(1);
-  const nsp = r.overlappingCompGUIDs ? ((r.newSalesCompanies / Math.max(r.overlappingCompGUIDs, 1)) * 100).toFixed(1) : '0';
-  const ap = r.totalActive ? ((r.atRisk / r.totalActive) * 100).toFixed(1) : '0';
   safeSetHTML('flowDiagram', `
     <div class="flow-row" onclick="drillByCategory('overlap')"><div class="flow-label">🟡 Partial Churn</div><div class="flow-bar-container"><div class="flow-bar partial" style="width:${Math.max(+pp, 5)}%">${r.overlappingCompGUIDs.toLocaleString()}</div></div><div class="flow-value" style="color:#a855f7">${pp}%</div></div>
-    <div class="flow-row" onclick="drillByCategory('churned')"><div class="flow-label">🔴 Full Churn</div><div class="flow-bar-container"><div class="flow-bar churned" style="width:${Math.max(+fp, 5)}%">${r.fullChurn.toLocaleString()}</div></div><div class="flow-value" style="color:#f45c43">${fp}%</div></div>
-    <div class="flow-row" onclick="drillByCategory('newsales')"><div class="flow-label">🔵 New Sales</div><div class="flow-bar-container"><div class="flow-bar newsales" style="width:${Math.max(+nsp, 5)}%">${r.newSalesCompanies.toLocaleString()} cos</div></div><div class="flow-value" style="color:#22d3ee">${nsp}%</div></div>
-    <div class="flow-row" onclick="drillByCategory('ghost')"><div class="flow-label">👻 Ghost Churn</div><div class="flow-bar-container"><div class="flow-bar" style="background:rgba(244,63,94,.5);width:${Math.max(r.ghostCount > 0 ? 10 : 0, 3)}%">${r.ghostCount.toLocaleString()} subs</div></div><div class="flow-value" style="color:#f43f5e">Unused</div></div>
-    <div class="flow-row" onclick="drillByCategory('atrisk')"><div class="flow-label">⚠️ At-Risk</div><div class="flow-bar-container"><div class="flow-bar atrisk" style="width:${Math.max(+ap, 3)}%">${r.atRisk.toLocaleString()}</div></div><div class="flow-value" style="color:#ffd200">${ap}%</div></div>`);
+    <div class="flow-row" onclick="drillByCategory('churned')"><div class="flow-label">🔴 Full Churn</div><div class="flow-bar-container"><div class="flow-bar churned" style="width:${Math.max(+fp, 5)}%">${r.fullChurn.toLocaleString()}</div></div><div class="flow-value" style="color:#f45c43">${fp}%</div></div>`);
 }
 
 function dc(n) { if (charts[n]) { charts[n].destroy(); charts[n] = null; } }
@@ -1019,33 +1018,31 @@ function rowCsv(d){
   const ten=d.installDate?((d.currentBlsExpiry-d.installDate)/31557600000).toFixed(2):'';
   const inst=d.installDate?d.installDate.toISOString().slice(0,10):'';
   const lud=d.lastUseDate?d.lastUseDate.toISOString().slice(0,10):'';
-  
   const ca=[...new Set(cn.a.filter(x=>x.sub!==d.subscriptionId).map(x=>`${x.sub}(Exp:${x.expStr})`))].join('; ');
   const ce=[...new Set(cn.e.filter(x=>x.sub!==d.subscriptionId).map(x=>`${x.sub}(Exp:${x.expStr})`))].join('; ');
   const ga=[...new Set(gn.a.filter(x=>x.sub!==d.subscriptionId).map(x=>`${x.sub}(Exp:${x.expStr})`))].join('; ');
   const ge=[...new Set(gn.e.filter(x=>x.sub!==d.subscriptionId).map(x=>`${x.sub}(Exp:${x.expStr})`))].join('; ');
   const comboActList=[...new Set(combo.a.map(x=>`${x.sub}(Exp:${x.expStr})`))].join('; ');
-
   return `"${d.ownerPartner}","${d.categoryName}","${inst}","${ten}","${d.compGUID}","${d.gstin||''}","${d.comboKey}","${d.subscriptionId}","${lud}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}","${d.isGhost?'Ghost':(d.isNewSales?'Yes':'No')}","${(d.newSalesDetail||'').replace(/"/g,"'")}","${ca}","${ce}","${ga}","${ge}","${comboActList}"\n`;
 }
 
 function downloadCSV(){
-  let csv='Partner,Category,Install,TenureYrs,CompGUID,GSTIN,GSTIN_CompGUID,SubNo,LastUsedDate,BLSExpiry,Source,NewSalesOrGhost,NewSalesDetail,LinkedActCompWithExpiries,LinkedExpCompWithExpiries,LinkedActGSTWithExpiries,LinkedExpGSTWithExpiries,ActiveSerialsSameGSTINCompGUIDWithExpiries\n';
+  let csv='Partner,Category,Install,TenureYrs,CompGUID,GSTIN,GSTIN_CompGUID,SubNo,LastUsedDate,BLSExpiry,Source,NewSalesOrGhost,NewSalesDetail,LinkedActComp,LinkedExpComp,LinkedActGST,LinkedExpGST,ActiveSerialsCombo\n';
   expiredData.forEach(d=>csv+=rowCsv(d)); activeData.forEach(d=>csv+=rowCsv(d));
-  dlFile(csv,'churn_full_dual_expiry_export.csv','text/csv');
+  dlFile(csv,'churn_full_export.csv','text/csv');
 }
 function downloadOverlap(){
-  const r=analysisResults; let csv='Partner,Category,Install,TenureYrs,CompGUID,GSTIN,GSTIN_CompGUID,SubNo,LastUsedDate,BLSExpiry,Source,NewSalesOrGhost,NewSalesDetail,LinkedActCompWithExpiries,LinkedExpCompWithExpiries,ActiveSerialsSameGSTINCompGUIDWithExpiries\n';
-  const w=d=>{if(!r.overlappingCompGUIDSet.has(d.compGUID))return; csv+=rowCsv(d);};
-  expiredData.forEach(w); activeData.forEach(w); dlFile(csv,'partial_churn_dual_expiry_export.csv','text/csv');
+  const r=analysisResults; let csv='Partner,Category,Install,TenureYrs,CompGUID,GSTIN,GSTIN_CompGUID,SubNo,LastUsedDate,BLSExpiry,Source,NewSalesOrGhost,NewSalesDetail,LinkedActComp,LinkedExpComp,ActiveSerialsCombo\n';
+  expiredData.concat(activeData).filter(d=>r.overlappingCompGUIDSet.has(d.compGUID)).forEach(d=>csv+=rowCsv(d));
+  dlFile(csv,'partial_churn_export.csv','text/csv');
 }
 function downloadNewSales(){
-  let csv='Partner,Category,Install,TenureYrs,CompGUID,GSTIN,GSTIN_CompGUID,SubNo,LastUsedDate,BLSExpiry,Source,NewSalesOrGhost,NewSalesDetail,LinkedActCompWithExpiries,LinkedExpCompWithExpiries,LinkedActGSTWithExpiries,LinkedExpGSTWithExpiries,ActiveSerialsSameGSTINCompGUIDWithExpiries\n';
+  let csv='Partner,Category,Install,TenureYrs,CompGUID,GSTIN,GSTIN_CompGUID,SubNo,LastUsedDate,BLSExpiry,Source,NewSalesOrGhost,NewSalesDetail,LinkedActComp,LinkedExpComp,LinkedActGST,LinkedExpGST,ActiveSerialsCombo\n';
   expiredData.concat(activeData).filter(d=>d.isNewSales).forEach(d=>csv+=rowCsv(d));
   dlFile(csv,'new_sales_export.csv','text/csv');
 }
 function downloadModalData(){
-  let csv='Partner,Category,Install,TenureYrs,CompGUID,GSTIN,GSTIN_CompGUID,SubNo,LastUsedDate,BLSExpiry,Source,NewSalesOrGhost,NewSalesDetail,LinkedActCompWithExpiries,LinkedExpCompWithExpiries,LinkedActGSTWithExpiries,LinkedExpGSTWithExpiries,ActiveSerialsSameGSTINCompGUIDWithExpiries\n';
+  let csv='Partner,Category,Install,TenureYrs,CompGUID,GSTIN,GSTIN_CompGUID,SubNo,LastUsedDate,BLSExpiry,Source,NewSalesOrGhost,NewSalesDetail,LinkedActComp,LinkedExpComp,LinkedActGST,LinkedExpGST,ActiveSerialsCombo\n';
   modalFilteredData.forEach(d=>csv+=rowCsv(d));
   dlFile(csv,'drill_down_export.csv','text/csv');
 }
@@ -1053,11 +1050,14 @@ function downloadModalData(){
 function runAnalysis(){
   const ov = document.getElementById('loadingOverlay');
   if(ov) ov.classList.add('show');
-  
-  // Non-blocking timer prevents UI freeze
   setTimeout(()=>{
     try{
-      analyzeData(); renderKPIs(); renderInsights(); renderVenn(); renderFlowDiagram(); renderCharts(); 
+      analyzeData(); 
+      renderKPIs(); 
+      renderInsights(); 
+      renderVenn(); 
+      renderFlowDiagram(); 
+      renderCharts(); 
       setMainTab('all'); 
     }catch(err){
       console.error(err);
@@ -1065,7 +1065,7 @@ function runAnalysis(){
     }finally{
       if(ov) ov.classList.remove('show');
     }
-  }, 100);
+  },50);
 }
 
 if (document.readyState === 'loading') {
