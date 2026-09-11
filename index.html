@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Customer Churn & Retention Dashboard</title>
+<title>Expired base Churn Analysis</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -44,9 +44,7 @@
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:var(--bg-gradient);color:var(--text-main);min-height:100vh;overflow-x:hidden;transition:background 0.3s, color 0.3s;}
 .header{background:linear-gradient(135deg,#667eea,#764ba2);padding:24px 40px;text-align:center;box-shadow:0 4px 30px rgba(102,126,234,.3);position:relative;}
-.header h1{font-size:1.8rem;color:#fff;margin-bottom:4px}
-.header p{color:rgba(255,255,255,.85);font-size:.9rem}
-.header-badge{display:inline-block;background:rgba(255,255,255,.15);padding:3px 14px;border-radius:20px;font-size:.75rem;color:#fff;margin-top:6px}
+.header h1{font-size:1.8rem;color:#fff;margin:0;}
 
 .theme-toggle { position:absolute; top:24px; right:30px; background:rgba(255,255,255,0.2); border:1px solid rgba(255,255,255,0.4); color:#fff; padding:6px 14px; border-radius:20px; cursor:pointer; font-size:0.8rem; font-weight:600; transition:0.2s; }
 .theme-toggle:hover { background:rgba(255,255,255,0.3); }
@@ -276,9 +274,7 @@ footer{text-align:center;padding:20px;color:var(--text-muted);font-size:.72rem}
 </div>
 
 <div class="header">
-  <h1>📊 Enterprise Customer Churn & Retention Dashboard</h1>
-  <p>Deduplicated Precision Engine · Partner Churn Rankings · Interactive Data Labels</p>
-  <div class="header-badge">v48.0 — Absolute Math Sync & Light Mode Default</div>
+  <h1>Expired base Churn Analysis in co-relation to COMPGUID & GSTIN</h1>
   <button id="themeToggleBtn" class="theme-toggle" onclick="toggleTheme()">🌙 Dark Mode</button>
 </div>
 
@@ -330,7 +326,7 @@ footer{text-align:center;padding:20px;color:var(--text-muted);font-size:.72rem}
   <div class="chart-card">
     <div class="chart-title" style="cursor:pointer" title="Click to interact">🔄 Top Partners by RDP Shift (vs Expired Base)</div>
     <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 8px;">
-        <strong>Red:</strong> Pure Churn (Expired) &nbsp;|&nbsp; <strong>Cyan:</strong> Shifted to RDP (Expired) &nbsp;|&nbsp; <strong>Line:</strong> RDP Shift %<br>
+        <strong>Red:</strong> Pure Churn &nbsp;|&nbsp; <strong>Cyan:</strong> Shifted to RDP &nbsp;|&nbsp; <strong>Line:</strong> RDP Shift %<br>
         <strong>Click a bar</strong> to view Partner's complete base.
     </div>
     <div class="chart-container"><canvas id="partnerRdpChart"></canvas></div>
@@ -339,7 +335,7 @@ footer{text-align:center;padding:20px;color:var(--text-muted);font-size:.72rem}
   <div class="chart-card">
     <div class="chart-title" style="cursor:pointer" title="Click to interact">🆕 Top Partners by New Sales Shift (vs Expired Base)</div>
     <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 8px;">
-        <strong>Red:</strong> Pure Churn (Expired) &nbsp;|&nbsp; <strong>Purple:</strong> Shifted to New Sale (Expired) &nbsp;|&nbsp; <strong>Line:</strong> NS Shift %<br>
+        <strong>Red:</strong> Pure Churn &nbsp;|&nbsp; <strong>Purple:</strong> Shifted to New Sale &nbsp;|&nbsp; <strong>Line:</strong> NS Shift %<br>
         <strong>Click a bar</strong> to view Partner's complete base.
     </div>
     <div class="chart-container"><canvas id="partnerNsChart"></canvas></div>
@@ -426,7 +422,7 @@ footer{text-align:center;padding:20px;color:var(--text-muted);font-size:.72rem}
   </div>
 </div>
 
-<footer>Customer Churn Dashboard v48.0 · Absolute Math Sync Engine & Native Light Theme</footer>
+<footer>Expired base Churn Analysis · Light / Dark Mode</footer>
 
 <script>
 Chart.register(ChartDataLabels);
