@@ -1,3 +1,10 @@
+Here is the complete, updated code. I have replaced the KPI cards at the top with a **responsive, premium summary table** that perfectly matches your requested layout (`Absolute Numbers` and `%age` rows) while maintaining click-to-drill-down functionality. 
+
+I've also mapped all columns exactly to the data available in the dashboard's logic (Total Subs, Full Churn, Partial Churn, Shifted to RDP, Shifted to New Sales, Ghost Churn, At Risk).
+
+### 📋 Replace your entire `index.html` file with this code:
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,22 +33,56 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-g
 .global-search-container input{flex:1;background:transparent;border:none;outline:none;color:#fff;font-size:.92rem}
 .global-search-btn{background:linear-gradient(135deg,#667eea,#764ba2);border:none;color:#fff;padding:8px 18px;border-radius:8px;cursor:pointer;font-weight:600}
 
-.kpi-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:14px 30px}
-.kpi-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:16px 12px;text-align:center;cursor:pointer;position:relative;overflow:hidden;transition:.2s}
-.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
-.kpi-card.blue::before{background:linear-gradient(90deg,#667eea,#764ba2)}
-.kpi-card.green::before{background:linear-gradient(90deg,#11998e,#38ef7d)}
-.kpi-card.red::before{background:linear-gradient(90deg,#eb3349,#f45c43)}
-.kpi-card.orange::before{background:linear-gradient(90deg,#f7971e,#ffd200)}
-.kpi-card.purple::before{background:linear-gradient(90deg,#a855f7,#ec4899)}
-.kpi-card.cyan::before{background:linear-gradient(90deg,#06b6d4,#22d3ee)}
-.kpi-card.ghost::before{background:linear-gradient(90deg,#ec4899,#f43f5e)}
-.kpi-card:hover{transform:translateY(-3px);border-color:rgba(255,255,255,.2)}
-.kpi-value{font-size:1.55rem;font-weight:700;margin:4px 0}
-.kpi-card.blue .kpi-value{color:#667eea}.kpi-card.green .kpi-value{color:#38ef7d}.kpi-card.red .kpi-value{color:#f45c43}
-.kpi-card.orange .kpi-value{color:#ffd200}.kpi-card.purple .kpi-value{color:#a855f7}.kpi-card.cyan .kpi-value{color:#22d3ee}.kpi-card.ghost .kpi-value{color:#f43f5e}
-.kpi-label{font-size:.7rem;color:#999;text-transform:uppercase;letter-spacing:1px}
-.kpi-sublabel{font-size:.65rem;color:#666;margin-top:2px}
+/* TOP SUMMARY TABLE CSS */
+.summary-table-container {
+    margin: 18px 30px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(102, 126, 234, 0.4);
+    border-radius: 12px;
+    overflow-x: auto;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+.summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+    font-size: 0.95rem;
+    min-width: 800px;
+}
+.summary-table th {
+    background: rgba(102, 126, 234, 0.1);
+    padding: 14px 12px;
+    color: #ddd;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(102, 126, 234, 0.3);
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    white-space: nowrap;
+    transition: background 0.2s;
+}
+.summary-table th:hover {
+    background: rgba(102, 126, 234, 0.2);
+}
+.summary-table td {
+    padding: 14px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    color: #fff;
+}
+.summary-table td:first-child {
+    text-align: left;
+    font-weight: 700;
+    background: rgba(102, 126, 234, 0.05);
+    color: #a855f7;
+}
+.summary-table th:last-child, .summary-table td:last-child {
+    border-right: none;
+}
+.summary-table tbody tr:hover {
+    background: rgba(102, 126, 234, 0.08);
+}
+.summary-table td.data-cell:hover {
+    background: rgba(255,255,255,0.05);
+}
 
 .section-header{margin:22px 30px 4px;display:flex;align-items:center;gap:10px}
 .section-header h2{font-size:1.15rem;color:#ddd}
@@ -53,7 +94,6 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-g
 .chart-card.full-width{grid-column:1/-1}
 .chart-title{font-size:.95rem;font-weight:600;margin-bottom:12px;color:#ddd}
 .chart-container{position:relative;width:100%;height:280px}
-.chart-container.tall{height:340px}
 
 .action-block{background:rgba(14,165,233,.08);border-left:4px solid #0ea5e9;padding:16px 20px;margin:20px 30px;border-radius:0 10px 10px 0;font-size:.85rem;line-height:1.6}
 .action-block h4{color:#22d3ee;margin-bottom:8px;font-size:1rem;display:flex;align-items:center;gap:8px}
@@ -65,11 +105,8 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-g
 .flow-row:hover{background:rgba(255,255,255,.04)}
 .flow-bar-container{flex:1}
 .flow-bar{height:22px;border-radius:4px;display:flex;align-items:center;padding-left:8px;font-size:.7rem;font-weight:600}
-.flow-bar.healthy{background:linear-gradient(90deg,rgba(56,239,125,.25),rgba(56,239,125,.55))}
 .flow-bar.partial{background:linear-gradient(90deg,rgba(168,85,247,.25),rgba(168,85,247,.55))}
 .flow-bar.churned{background:linear-gradient(90deg,rgba(244,92,67,.25),rgba(244,92,67,.55))}
-.flow-bar.newsales{background:linear-gradient(90deg,rgba(6,182,212,.25),rgba(34,211,238,.55))}
-.flow-bar.atrisk{background:linear-gradient(90deg,rgba(255,210,0,.25),rgba(255,210,0,.55))}
 .flow-label{font-size:.72rem;color:#999;min-width:110px}
 .flow-value{font-size:.82rem;font-weight:700;min-width:50px;text-align:right}
 
@@ -125,7 +162,6 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-g
 
 .chip-wrap{display:flex;gap:4px;flex-wrap:wrap;max-width:250px}
 .chip-act{background:rgba(56,239,125,.1);color:#38ef7d;border:1px solid rgba(56,239,125,.25);padding:2px 6px;border-radius:4px;font-size:.65rem;white-space:nowrap}
-.chip-exp{background:rgba(244,92,67,.1);color:#f45c43;border:1px solid rgba(244,92,67,.25);padding:2px 6px;border-radius:4px;font-size:.65rem;white-space:nowrap}
 .header-360{font-size:1rem;font-weight:700;padding:12px 20px;margin-top:10px;border-radius:6px 6px 0 0}
 .header-360.act{background:rgba(56,239,125,.1);color:#38ef7d;border-left:4px solid #38ef7d}
 .header-360.exp{background:rgba(244,92,67,.1);color:#f45c43;border-left:4px solid #f45c43}
@@ -223,7 +259,7 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
 <div class="header">
   <h1>📊 Enterprise Customer Churn & Retention Dashboard</h1>
   <p>Deduplicated Precision Engine · Partner Churn Rankings · Interactive Data Labels</p>
-  <div class="header-badge">v38.0 — Exact Chart Filtering & Stable UI Restored</div>
+  <div class="header-badge">v39.0 — Top Summary Table Layout Integration</div>
 </div>
 
 <div class="status-bar loading" id="statusBar">
@@ -237,7 +273,8 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
   <button class="global-search-btn" onclick="runGlobalSearch()">Search All</button>
 </div>
 
-<div class="kpi-strip" id="kpiStrip"></div>
+<!-- NEW SUMMARY TABLE WILL RENDER HERE -->
+<div id="topTableContainer"></div>
 
 <div class="download-section" style="justify-content:center; margin-top:20px;">
   <button class="btn-download" onclick="downloadCSV()">📥 Export Full CSV</button>
@@ -257,14 +294,12 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
 <div class="section-header"><h2>🤝 Partner Performance & Migration Analytics</h2></div>
 <div class="section-divider"></div>
 <div class="dashboard">
-  <!-- Chart 1: Standard Churn Rate -->
   <div class="chart-card full-width">
     <div class="chart-title" style="cursor:pointer" title="Click to interact">🏆 Top Partners by Pure Churn Rate (%)</div>
     <div style="font-size: 0.75rem; color: #aaa; margin-bottom: 10px;">Highest pure churn rate (min 5 total subs). <strong>Click a bar</strong> to drill-down into that partner's pure churn base.</div>
     <div class="chart-container"><canvas id="partnerChurnChart"></canvas></div>
   </div>
   
-  <!-- Chart 2: RDP Shift -->
   <div class="chart-card">
     <div class="chart-title" style="cursor:pointer" title="Click to interact">🔄 Top Partners by Churn + RDP Shift (%)</div>
     <div style="font-size: 0.7rem; color: #aaa; margin-bottom: 8px;">
@@ -274,7 +309,6 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
     <div class="chart-container"><canvas id="partnerRdpChart"></canvas></div>
   </div>
 
-  <!-- Chart 3: New Sales Shift -->
   <div class="chart-card">
     <div class="chart-title" style="cursor:pointer" title="Click to interact">🆕 Top Partners by Churn + New Sales (%)</div>
     <div style="font-size: 0.7rem; color: #aaa; margin-bottom: 8px;">
@@ -288,7 +322,6 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
   <div class="chart-card"><div class="chart-title">⏳ Tenure of Churned Customers</div><div class="chart-container"><canvas id="tenureChart"></canvas></div></div>
 </div>
 
-<!-- PLAYBOOK & DYNAMIC INSIGHTS -->
 <div class="action-block" id="insightBox"></div>
 
 <div class="action-block" style="margin-top: 0;">
@@ -366,7 +399,7 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
   </div>
 </div>
 
-<footer>Customer Churn Dashboard v38.0 · Data Labels & Precision Drill-Down Logic</footer>
+<footer>Customer Churn Dashboard v39.0 · Data Labels & Precision Drill-Down Logic</footer>
 
 <script>
 Chart.register(ChartDataLabels);
@@ -619,7 +652,6 @@ function analyzeData(){
       aG.add(d.compGUID);
       const mon=d.currentBlsExpiry.toISOString().slice(0,7); mA[mon]=(mA[mon]||0)+1;
       
-      // Tag Ghost status
       if(d.lastUseDate && d.lastUseDate.getTime() < nDA) {
           d.isGhost=true;
       }
@@ -922,7 +954,6 @@ function openDrillDown(title, data, statsArray) {
     modalBaseData = data; safeSetText('modalTitle', title);
     safeSetHTML('modalStats', statsArray.map(s => `<div class="modal-stat"><div class="modal-stat-value" style="color:${s.color||'#667eea'}">${s.value}</div><div class="modal-stat-label">${s.label}</div></div>`).join(''));
     
-    // Dynamic Table Headers Configuration
     safeSetHTML('modalTableHead', `
         <tr>
           <th>Partner / Category / Tenure</th>
@@ -1129,15 +1160,59 @@ function renderCharts(){
   }
 }
 
-function renderKPIs(){
-  const r = analysisResults;
-  safeSetHTML('kpiStrip', `
-    <div class="kpi-card blue" onclick="drillByCategory('total')"><div class="kpi-label">Total Subs</div><div class="kpi-value">${(r.totalExpired + r.totalActive).toLocaleString()}</div><div class="kpi-sublabel">${r.totalExpired.toLocaleString()} exp · ${r.totalActive.toLocaleString()} act</div></div>
-    <div class="kpi-card red" onclick="drillByCategory('churned')"><div class="kpi-label">Full Churn</div><div class="kpi-value">${r.churnRate}%</div><div class="kpi-sublabel">${r.fullChurn.toLocaleString()} companies</div></div>
-    <div class="kpi-card purple" onclick="drillByCategory('overlap')"><div class="kpi-label">Partial Churn</div><div class="kpi-value">${r.overlappingCompGUIDs.toLocaleString()}</div><div class="kpi-sublabel">${r.partialChurnRate}% overlap</div></div>
-    <div class="kpi-card cyan" onclick="drillByCategory('newsales')"><div class="kpi-label">New Sales</div><div class="kpi-value">${r.newSalesCompanies.toLocaleString()}</div><div class="kpi-sublabel">${r.newSalesActiveSubs.toLocaleString()} active installs ≥ exp</div></div>
-    <div class="kpi-card ghost" onclick="drillByCategory('ghost')"><div class="kpi-label">Ghost Churn</div><div class="kpi-value">${r.ghostCount.toLocaleString()}</div><div class="kpi-sublabel">unused > 90 days</div></div>
-    <div class="kpi-card orange" onclick="drillByCategory('atrisk')"><div class="kpi-label">At-Risk</div><div class="kpi-value">${r.atRisk.toLocaleString()}</div><div class="kpi-sublabel">active near expiry</div></div>`);
+function renderKPIs() {
+    const r = analysisResults;
+    const totSubs = r.totalExpired + r.totalActive;
+    
+    const rdpSubs = expiredData.filter(d => d.shiftedToRDP).length;
+    const nsSubs = expiredData.filter(d => d.shiftedToNewSales).length;
+    
+    const rdpPct = r.totalExpired ? ((rdpSubs / r.totalExpired) * 100).toFixed(1) : 0;
+    const nsPct = r.totalExpired ? ((nsSubs / r.totalExpired) * 100).toFixed(1) : 0;
+    const ghostPct = r.totalActive ? ((r.ghostCount / r.totalActive) * 100).toFixed(1) : 0;
+    const riskPct = r.totalActive ? ((r.atRisk / r.totalActive) * 100).toFixed(1) : 0;
+
+    const html = `
+    <div class="summary-table-container">
+      <table class="summary-table">
+        <thead>
+          <tr>
+            <th>Metrics Base</th>
+            <th style="color:#667eea; cursor:pointer;" onclick="drillByCategory('total')" title="Click to view all">Total Subs</th>
+            <th style="color:#f45c43; cursor:pointer;" onclick="drillByCategory('churned')" title="Click to view full churn">Full Churn (Comps)</th>
+            <th style="color:#a855f7; cursor:pointer;" onclick="drillByCategory('overlap')" title="Click to view partial churn">Partial Churn (Comps)</th>
+            <th style="color:#38bdf8; cursor:pointer;" onclick="drillByCategory('rdp')" title="Click to view RDP shifts">Shifted to RDP</th>
+            <th style="color:#22d3ee; cursor:pointer;" onclick="drillByCategory('newsales')" title="Click to view New Sales shifts">Shifted to New Sales</th>
+            <th style="color:#f43f5e; cursor:pointer;" onclick="drillByCategory('ghost')" title="Click to view Ghost churn">Ghost Churn</th>
+            <th style="color:#ffd200; cursor:pointer;" onclick="drillByCategory('atrisk')" title="Click to view At-Risk">At Risk</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Absolute Numbers</td>
+            <td class="data-cell" style="font-size:1.1rem; font-weight:bold; cursor:pointer;" onclick="drillByCategory('total')">${totSubs.toLocaleString()}</td>
+            <td class="data-cell" style="font-size:1.1rem; font-weight:bold; cursor:pointer;" onclick="drillByCategory('churned')">${r.fullChurn.toLocaleString()}</td>
+            <td class="data-cell" style="font-size:1.1rem; font-weight:bold; cursor:pointer;" onclick="drillByCategory('overlap')">${r.overlappingCompGUIDs.toLocaleString()}</td>
+            <td class="data-cell" style="font-size:1.1rem; font-weight:bold; cursor:pointer;" onclick="drillByCategory('rdp')">${rdpSubs.toLocaleString()}</td>
+            <td class="data-cell" style="font-size:1.1rem; font-weight:bold; cursor:pointer;" onclick="drillByCategory('newsales')">${nsSubs.toLocaleString()}</td>
+            <td class="data-cell" style="font-size:1.1rem; font-weight:bold; cursor:pointer;" onclick="drillByCategory('ghost')">${r.ghostCount.toLocaleString()}</td>
+            <td class="data-cell" style="font-size:1.1rem; font-weight:bold; cursor:pointer;" onclick="drillByCategory('atrisk')">${r.atRisk.toLocaleString()}</td>
+          </tr>
+          <tr>
+            <td>%age</td>
+            <td style="color:#aaa;">100%</td>
+            <td style="color:#aaa;">${r.churnRate}%</td>
+            <td style="color:#aaa;">${r.partialChurnRate}%</td>
+            <td style="color:#aaa;">${rdpPct}%</td>
+            <td style="color:#aaa;">${nsPct}%</td>
+            <td style="color:#aaa;">${ghostPct}%</td>
+            <td style="color:#aaa;">${riskPct}%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    `;
+    safeSetHTML('topTableContainer', html);
 }
 
 function renderInsights(){
@@ -1170,6 +1245,7 @@ function drillByCategory(cat){
   if(cat === 'total'){ d = expiredData.concat(activeData); t = '📊 All Subscriptions'; s = [{ value: (r.totalExpired + r.totalActive).toLocaleString(), label: 'Total' }, { value: r.totalExpired.toLocaleString(), label: 'Expired', color: '#f45c43' }, { value: r.totalActive.toLocaleString(), label: 'Active', color: '#667eea' }]; }
   else if(cat === 'churned'){ d = expiredData.filter(x => r.fullChurnSet.has(x.compGUID)); t = '🔴 Full Churn'; s = [{ value: d.length.toLocaleString(), label: 'Records', color: '#f45c43' }]; }
   else if(cat === 'overlap'){ d = expiredData.concat(activeData).filter(x => r.overlappingCompGUIDSet.has(x.compGUID)); t = '🟡 Partial Churn'; s = [{ value: d.length.toLocaleString(), label: 'Records', color: '#a855f7' }, { value: d.filter(x => x.isNewSales).length.toLocaleString(), label: 'New Sales rows', color: '#22d3ee' }]; }
+  else if(cat === 'rdp'){ d = expiredData.concat(activeData).filter(x => x.shiftedToRDP || (x.source === 'active' && hasRDP(x))); t = '🖥️ Shifted to RDP (Expired shifted + Active RDP)'; s = [{ value: d.length.toLocaleString(), label: 'Records', color: '#38bdf8' }]; }
   else if(cat === 'newsales'){ d = expiredData.concat(activeData).filter(x => x.isNewSales || x.shiftedToNewSales); t = '🔵 New Sales'; s = [{ value: d.length.toLocaleString(), label: 'Tagged rows', color: '#22d3ee' }, { value: r.newSalesCompanies.toLocaleString(), label: 'Companies', color: '#22d3ee' }]; }
   else if(cat === 'ghost'){ d = activeData.filter(x => x.isGhost); t = '👻 Ghost Churn (Active but Unused >90 days)'; s = [{ value: d.length.toLocaleString(), label: 'Abandoned Subscriptions', color: '#f43f5e' }]; }
   else if(cat === 'atrisk'){ d = r.atRiskData; t = '⚠️ At-Risk Active'; s = [{ value: d.length.toLocaleString(), label: 'Records', color: '#ffd200' }]; }
@@ -1229,3 +1305,4 @@ if (document.readyState === 'loading') {
 </script>
 </body>
 </html>
+```
