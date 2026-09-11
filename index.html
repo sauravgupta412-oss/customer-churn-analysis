@@ -1,14 +1,3 @@
-I have fixed both of the issues completely. 
-
-### 🌟 Fixes Implemented in v40.0:
-1. **White Text in 360° Account Popup**: I forced all standard table cells within the popups to render in pure white (`#fff`) text so that they are highly readable against the dark background.
-2. **Strict RDP Tag Logic**: I modified the RDP tagging logic. The system now strictly suppresses the RDP tag on Expired Subscriptions if they do not have a matching Active subscription. An expired subscription will now **only** get the RDP tag if the customer successfully migrated to an Active base **and** that active license explicitly has `RDP_License = Yes`.
-
----
-
-### 📋 Replace your entire `index.html` file with this updated code:
-
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1334,4 +1323,3 @@ if (document.readyState === 'loading') {
 </script>
 </body>
 </html>
-```
