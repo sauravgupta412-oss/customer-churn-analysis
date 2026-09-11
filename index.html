@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Customer Churn & Retention - Enterprise Dashboard</title>
+<title>Customer Churn & Retention Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
@@ -80,7 +80,7 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-g
 /* MODAL & 360 POPUP */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(10,10,26,.95);z-index:2000;justify-content:center;align-items:center;padding:16px}
 .modal-overlay.show{display:flex}
-.modal{background:#1a1a3e;border:1px solid rgba(255,255,255,.12);border-radius:12px;width:100%;max-width:1480px;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.modal{background:#1a1a3e;border:1px solid rgba(255,255,255,.12);border-radius:12px;width:100%;max-width:1550px;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.5)}
 .modal-header{background:linear-gradient(135deg,#667eea,#764ba2);padding:14px 20px;display:flex;justify-content:space-between;align-items:center}
 .modal-header h3{color:#fff;font-size:1.05rem}
 .modal-close{background:rgba(255,255,255,.2);border:none;color:#fff;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:background 0.2s}
@@ -96,8 +96,8 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-g
 .ctrl-input option { background-color:#1a1a3e; color:#fff; }
 
 .modal-body{padding:0;overflow-y:auto;flex:1;overflow-x:auto;}
-.modal-table{width:100%;border-collapse:collapse;font-size:.74rem;min-width:1100px}
-.modal-table thead th{background:rgba(30,30,60,.97);padding:10px 14px;text-align:left;color:#999;font-weight:600;text-transform:uppercase;font-size:.65rem;position:sticky;top:0;z-index:1;white-space:nowrap;border-bottom:1px solid rgba(255,255,255,.05)}
+.modal-table{width:100%;border-collapse:collapse;font-size:.74rem;min-width:1380px}
+.modal-table thead th{background:rgba(30,30,60,.97);padding:9px 12px;text-align:left;color:#999;font-weight:600;text-transform:uppercase;font-size:.65rem;position:sticky;top:0;z-index:1;white-space:nowrap;border-bottom:1px solid rgba(255,255,255,.05)}
 .modal-table tbody td{padding:8px 14px;border-bottom:1px solid rgba(255,255,255,.03);vertical-align:middle}
 .modal-table tbody tr:hover{background:rgba(102,126,234,.06)}
 
@@ -117,19 +117,13 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-g
 .linked-summary-badge .exp-num{color:#f45c43;font-weight:700}
 .linked-summary-badge .hint{font-size:.62rem;color:#888;margin-left:4px}
 
-.status-badge{padding:3px 8px;border-radius:10px;font-size:.62rem;font-weight:600;white-space:nowrap}
+/* INLINE BADGES */
+.status-badge{padding:3px 8px;border-radius:10px;font-size:.62rem;font-weight:600;white-space:nowrap;display:inline-block;}
 .status-active{background:rgba(56,239,125,.12);color:#38ef7d}
 .status-expired{background:rgba(244,92,67,.12);color:#f45c43}
 .status-newsales{background:rgba(34,211,238,.15);color:#22d3ee;border:1px solid rgba(34,211,238,.35)}
-.status-ghost{background:rgba(244,63,94,.15);color:#f43f5e;border:1px solid rgba(244,63,94,.35)}
-
-.debug-console{margin:10px 30px;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.08);border-radius:8px;overflow:hidden}
-.debug-header{padding:8px 14px;background:rgba(255,255,255,.04);cursor:pointer;font-size:.8rem;color:#aaa}
-.debug-body{padding:10px 14px;max-height:160px;overflow-y:auto;font-family:monospace;font-size:.72rem;color:#ccc}
-.debug-line{padding:2px 0}
-.debug-line.success{color:#38ef7d}
-.debug-line.error{color:#f45c43}
-.debug-line.warn{color:#ffd200}
+.status-ghost{background:rgba(244,63,94,.15);color:#f43f5e;border:1px solid rgba(244,63,94,.35);margin-left:4px;}
+.status-rdp{background:rgba(56,189,248,.15);color:#38bdf8;border:1px solid rgba(56,189,248,.35);margin-left:4px;cursor:help;}
 
 .data-table-container{margin:14px 30px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;overflow:hidden}
 .table-header{padding:14px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,.06);flex-wrap:wrap;gap:8px}
@@ -148,9 +142,7 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-g
 .file-btn-sm{background:linear-gradient(135deg,#667eea,#764ba2);border:none;color:#fff;padding:4px 12px;border-radius:4px;cursor:pointer;font-size:.75rem;margin-left:8px}
 footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
 
-.header-360 {
-    background:rgba(255,255,255,0.02); padding:10px 15px; margin:14px 20px 8px; border-radius:8px; border-left:4px solid #38ef7d; font-weight:600; color:#38ef7d; display:flex; align-items:center; font-size:0.9rem;
-}
+.header-360 {background:rgba(255,255,255,0.02); padding:10px 15px; margin:14px 20px 8px; border-radius:8px; border-left:4px solid #38ef7d; font-weight:600; color:#38ef7d; display:flex; align-items:center; font-size:0.9rem;}
 .header-360.exp { border-left-color: #f45c43; color: #f45c43; background:rgba(244,92,67,0.05); }
 .header-360.act { border-left-color: #38ef7d; color: #38ef7d; background:rgba(56,239,125,0.05); }
 </style>
@@ -181,6 +173,8 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
       <select class="ctrl-input" id="modalSort" onchange="triggerModalUpdate()">
         <option value="exp_desc">Sort: Expiry (Newest)</option>
         <option value="exp_asc">Sort: Expiry (Oldest)</option>
+        <option value="install_desc">Sort: Install Date (Newest)</option>
+        <option value="install_asc">Sort: Install Date (Oldest)</option>
         <option value="tenure_desc">Sort: Tenure (High-Low)</option>
         <option value="tenure_asc">Sort: Tenure (Low-High)</option>
       </select>
@@ -205,7 +199,7 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
 <!-- DEDICATED ACCOUNT 360° DETAIL POPUP -->
 <div class="modal-overlay" id="account360Modal">
   <div class="modal" style="max-width:1400px">
-    <div class="modal-header" style="background:linear-gradient(135deg,#667eea,#764ba2)">
+    <div class="modal-header">
       <h3 id="acc360Title">🏢 Account 360° Complete History</h3>
       <button class="modal-close" onclick="closeModal('account360Modal')">✕</button>
     </div>
@@ -222,20 +216,18 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
 
 <div class="header">
   <h1>📊 Enterprise Customer Churn & Retention Dashboard</h1>
-  <p>Esc Key Support · Robust Timestamp & Date Parsing · Un-Killable Auto-Loader</p>
-  <div class="header-badge">v30.0 — Multi-Engine Auto-Loader Edition</div>
+  <p>Esc Key Support · Inline RDP Badges · Deduplicated Precision Engine</p>
+  <div class="header-badge">v34.0 — Inline RDP Badges & Optimized Table Layout</div>
 </div>
 
-<div class="status-bar loading" id="statusBar"><div class="status-spinner"></div><span id="statusText">Fetching data files...</span></div>
-
-<div class="debug-console" id="debugConsole">
-  <div class="debug-header" onclick="toggleDebug()">🔧 Console Log (Click to toggle view)</div>
-  <div class="debug-body" id="debugBody"></div>
+<div class="status-bar loading" id="statusBar">
+    <div class="status-spinner"></div>
+    <span id="statusText">Fetching data files...</span>
 </div>
 
 <div class="global-search-container">
   <span>🔍</span>
-  <input type="text" id="globalSearchInput" placeholder="Global Search: Partner, Category, CompGUID, Sub ID, GSTIN..." onkeydown="if(event.key==='Enter')runGlobalSearch()">
+  <input type="text" id="globalSearchInput" placeholder="Global Search: Partner, CompGUID, Sub ID, GSTIN, RDP..." onkeydown="if(event.key==='Enter')runGlobalSearch()">
   <button class="global-search-btn" onclick="runGlobalSearch()">Search All</button>
 </div>
 
@@ -260,14 +252,17 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
     <h4>💡 Playbook: Correlation & Recovery</h4>
     <div class="action-item"><strong>For Ghost Churn (Pink):</strong> Active subscriptions unused in 90+ days. <em>Action: Reach out immediately to offer training or technical support.</em></div>
     <div class="action-item"><strong>For Partial Churn (Yellow):</strong> Dropped some licenses but kept others. <em>Action: Click any row to open the 360° Account Popup and see all linked serials.</em></div>
-    <div class="action-item"><strong>For New Sales (Blue):</strong> Active licenses purchased after an old one expired. <em>Action: Verify if this is net-new growth or license replacement.</em></div>
 </div>
 
-<!-- SECTION 2: PARTNERS & PRODUCTS -->
-<div class="section-header"><h2>🤝 Partner & Product Performance</h2></div>
+<!-- SECTION 2: TOP PARTNER CHURN -->
+<div class="section-header"><h2>🤝 Partner Performance Analysis</h2></div>
 <div class="section-divider"></div>
 <div class="dashboard">
-  <div class="chart-card full-width"><div class="chart-title">🏆 Top 10 Owner_Partners</div><div class="chart-container"><canvas id="partnerChart"></canvas></div></div>
+  <div class="chart-card full-width">
+    <div class="chart-title">🏆 Top Partners by Churn Rate (%)</div>
+    <div style="font-size: 0.75rem; color: #aaa; margin-bottom: 10px;">Showing partners with highest churn percentage (minimum 2 total subscriptions).</div>
+    <div class="chart-container"><canvas id="partnerChurnChart"></canvas></div>
+  </div>
   <div class="chart-card"><div class="chart-title">📦 Category Mix</div><div class="chart-container"><canvas id="categoryChart"></canvas></div></div>
   <div class="chart-card"><div class="chart-title">⏳ Tenure of Churned Customers</div><div class="chart-container"><canvas id="tenureChart"></canvas></div></div>
 </div>
@@ -301,6 +296,8 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
       <select class="ctrl-input" id="mainSort" onchange="triggerMainUpdate()">
         <option value="exp_desc">Sort: Expiry (Newest)</option>
         <option value="exp_asc">Sort: Expiry (Oldest)</option>
+        <option value="install_desc">Sort: Install Date (Newest)</option>
+        <option value="install_asc">Sort: Install Date (Oldest)</option>
         <option value="tenure_desc">Sort: Tenure (High-Low)</option>
         <option value="tenure_asc">Sort: Tenure (Low-High)</option>
       </select>
@@ -335,10 +332,9 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
   </div>
 </div>
 
-<footer>Customer Churn Dashboard v30.0 · Un-Killable Multi-Engine Auto-Loader</footer>
+<footer>Customer Churn Dashboard v34.0 · Inline RDP Badging Engine</footer>
 
 <script>
-// ==================== GLOBAL CONSTANTS & HELPERS ====================
 window.stateGST = {
   '01':'J&K','02':'HP','03':'Punjab','04':'Chandigarh','05':'Uttarakhand','06':'Haryana',
   '07':'Delhi','08':'Rajasthan','09':'UP','10':'Bihar','11':'Sikkim','12':'Arunachal',
@@ -348,37 +344,14 @@ window.stateGST = {
   '32':'Kerala','33':'Tamil Nadu','34':'Puducherry','35':'Andaman & Nicobar','36':'Telangana','37':'Andhra Pradesh','38':'Ladakh'
 };
 
-function debugLog(msg, type='info') {
-    const dc = document.getElementById('debugConsole');
-    if (dc) dc.classList.add('show');
-    const db = document.getElementById('debugBody');
-    if (db) {
-        const time = new Date().toLocaleTimeString();
-        db.innerHTML += `<div class="debug-line ${type}">[${time}] ${msg}</div>`;
-        db.scrollTop = db.scrollHeight;
-    }
-    console.log(`[${type}] ${msg}`);
-}
-
-function toggleDebug(){
-    const db=document.getElementById('debugBody');
-    if(db) db.style.display = db.style.display==='none'?'block':'none';
-}
-
 function getStateName(gstin) {
     if (!gstin || typeof gstin !== 'string' || gstin.length < 2) return 'Other';
     const code = gstin.trim().substring(0, 2);
     return window.stateGST[code] || ('Other (' + code + ')');
 }
 
-function safeSetHTML(id, html) {
-    const el = document.getElementById(id);
-    if (el) el.innerHTML = html;
-}
-function safeSetText(id, txt) {
-    const el = document.getElementById(id);
-    if (el) el.textContent = txt;
-}
+function safeSetHTML(id, html) { const el = document.getElementById(id); if (el) el.innerHTML = html; }
+function safeSetText(id, txt) { const el = document.getElementById(id); if (el) el.textContent = txt; }
 
 function parseDateRobust(val) {
     if (!val) return null;
@@ -397,7 +370,9 @@ function parseDateRobust(val) {
 
     const p = datePart.split(/[\/\-\.]/);
     if (p.length === 3) {
-        let p0 = parseInt(p[0], 10), p1 = parseInt(p[1], 10), p2 = parseInt(p[2], 10);
+        let p0 = parseInt(p[0], 10);
+        let p1 = parseInt(p[1], 10);
+        let p2 = parseInt(p[2], 10);
         if (isNaN(p0) || isNaN(p1) || isNaN(p2)) return null;
         let yr, mo, day;
         if (p0 > 1000) { yr = p0; mo = p1 - 1; day = p2; }
@@ -438,7 +413,21 @@ function getTenureText(d) {
     return `<span style="color:#22d3ee;font-weight:600">${y.toFixed(1)} yrs</span>`;
 }
 
-// ESC KEY LISTENER
+// CHECK IF RDP IS PRESENT
+function hasRDP(d) {
+    if (!d.rdpLicense) return false;
+    const v = String(d.rdpLicense).trim().toLowerCase();
+    return v !== '' && v !== 'n/a' && v !== 'no' && v !== '0' && v !== 'false' && v !== 'null';
+}
+
+// RDP INLINE BADGE WITH STATUS
+function statusCell(d) {
+    const stBadge = `<span class="status-badge ${d.source==='expired'?'status-expired':'status-active'}">${d.source}</span>`;
+    const rdpBadge = hasRDP(d) ? `<span class="status-badge status-rdp" title="RDP License: ${d.rdpLicense}">🖥️ RDP</span>` : '';
+    return `${stBadge}${rdpBadge}`;
+}
+
+// ESC KEY LISTENER TO CLOSE POPUPS
 document.addEventListener('keydown', function(event) {
     if (event.key === 'Escape') {
         closeModal('drillModal');
@@ -487,30 +476,48 @@ function decodeArrayBufferSmart(buffer){
 }
 
 function parseArrayOfRows(rows,headers,source){
-  let ci=-1,si=-1,gi=-1,ei=-1,pi=-1,ii=-1,cati=-1,ludi=-1;
+  let ci=-1,si=-1,gi=-1,ei=-1,pi=-1,ii=-1,cati=-1,ludi=-1,rdpi=-1;
   headers.forEach((h,i)=>{const l=String(h).toLowerCase().replace(/[^a-z0-9]/g,'');
-    if(l.includes('guid')||l.includes('comp'))ci=i; else if(l.includes('sub')||l.includes('number'))si=i;
+    if(l.includes('guid')||l.includes('comp'))ci=i; else if(l.includes('sub')||l.includes('number')||l.includes('serial'))si=i;
     else if(l.includes('gst'))gi=i; else if((l.includes('expiry')||l.includes('bls'))&&!l.includes('install'))ei=i;
     else if(l.includes('owner')||l.includes('partner'))pi=i; else if(l.includes('install'))ii=i;
     else if(l.includes('category')||l.includes('product'))cati=i;
-    else if(l.includes('last')&&(l.includes('use')||l.includes('active')))ludi=i;
+    else if(l.includes('last')&&(l.includes('use')||l.includes('active')||l.includes('login')))ludi=i;
+    else if(l.includes('rdp'))rdpi=i;
   });
-  if(ci===-1)ci=0; if(si===-1)si=1; if(gi===-1)gi=2; if(ei===-1)ei=3;
-  return rows.map(cols=>{
-    if(!cols || !cols.length) return null;
+  
+  if(ci===-1&&headers.length>=1)ci=0; if(si===-1&&headers.length>=2)si=1; if(gi===-1&&headers.length>=3)gi=2;
+  if(ei===-1&&headers.length>=4)ei=3; if(pi===-1&&headers.length>=5)pi=4; if(ii===-1&&headers.length>=6)ii=5; 
+  if(cati===-1&&headers.length>=7)cati=6; if(rdpi===-1&&headers.length>=8)rdpi=7;
+
+  const out=[];
+  const seen = new Set();
+
+  for(let i=0;i<rows.length;i++){
+    const cols=rows[i]; if(!cols||!cols.length)continue;
+    const comp=String(cols[ci]||'').trim(), sub=String(cols[si]||'').trim(), gst=String(cols[gi]||'').trim();
+    if(!comp&&!sub)continue;
+    
     const dt = parseDateRobust(cols[ei]) || new Date(2025, 0, 1);
-    return {
-      compGUID:String(cols[ci]||'').trim(), subscriptionId:String(cols[si]||'').trim(),
-      gstin:String(cols[gi]||'').trim().length>=8?String(cols[gi]||'').trim():null,
-      comboKey: `${String(cols[gi]||'NO_GST').trim()}_${String(cols[ci]||'').trim()}`,
+    
+    const uniqueKey = `${comp}_${sub}_${gst}_${dt.getTime()}_${source}`;
+    if (seen.has(uniqueKey)) continue;
+    seen.add(uniqueKey);
+
+    const validGst = gst.length>=8 ? gst : null;
+    const comboKey = `${validGst || 'NO_GST'}_${comp}`;
+    out.push({
+      compGUID:comp, subscriptionId:sub, gstin:validGst, comboKey:comboKey,
       currentBlsExpiry:dt, expStr:formatDateFast(dt),
-      ownerPartner:pi!==-1?String(cols[pi]||'Direct').trim():'Direct',
+      ownerPartner:pi!==-1&&cols[pi]?String(cols[pi]).trim():'Direct / Unassigned',
       installDate:ii!==-1?parseDateRobust(cols[ii]):null,
-      categoryName:cati!==-1?String(cols[cati]||'Standard').trim():'Standard',
+      categoryName:cati!==-1&&cols[cati]?String(cols[cati]).trim():'Standard',
       lastUseDate:ludi!==-1?parseDateRobust(cols[ludi]):null,
+      rdpLicense:rdpi!==-1&&cols[rdpi]?String(cols[rdpi]).trim():'N/A',
       source
-    };
-  }).filter(Boolean);
+    });
+  }
+  return out;
 }
 
 function parseCSVFast(text,src){
@@ -525,123 +532,49 @@ function parseExcelBuffer(buf,src){
   try{
     const wb=XLSX.read(new Uint8Array(buf),{type:'array',cellDates:true});
     const json=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:''});
-    return parseArrayOfRows(json.slice(1),json[0]||[],src);
+    if(!json||json.length<2)return[]; return parseArrayOfRows(json.slice(1),json[0],src);
   }catch(e){return[];}
 }
 
-// UN-KILLABLE MULTI-ENGINE AUTO LOADER
-async function autoLoadFromRepo() {
-    setStatus('Connecting to Multi-Engine Data Loader...', 'loading');
-    debugLog('🚀 Starting v30.0 Auto-Loader Engine...');
-
-    let owner = 'sauravgupta412-oss';
-    let repo = 'customer-churn-analysis';
-
-    if (location.hostname.includes('github.io')) {
-        owner = location.hostname.split('.')[0];
-        const pp = location.pathname.split('/').filter(Boolean);
-        if (pp.length > 0) repo = pp[0];
-    }
-
-    debugLog(`Target Repo: ${owner}/${repo}`);
-
-    const filenames = {
-        expired: ['expired_customers', 'Expired_Customers', 'expired', 'Expired'],
-        active: ['active_customers', 'Active_Customers', 'active', 'Active']
-    };
-
-    const fetchAny = async (type) => {
-        const names = filenames[type];
-        const exts = ['.csv', '.xlsx'];
-        const folders = ['data/', ''];
-
-        for (let folder of folders) {
-            for (let name of names) {
-                for (let ext of exts) {
-                    const path = `${folder}${name}${ext}`;
-                    const rawUrl = `https://raw.githubusercontent.com/${owner}/${repo}/main/${path}`;
-                    
-                    // Strategy 1: Direct fetch
-                    try {
-                        debugLog(`Fetch attempt: ${path}`);
-                        const res = await fetch(path + '?t=' + Date.now());
-                        if (res.ok) {
-                            const buf = await res.arrayBuffer();
-                            if (buf.byteLength > 20) {
-                                const text = decodeArrayBufferSmart(buf);
-                                if (text && !text.trim().startsWith('<!DOCTYPE') && !text.trim().startsWith('<html')) {
-                                    const parsed = parseCSVFast(text, type);
-                                    if (parsed.length > 0) {
-                                        debugLog(`✅ Loaded ${type} via relative path: ${path} (${parsed.length} rows)`, 'success');
-                                        return parsed;
-                                    }
-                                }
-                                const xlsxParsed = parseExcelBuffer(buf, type);
-                                if (xlsxParsed.length > 0) {
-                                    debugLog(`✅ Loaded ${type} via Excel buffer: ${path} (${xlsxParsed.length} rows)`, 'success');
-                                    return xlsxParsed;
-                                }
-                            }
-                        }
-                    } catch(e) {}
-
-                    // Strategy 2: Raw GitHub CDN
-                    try {
-                        debugLog(`Fetch attempt Raw CDN: ${rawUrl}`);
-                        const res = await fetch(rawUrl);
-                        if (res.ok) {
-                            const buf = await res.arrayBuffer();
-                            const text = decodeArrayBufferSmart(buf);
-                            if (text && !text.trim().startsWith('<!DOCTYPE') && !text.trim().startsWith('<html')) {
-                                const parsed = parseCSVFast(text, type);
-                                if (parsed.length > 0) {
-                                    debugLog(`✅ Loaded ${type} via Raw CDN: ${rawUrl} (${parsed.length} rows)`, 'success');
-                                    return parsed;
-                                }
-                            }
-                        }
-                    } catch(e) {}
-                }
-            }
-        }
-
-        // Strategy 3: GitHub API Blobs
+async function fetchDataset(filename) {
+    const candidates = [
+        `data/${filename}.csv`, `./data/${filename}.csv`, `${filename}.csv`, `./${filename}.csv`,
+        `https://raw.githubusercontent.com/sauravgupta412-oss/customer-churn-analysis/main/data/${filename}.csv`,
+        `https://raw.githubusercontent.com/sauravgupta412-oss/customer-churn-analysis/main/${filename}.csv`
+    ];
+    const src = filename.includes('expired') ? 'expired' : 'active';
+    for (let url of candidates) {
         try {
-            debugLog(`Trying GitHub Tree API for ${type}...`);
-            const treeRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/main?recursive=1`);
-            if (treeRes.ok) {
-                const tree = await treeRes.json();
-                const matchedFile = (tree.tree || []).find(f => f.path.toLowerCase().includes(type));
-                if (matchedFile) {
-                    const blobRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/blobs/${matchedFile.sha}`);
-                    if (blobRes.ok) {
-                        const bData = await blobRes.json();
-                        const binStr = atob(bData.content.replace(/\s/g, ''));
-                        const bytes = new Uint8Array(binStr.length);
-                        for (let i = 0; i < binStr.length; i++) bytes[i] = binStr.charCodeAt(i);
-                        const text = decodeArrayBufferSmart(bytes.buffer);
-                        const parsed = parseCSVFast(text, type);
-                        if (parsed.length > 0) {
-                            debugLog(`✅ Loaded ${type} via GitHub Blobs API (${parsed.length} rows)`, 'success');
-                            return parsed;
-                        }
-                    }
-                }
+            const res = await fetch(url + '?t=' + Date.now());
+            if (!res.ok) continue;
+            const buf = await res.arrayBuffer();
+            if (buf.byteLength < 20) continue;
+            const text = decodeArrayBufferSmart(buf);
+            if (text && !text.trim().startsWith('<!DOCTYPE') && !text.trim().startsWith('<html')) {
+                const parsed = parseCSVFast(text, src);
+                if (parsed && parsed.length > 0) return parsed;
             }
+            const xlsxParsed = parseExcelBuffer(buf, src);
+            if (xlsxParsed && xlsxParsed.length > 0) return xlsxParsed;
         } catch(e) {}
+    }
+    return [];
+}
 
-        return [];
-    };
+async function autoLoadFromRepo() {
+    setStatus('Fetching data files...', 'loading');
+    try {
+        expiredData = await fetchDataset('expired_customers');
+        activeData = await fetchDataset('active_customers');
 
-    expiredData = await fetchAny('expired');
-    activeData = await fetchAny('active');
-
-    if (expiredData.length > 0 && activeData.length > 0) {
-        setStatus(`✅ Auto-Loaded: ${expiredData.length.toLocaleString()} expired + ${activeData.length.toLocaleString()} active records`, 'success');
-        runAnalysis();
-    } else {
-        debugLog(`❌ All Auto-Load Strategies exhausted. Expired: ${expiredData.length}, Active: ${activeData.length}`, 'error');
-        setStatus(`⚠️ Auto-load failed. Click below to upload your CSV files manually.`, 'error');
+        if (expiredData.length > 0 && activeData.length > 0) {
+            setStatus(`✅ Real Unique Data Loaded: ${expiredData.length.toLocaleString()} expired + ${activeData.length.toLocaleString()} active records`, 'success');
+            runAnalysis();
+        } else {
+            throw new Error(`Could not parse records automatically.`);
+        }
+    } catch(err) {
+        setStatus(`⚠️ Auto-load failed. Click below to upload CSV files manually.`, 'error');
     }
 }
 
@@ -660,7 +593,7 @@ async function handleFileUpload(type, input) {
             setStatus(`✅ Uploaded: ${expiredData.length.toLocaleString()} expired + ${activeData.length.toLocaleString()} active records`, 'success');
             runAnalysis();
         } else {
-            setStatus(`Loaded ${parsed.length.toLocaleString()} ${type} records. Please upload the other file.`, 'info');
+            setStatus(`Loaded ${parsed.length.toLocaleString()} ${type} records. Upload the other file.`, 'info');
         }
     } catch(e) { setStatus(`❌ File error: ${e.message}`, 'error'); }
 }
@@ -688,8 +621,7 @@ function analyzeData(){
     const pk=d.ownerPartner; if(!partStats[pk])partStats[pk]={expired:0,active:0}; partStats[pk].expired++;
     const ck=d.categoryName; if(!catStats[ck])catStats[ck]={expired:0,active:0}; catStats[ck].expired++;
     
-    const tl = getTenureLabel(d);
-    tenStats[tl] = (tenStats[tl] || 0) + 1;
+    const tl=getTenureLabel(d); if(tl)tenStats[tl]++;
   });
 
   let ghosts=0, nsActive=0; const nsComp=new Set();
@@ -779,7 +711,7 @@ function rowHtml(d) {
       <td>${d.subscriptionId || ''}</td>
       <td>${lastUseStr}</td>
       <td><b style="color:${d.source === 'expired' ? '#f45c43' : '#38ef7d'}">${d.expStr}</b></td>
-      <td><span class="status-badge status-${d.source}">${d.source}</span></td>
+      <td>${statusCell(d)}</td>
       <td>${newSalesCell(d)}</td>
       <td>${getSummaryBadgeHTML(d, 'comp')}</td>
       <td>${getSummaryBadgeHTML(d, 'gst')}</td>
@@ -835,7 +767,7 @@ function openAccount360(type, val) {
                 <td>${d.installDate ? formatDateFast(d.installDate) : '<span style="color:#555">N/A</span>'}</td>
                 <td><b style="color:#38ef7d">${d.expStr}</b></td>
                 <td>${d.lastUseDate ? formatDateFast(d.lastUseDate) : '<span style="color:#555">N/A</span>'}</td>
-                <td><span class="status-badge status-active">Active</span> ${d.isGhost ? '<span class="status-badge status-ghost">👻 Ghost</span>' : ''}</td>
+                <td>${statusCell(d)} ${d.isGhost ? '<span class="status-badge status-ghost">👻 Ghost</span>' : ''}</td>
             </tr>`).join('')}
             </tbody>
         </table>
@@ -857,7 +789,7 @@ function openAccount360(type, val) {
                 <td>${d.installDate ? formatDateFast(d.installDate) : '<span style="color:#555">N/A</span>'}</td>
                 <td><b style="color:#f45c43">${d.expStr}</b></td>
                 <td>${d.lastUseDate ? formatDateFast(d.lastUseDate) : '<span style="color:#555">N/A</span>'}</td>
-                <td><span class="status-badge status-expired">Expired</span></td>
+                <td>${statusCell(d)}</td>
             </tr>`).join('')}
             </tbody>
         </table>
@@ -873,12 +805,12 @@ function openAccount360(type, val) {
 
 function downloadAcc360Data() {
     if (!currentAcc360Data || currentAcc360Data.length === 0) return;
-    let csv = 'Partner,Category,Install,TenureYrs,CompGUID,GSTIN,SubNo,LastUsedDate,BLSExpiry,Source\n';
+    let csv = 'Partner,Category,Install,TenureYrs,CompGUID,GSTIN,SubNo,RDP_License,LastUsedDate,BLSExpiry,Source\n';
     currentAcc360Data.forEach(d => {
         const ten = d.installDate ? ((d.currentBlsExpiry - d.installDate) / 31557600000).toFixed(2) : '';
         const inst = d.installDate ? d.installDate.toISOString().slice(0, 10) : '';
         const lud = d.lastUseDate ? d.lastUseDate.toISOString().slice(0, 10) : '';
-        csv += `"${d.ownerPartner}","${d.categoryName}","${inst}","${ten}","${d.compGUID}","${d.subscriptionId}","${d.gstin || ''}","${lud}","${d.currentBlsExpiry.toISOString().slice(0, 10)}","${d.source}"\n`;
+        csv += `"${d.ownerPartner}","${d.categoryName}","${inst}","${ten}","${d.compGUID}","${d.subscriptionId}","${d.gstin || ''}","${d.rdpLicense||''}","${lud}","${d.currentBlsExpiry.toISOString().slice(0, 10)}","${d.source}"\n`;
     });
     dlFile(csv, 'account_360_export.csv', 'text/csv');
 }
@@ -903,7 +835,7 @@ function applyFiltersAndSort(sourceData, searchId, tenureId, sortId) {
             if (getTenureLabel(d) !== tenureF) continue;
         }
         if (rawQ) {
-            const str = `${d.compGUID} ${d.subscriptionId} ${d.gstin} ${d.comboKey} ${d.ownerPartner} ${d.categoryName}`.toLowerCase();
+            const str = `${d.compGUID} ${d.subscriptionId} ${d.gstin} ${d.comboKey} ${d.ownerPartner} ${d.categoryName} ${d.rdpLicense}`.toLowerCase();
             let match = str.includes(q);
             if (!match && cq.length >= 2) match = str.replace(/[^a-z0-9]/g, '').includes(cq);
             if (!match) continue;
@@ -913,6 +845,12 @@ function applyFiltersAndSort(sourceData, searchId, tenureId, sortId) {
 
     if(sortF === 'exp_desc') res.sort((a,b)=> b.currentBlsExpiry - a.currentBlsExpiry);
     else if(sortF === 'exp_asc') res.sort((a,b)=> a.currentBlsExpiry - b.currentBlsExpiry);
+    else if(sortF === 'install_desc') res.sort((a,b)=> (b.installDate?b.installDate.getTime():0) - (a.installDate?a.installDate.getTime():0));
+    else if(sortF === 'install_asc') res.sort((a,b)=> {
+        let ta = a.installDate ? a.installDate.getTime() : 9999999999999;
+        let tb = b.installDate ? b.installDate.getTime() : 9999999999999;
+        return ta - tb;
+    });
     else if(sortF === 'tenure_desc') res.sort((a,b)=> getTenureYrs(b) - getTenureYrs(a));
     else if(sortF === 'tenure_asc') res.sort((a,b)=> getTenureYrs(a) - getTenureYrs(b));
 
@@ -1038,7 +976,7 @@ function runGlobalSearch(){
   const scan = arr => {
       for(let i=0; i<arr.length; i++) {
           const d = arr[i];
-          const str = `${d.compGUID} ${d.subscriptionId} ${d.gstin} ${d.comboKey} ${d.ownerPartner} ${d.categoryName} ${d.isNewSales ? 'new sales' : ''} ${d.isGhost ? 'ghost' : ''}`.toLowerCase();
+          const str = `${d.compGUID} ${d.subscriptionId} ${d.gstin} ${d.comboKey} ${d.ownerPartner} ${d.categoryName} ${d.rdpLicense} ${d.isNewSales ? 'new sales' : ''} ${d.isGhost ? 'ghost' : ''}`.toLowerCase();
           if(str.includes(q) || (cq.length >= 2 && str.replace(/[^a-z0-9]/g, '').includes(cq))) matches.push(d);
       }
   };
@@ -1086,7 +1024,7 @@ function renderInsights(){
 function renderVenn(){
   const r = analysisResults;
   safeSetHTML('vennDiagram', `
-    <div class="venn-circle venn-active" onclick="drillByCategory('total')" title="Active-only companies"><div style="margin-left:-20px"><div style="font-size:1.1rem;color:#667eea">${r.onlyActive.toLocaleString()}</div><div style="font-size:.58rem;color:#999">Active only</div></div></div>
+    <div class="venn-circle venn-active" onclick="drillByCategory('total')" title="Active-only companies"><div style="margin-left:-20px"><div style="font-size:1.1rem;color:#667eea">${r.healthySet.size.toLocaleString()}</div><div style="font-size:.58rem;color:#999">Active only</div></div></div>
     <div class="venn-circle venn-expired" onclick="drillByCategory('churned')"><div style="margin-left:20px"><div style="font-size:1.1rem;color:#f45c43">${r.fullChurn.toLocaleString()}</div><div style="font-size:.58rem;color:#999">Expired only</div></div></div>
     <div class="venn-overlap-zone" onclick="drillByCategory('overlap')"><div><div>${r.overlappingCompGUIDs.toLocaleString()}</div><div style="font-size:.55rem;color:#ccc">Partial</div></div></div>`);
 }
@@ -1103,10 +1041,33 @@ function dc(n) { if (charts[n]) { charts[n].destroy(); charts[n] = null; } }
 function renderCharts(){
   const r = analysisResults;
   
-  const pcEl = document.getElementById('partnerChart');
+  const pcEl = document.getElementById('partnerChurnChart');
   if(pcEl){
-      const pArr = Object.entries(r.partStats).map(([k, v]) => ({ p: k, a: v.active, e: v.expired, t: v.active + v.expired })).sort((a, b) => b.t - a.t).slice(0, 10);
-      dc('pc'); charts.pc = new Chart(pcEl,{type:'bar',data:{labels:pArr.map(x=>x.p.substring(0,20)),datasets:[{label:'Expired',data:pArr.map(x=>x.e),backgroundColor:'rgba(244,92,67,.7)'},{label:'Active',data:pArr.map(x=>x.a),backgroundColor:'rgba(102,126,234,.7)'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{stacked:true,ticks:{color:'#888'}},y:{stacked:true,ticks:{color:'#888'},grid:{color:'rgba(255,255,255,.05)'}}}}}); 
+      const pArr = Object.entries(r.partStats).map(([k, v]) => {
+          const tot = v.active + v.expired;
+          return { p: k, a: v.active, e: v.expired, t: tot, rate: tot > 0 ? (v.expired / tot) * 100 : 0 };
+      }).filter(x => x.t >= 2 && x.p !== 'Direct / Unassigned' && x.p !== 'Direct')
+        .sort((a, b) => b.rate - a.rate)
+        .slice(0, 15);
+
+      dc('pc'); charts.pc = new Chart(pcEl,{
+          type:'bar',
+          data:{
+              labels:pArr.map(x=>x.p.substring(0,25) + (x.p.length>25?'...':'')),
+              datasets:[{label:'Churn Rate %', data:pArr.map(x=>x.rate.toFixed(1)), backgroundColor:'rgba(244,92,67,.7)', borderColor: '#f45c43', borderWidth: 1}]
+          },
+          options:{
+              responsive:true, maintainAspectRatio:false,
+              plugins:{
+                  legend:{display:false},
+                  tooltip: { callbacks: { label: (ctx) => { const d = pArr[ctx.dataIndex]; return `Churn Rate: ${d.rate.toFixed(1)}% (${d.e} / ${d.t} subs)`; } } }
+              },
+              scales:{
+                  x:{ticks:{color:'#888'}},
+                  y:{ticks:{color:'#888', callback: v=>v+'%'}, grid:{color:'rgba(255,255,255,.05)'}, max:100}
+              }
+          }
+      }); 
   }
   
   const ccEl = document.getElementById('categoryChart');
@@ -1129,7 +1090,7 @@ function renderCharts(){
   const stEl = document.getElementById('stateChart');
   if(stEl){
       const states = Object.keys(r.stateChurn).sort();
-      dc('st'); charts.st = new Chart(stEl,{type:'bar',data:{labels:states,datasets:[{label:'Expired',data:states.map(s=>r.stateChurn[s].expired),backgroundColor:'rgba(244,92,67,.6)'},{label:'Active',data:states.map(s=>r.stateChurn[s].active),backgroundColor:'rgba(102,126,234,.6)'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{stacked:true,ticks:{color:'#888',maxRotation:45}},y:{stacked:true,grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#888'}}}}}); 
+      dc('st'); charts.st = new Chart(stEl,{type:'bar',data:{labels:states,datasets:[{label:'Expired',data:states.map(s=>r.stateChurn[s].expired),backgroundColor:'rgba(244,92,67,.6)'},{label:'Active',data:states.map(s=>r.stateChurn[s].active),backgroundColor:'rgba(102,126,234,.6)'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa',maxRotation:45}},y:{stacked:true,grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#888'}}}}}); 
   }
 }
 
@@ -1145,26 +1106,26 @@ function rowCsv(d){
   const ga=[...new Set(gn.a.filter(x=>x.sub!==d.subscriptionId).map(x=>`${x.sub}(Exp:${x.expStr})`))].join('; ');
   const ge=[...new Set(gn.e.filter(x=>x.sub!==d.subscriptionId).map(x=>`${x.sub}(Exp:${x.expStr})`))].join('; ');
   const comboActList=[...new Set(combo.a.map(x=>`${x.sub}(Exp:${x.expStr})`))].join('; ');
-  return `"${d.ownerPartner}","${d.categoryName}","${inst}","${ten}","${d.compGUID}","${d.gstin||''}","${d.comboKey}","${d.subscriptionId}","${lud}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}","${d.isGhost?'Ghost':(d.isNewSales?'Yes':'No')}","${(d.newSalesDetail||'').replace(/"/g,"'")}","${ca}","${ce}","${ga}","${ge}","${comboActList}"\n`;
+  return `"${d.ownerPartner}","${d.categoryName}","${inst}","${ten}","${d.compGUID}","${d.gstin||''}","${d.comboKey}","${d.subscriptionId}","${d.rdpLicense||''}","${lud}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}","${d.isGhost?'Ghost':(d.isNewSales?'Yes':'No')}","${(d.newSalesDetail||'').replace(/"/g,"'")}","${ca}","${ce}","${ga}","${ge}","${comboActList}"\n`;
 }
 
 function downloadCSV(){
-  let csv='Partner,Category,Install,TenureYrs,CompGUID,GSTIN,GSTIN_CompGUID,SubNo,LastUsedDate,BLSExpiry,Source,NewSalesOrGhost,NewSalesDetail,LinkedActCompWithExpiries,LinkedExpCompWithExpiries,LinkedActGSTWithExpiries,LinkedExpGSTWithExpiries,ActiveSerialsCombo\n';
+  let csv='Partner,Category,Install,TenureYrs,CompGUID,GSTIN,GSTIN_CompGUID,SubNo,RDP_License,LastUsedDate,BLSExpiry,Source,NewSalesOrGhost,NewSalesDetail,LinkedActCompWithExpiries,LinkedExpCompWithExpiries,LinkedActGSTWithExpiries,LinkedExpGSTWithExpiries,ActiveSerialsSameGSTINCompGUIDWithExpiries\n';
   expiredData.forEach(d=>csv+=rowCsv(d)); activeData.forEach(d=>csv+=rowCsv(d));
   dlFile(csv,'churn_full_export.csv','text/csv');
 }
 function downloadOverlap(){
-  const r=analysisResults; let csv='Partner,Category,Install,TenureYrs,CompGUID,GSTIN,GSTIN_CompGUID,SubNo,LastUsedDate,BLSExpiry,Source,NewSalesOrGhost,NewSalesDetail,LinkedActCompWithExpiries,LinkedExpCompWithExpiries,ActiveSerialsCombo\n';
+  const r=analysisResults; let csv='Partner,Category,Install,TenureYrs,CompGUID,GSTIN,GSTIN_CompGUID,SubNo,RDP_License,LastUsedDate,BLSExpiry,Source,NewSalesOrGhost,NewSalesDetail,LinkedActCompWithExpiries,LinkedExpCompWithExpiries,ActiveSerialsSameGSTINCompGUIDWithExpiries\n';
   expiredData.concat(activeData).filter(d=>r.overlappingCompGUIDSet.has(d.compGUID)).forEach(d=>csv+=rowCsv(d));
   dlFile(csv,'partial_churn_export.csv','text/csv');
 }
 function downloadNewSales(){
-  let csv='Partner,Category,Install,TenureYrs,CompGUID,GSTIN,GSTIN_CompGUID,SubNo,LastUsedDate,BLSExpiry,Source,NewSalesOrGhost,NewSalesDetail,LinkedActCompWithExpiries,LinkedExpCompWithExpiries,LinkedActGSTWithExpiries,LinkedExpGSTWithExpiries,ActiveSerialsCombo\n';
+  let csv='Partner,Category,Install,TenureYrs,CompGUID,GSTIN,GSTIN_CompGUID,SubNo,RDP_License,LastUsedDate,BLSExpiry,Source,NewSalesOrGhost,NewSalesDetail,LinkedActCompWithExpiries,LinkedExpCompWithExpiries,LinkedActGSTWithExpiries,LinkedExpGSTWithExpiries,ActiveSerialsSameGSTINCompGUIDWithExpiries\n';
   expiredData.concat(activeData).filter(d=>d.isNewSales).forEach(d=>csv+=rowCsv(d));
   dlFile(csv,'new_sales_export.csv','text/csv');
 }
 function downloadModalData(){
-  let csv='Partner,Category,Install,TenureYrs,CompGUID,GSTIN,GSTIN_CompGUID,SubNo,LastUsedDate,BLSExpiry,Source,NewSalesOrGhost,NewSalesDetail,LinkedActCompWithExpiries,LinkedExpCompWithExpiries,LinkedActGSTWithExpiries,LinkedExpGSTWithExpiries,ActiveSerialsCombo\n';
+  let csv='Partner,Category,Install,TenureYrs,CompGUID,GSTIN,GSTIN_CompGUID,SubNo,RDP_License,LastUsedDate,BLSExpiry,Source,NewSalesOrGhost,NewSalesDetail,LinkedActCompWithExpiries,LinkedExpCompWithExpiries,LinkedActGSTWithExpiries,LinkedExpGSTWithExpiries,ActiveSerialsSameGSTINCompGUIDWithExpiries\n';
   modalFilteredData.forEach(d=>csv+=rowCsv(d));
   dlFile(csv,'drill_down_export.csv','text/csv');
 }
