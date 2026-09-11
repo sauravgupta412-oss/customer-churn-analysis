@@ -12,15 +12,19 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-g
 .header{background:linear-gradient(135deg,#667eea,#764ba2);padding:24px 40px;text-align:center;box-shadow:0 4px 30px rgba(102,126,234,.3)}
 .header h1{font-size:1.8rem;color:#fff;margin-bottom:4px}
 .header p{color:rgba(255,255,255,.85);font-size:.9rem}
+.header-badge{display:inline-block;background:rgba(255,255,255,.15);padding:3px 14px;border-radius:20px;font-size:.75rem;color:#fff;margin-top:6px}
+
 .status-bar{margin:16px 30px;padding:10px 18px;border-radius:10px;font-size:.85rem;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .status-bar.loading{background:rgba(255,210,0,.1);border:1px solid rgba(255,210,0,.25);color:#ffd200}
 .status-bar.success{background:rgba(56,239,125,.1);border:1px solid rgba(56,239,125,.25);color:#38ef7d}
 .status-bar.error{background:rgba(244,92,67,.1);border:1px solid rgba(244,92,67,.25);color:#f45c43}
 .status-spinner{width:14px;height:14px;border:2px solid rgba(255,210,0,.3);border-top-color:#ffd200;border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
+
 .global-search-container{margin:16px 30px;background:rgba(255,255,255,.05);border:1px solid rgba(102,126,234,.4);border-radius:12px;padding:10px 18px;display:flex;align-items:center;gap:12px}
 .global-search-container input{flex:1;background:transparent;border:none;outline:none;color:#fff;font-size:.92rem}
 .global-search-btn{background:linear-gradient(135deg,#667eea,#764ba2);border:none;color:#fff;padding:8px 18px;border-radius:8px;cursor:pointer;font-weight:600}
+
 .kpi-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:14px 30px}
 .kpi-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:16px 12px;text-align:center;cursor:pointer;position:relative;overflow:hidden;transition:.2s}
 .kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
@@ -35,6 +39,7 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-g
 .kpi-card.purple .kpi-value{color:#a855f7}.kpi-card.cyan .kpi-value{color:#22d3ee}.kpi-card.orange .kpi-value{color:#ffd200}
 .kpi-label{font-size:.7rem;color:#999;text-transform:uppercase;letter-spacing:1px}
 .kpi-sublabel{font-size:.65rem;color:#666;margin-top:2px}
+
 .section-header{margin:22px 30px 4px;display:flex;align-items:center;gap:10px}
 .section-header h2{font-size:1.15rem;color:#ddd}
 .section-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(102,126,234,.2),transparent);margin:6px 30px 14px}
@@ -45,9 +50,11 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-g
 .chart-title{font-size:.95rem;font-weight:600;margin-bottom:12px;color:#ddd}
 .chart-container{position:relative;width:100%;height:280px}
 .chart-container.tall{height:340px}
+
 .insight-box{background:rgba(102,126,234,.08);border-left:4px solid #667eea;padding:14px 18px;margin:14px 30px;border-radius:0 10px 10px 0;font-size:.84rem;line-height:1.6}
 .insight-box h4{color:#667eea;margin-bottom:6px}
 .insight-item{padding:4px 0;border-bottom:1px solid rgba(255,255,255,.03)}
+
 .flow-container{padding:8px}
 .flow-row{display:flex;align-items:center;gap:8px;margin:6px 0;padding:8px 12px;border-radius:8px;cursor:pointer}
 .flow-row:hover{background:rgba(255,255,255,.04)}
@@ -59,14 +66,17 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-g
 .flow-bar.atrisk{background:linear-gradient(90deg,rgba(255,210,0,.25),rgba(255,210,0,.55))}
 .flow-label{font-size:.72rem;color:#999;min-width:110px}
 .flow-value{font-size:.82rem;font-weight:700;min-width:50px;text-align:right}
+
 .venn-container{display:flex;justify-content:center;align-items:center;height:260px;position:relative}
 .venn-circle{width:160px;height:160px;border-radius:50%;position:absolute;display:flex;align-items:center;justify-content:center;font-weight:700;cursor:pointer}
 .venn-active{background:rgba(102,126,234,.18);border:2px solid rgba(102,126,234,.45);left:calc(50% - 140px)}
 .venn-expired{background:rgba(244,92,67,.18);border:2px solid rgba(244,92,67,.45);left:calc(50% - 20px)}
 .venn-overlap-zone{position:absolute;background:rgba(168,85,247,.28);border:2px solid rgba(168,85,247,.55);border-radius:50%;width:80px;height:160px;left:calc(50% - 80px);display:flex;align-items:center;justify-content:center;font-weight:700;color:#a855f7;clip-path:ellipse(50% 50%);cursor:pointer}
+
+/* DRILL-DOWN MODAL */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(10,10,26,.95);z-index:2000;justify-content:center;align-items:center;padding:16px}
 .modal-overlay.show{display:flex}
-.modal{background:#1a1a3e;border:1px solid rgba(255,255,255,.12);border-radius:12px;width:100%;max-width:1450px;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.modal{background:#1a1a3e;border:1px solid rgba(255,255,255,.12);border-radius:12px;width:100%;max-width:1550px;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.5)}
 .modal-header{background:linear-gradient(135deg,#667eea,#764ba2);padding:14px 20px;display:flex;justify-content:space-between;align-items:center}
 .modal-header h3{color:#fff;font-size:1.05rem}
 .modal-close{background:rgba(255,255,255,.2);border:none;color:#fff;width:30px;height:30px;border-radius:50%;cursor:pointer}
@@ -75,33 +85,37 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-g
 .modal-stat-value{font-size:1.3rem;font-weight:700}
 .modal-stat-label{font-size:.62rem;color:#999;text-transform:uppercase}
 .modal-search{width:100%;background:rgba(255,255,255,.06);border:none;color:#fff;padding:11px 18px;font-size:.85rem;outline:none;border-bottom:1px solid rgba(255,255,255,.06)}
-.modal-body{padding:0;overflow:auto;flex:1}
-.modal-table{width:100%;border-collapse:collapse;font-size:.74rem;min-width:1300px}
-.modal-table thead th{background:rgba(30,30,60,.97);padding:9px 10px;text-align:left;color:#999;font-weight:600;text-transform:uppercase;font-size:.62rem;position:sticky;top:0;z-index:1;white-space:nowrap}
-.modal-table tbody td{padding:7px 10px;border-bottom:1px solid rgba(255,255,255,.03);vertical-align:top}
+.modal-body{padding:0;overflow-y:auto;flex:1;overflow-x:auto;}
+.modal-table{width:100%;border-collapse:collapse;font-size:.76rem;min-width:1500px;}
+.modal-table thead th{background:rgba(30,30,60,.97);padding:9px 12px;text-align:left;color:#999;font-weight:600;text-transform:uppercase;font-size:.65rem;position:sticky;top:0;z-index:1;white-space:nowrap;}
+.modal-table tbody td{padding:7px 12px;border-bottom:1px solid rgba(255,255,255,.03);vertical-align:top}
 .modal-table tbody tr:hover{background:rgba(102,126,234,.06)}
-.modal-footer{padding:10px 20px;background:rgba(255,255,255,.03);border-top:1px solid rgba(255,255,255,.06);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.modal-footer{padding:10px 20px;background:rgba(255,255,255,.03);border-top:1px solid rgba(255,255,255,.06);display:flex;gap:8px;align-items:center}
 .modal-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:#ccc;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:.78rem}
 .modal-btn.primary{background:linear-gradient(135deg,#667eea,#764ba2);border:none;color:#fff}
-.compguid-cell{font-family:monospace;font-size:.68rem;color:#a855f7;text-decoration:underline;cursor:pointer;word-break:break-all}
+
+.compguid-cell{font-family:monospace;font-size:.7rem;color:#a855f7;text-decoration:underline;cursor:pointer;word-break:break-all;}
+.combo-cell{font-family:monospace;font-size:.68rem;color:#38ef7d;word-break:break-all;background:rgba(56,239,125,.05);padding:4px 6px;border-radius:4px;border:1px dashed rgba(56,239,125,.2)}
+
 .chip-wrap{display:flex;flex-wrap:wrap;gap:4px;max-width:280px;max-height:80px;overflow-y:auto}
-.chip-act{color:#38ef7d;background:rgba(56,239,125,.1);border:1px solid rgba(56,239,125,.25);padding:2px 6px;border-radius:4px;font-size:.66rem;font-family:monospace}
-.chip-exp{color:#f45c43;background:rgba(244,92,67,.1);border:1px solid rgba(244,92,67,.25);padding:2px 6px;border-radius:4px;font-size:.66rem;font-family:monospace}
-.chip-label{font-size:.6rem;color:#888;width:100%;margin-top:2px}
-.status-badge{padding:3px 8px;border-radius:10px;font-size:.62rem;font-weight:600;white-space:nowrap}
+.chip-act{color:#38ef7d;background:rgba(56,239,125,.1);border:1px solid rgba(56,239,125,.25);padding:2px 6px;border-radius:4px;font-size:.68rem;font-family:monospace}
+.chip-exp{color:#f45c43;background:rgba(244,92,67,.1);border:1px solid rgba(244,92,67,.25);padding:2px 6px;border-radius:4px;font-size:.68rem;font-family:monospace}
+.chip-label{font-size:.62rem;color:#888;width:100%;margin-top:2px}
+
+.status-badge{padding:3px 8px;border-radius:10px;font-size:.65rem;font-weight:600;white-space:nowrap;}
 .status-active{background:rgba(56,239,125,.12);color:#38ef7d}
 .status-expired{background:rgba(244,92,67,.12);color:#f45c43}
 .status-newsales{background:rgba(34,211,238,.15);color:#22d3ee;border:1px solid rgba(34,211,238,.35)}
-.status-partial{background:rgba(168,85,247,.12);color:#a855f7}
-.status-atrisk{background:rgba(255,210,0,.12);color:#ffd200}
+
 .data-table-container{margin:14px 30px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;overflow:hidden}
 .table-header{padding:14px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,.06);flex-wrap:wrap;gap:8px}
 .table-tabs{display:flex;gap:5px;flex-wrap:wrap}
 .table-tab{padding:4px 11px;border-radius:16px;border:1px solid rgba(255,255,255,.12);background:transparent;color:#aaa;cursor:pointer;font-size:.75rem}
 .table-tab.active{background:linear-gradient(135deg,#667eea,#764ba2);border-color:transparent;color:#fff}
-.table-scroll{max-height:420px;overflow:auto}
+.table-scroll{max-height:400px;overflow:auto}
 .download-section{margin:12px 30px;display:flex;gap:8px;flex-wrap:wrap}
 .btn-download{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#bbb;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.78rem}
+
 .loading-overlay{display:none;position:fixed;inset:0;background:rgba(10,10,26,.92);z-index:3000;justify-content:center;align-items:center;flex-direction:column;gap:14px}
 .loading-overlay.show{display:flex}
 footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
@@ -116,7 +130,7 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
   <div class="modal">
     <div class="modal-header"><h3 id="modalTitle">Drill-Down</h3><button class="modal-close" onclick="closeModal()">✕</button></div>
     <div class="modal-stats" id="modalStats"></div>
-    <input type="text" class="modal-search" id="modalSearch" placeholder="🔍 Search Partner, Category, Sub ID, CompGUID, GSTIN, New Sales..." oninput="onModalSearchInput()">
+    <input type="text" class="modal-search" id="modalSearch" placeholder="🔍 Search Partner, Category, Sub ID, CompGUID, GSTIN..." oninput="onModalSearchInput()">
     <div class="modal-body"><table class="modal-table"><thead id="modalTableHead"></thead><tbody id="modalTableBody"></tbody></table></div>
     <div class="modal-footer">
       <button class="modal-btn primary" onclick="downloadModalData()">📥 Download Modal Data</button>
@@ -129,14 +143,15 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
 
 <div class="header">
   <h1>📊 Enterprise Customer Churn & Retention Dashboard</h1>
-  <p>Partner · Category · Tenure · New Sales (Install ≥ Expired BLS Expiry)</p>
+  <p>Single-Window Intelligence · Active Serials (GSTIN + CompGUID) Correlation Edition</p>
+  <div class="header-badge">v16.0 — Dedicated Active Serials Column & Triple-Indexed Correlation Engine</div>
 </div>
 
 <div class="status-bar loading" id="statusBar"><div class="status-spinner"></div><span>Loading data...</span></div>
 
 <div class="global-search-container">
   <span>🔍</span>
-  <input type="text" id="globalSearchInput" placeholder="Global Search: Partner, Category, CompGUID, Sub ID, GSTIN..." onkeydown="if(event.key==='Enter')runGlobalSearch()">
+  <input type="text" id="globalSearchInput" placeholder="Global Search: Partner, Category, CompGUID, Sub ID, or GSTIN..." onkeydown="if(event.key==='Enter')runGlobalSearch()">
   <button class="global-search-btn" onclick="runGlobalSearch()">Search All</button>
 </div>
 
@@ -149,14 +164,16 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
   <button class="btn-download" onclick="downloadNewSales()">📥 Export New Sales</button>
 </div>
 
-<div class="section-header"><h2>🔗 Churn Correlation (no Healthy view)</h2></div>
+<!-- SECTION: CORRELATION -->
+<div class="section-header"><h2>🔗 Health & Co-Subscriptions</h2></div>
 <div class="section-divider"></div>
 <div class="dashboard">
-  <div class="chart-card"><div class="chart-title">⭕ CompGUID Overlap</div><div class="venn-container" id="vennDiagram"></div></div>
-  <div class="chart-card"><div class="chart-title">📊 Churn & New Sales Flow</div><div class="flow-container" id="flowDiagram"></div></div>
+  <div class="chart-card"><div class="chart-title">⭕ CompGUID Retention</div><div class="venn-container" id="vennDiagram"></div></div>
+  <div class="chart-card"><div class="chart-title">📊 Account Health Flow</div><div class="flow-container" id="flowDiagram"></div></div>
 </div>
 
-<div class="section-header"><h2>🤝 Partner & Product Performance</h2></div>
+<!-- SECTION: ENRICHED DATA (PARTNERS & PRODUCTS) -->
+<div class="section-header"><h2>🤝 Partner & Product Category Performance</h2></div>
 <div class="section-divider"></div>
 <div class="dashboard">
   <div class="chart-card full-width"><div class="chart-title">🏆 Top 10 Owner_Partners</div><div class="chart-container"><canvas id="partnerChart"></canvas></div></div>
@@ -164,18 +181,20 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
   <div class="chart-card"><div class="chart-title">⏳ Tenure of Churned</div><div class="chart-container"><canvas id="tenureChart"></canvas></div></div>
 </div>
 
+<!-- SECTION: GEOGRAPHY & TIMELINE -->
 <div class="section-header"><h2>📅 Geography & Timeline</h2></div>
 <div class="section-divider"></div>
 <div class="dashboard">
-  <div class="chart-card full-width"><div class="chart-title">🗺️ State-wise</div><div class="chart-container tall"><canvas id="stateChart"></canvas></div></div>
-  <div class="chart-card full-width"><div class="chart-title">📈 Monthly Trend</div><div class="chart-container"><canvas id="timelineChart"></canvas></div></div>
+  <div class="chart-card full-width"><div class="chart-title">🗺️ State-wise Churn (from GSTIN)</div><div class="chart-container tall"><canvas id="stateChart"></canvas></div></div>
+  <div class="chart-card full-width"><div class="chart-title">📈 Monthly Expiry Trend</div><div class="chart-container"><canvas id="timelineChart"></canvas></div></div>
 </div>
 
-<div class="section-header"><h2>📋 Correlation Table (with New Sales)</h2></div>
+<!-- DATA TABLE -->
+<div class="section-header"><h2>📋 Full Enriched Records Preview (3-Way Views)</h2></div>
 <div class="section-divider"></div>
 <div class="data-table-container">
   <div class="table-header">
-    <h3>Records <span id="tableCount" style="color:#888;font-size:.75rem"></span></h3>
+    <h3>Live Data <span id="tableCount" style="color:#888;font-size:.75rem"></span></h3>
     <div class="table-tabs">
       <button class="table-tab active" onclick="showTable('all',this)">All</button>
       <button class="table-tab" onclick="showTable('overlap',this)">🟡 Partial Churn</button>
@@ -189,29 +208,31 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
       <thead>
         <tr>
           <th>Partner / Category / Tenure</th>
-          <th>CompGUID</th>
+          <th>View 1: CompGUID</th>
+          <th>View 2: GSTIN</th>
+          <th>View 3: GSTIN + CompGUID</th>
           <th>Sub No</th>
-          <th>GSTIN</th>
-          <th>Install</th>
           <th>BLS Expiry</th>
-          <th>Source</th>
+          <th>Status</th>
           <th>New Sales</th>
           <th>Linked by CompGUID</th>
           <th>Linked by GSTIN</th>
+          <th style="color:#38ef7d;">Active Serials (Same GSTIN + CompGUID)</th>
         </tr>
       </thead>
       <tbody id="tableBody"></tbody>
     </table>
   </div>
 </div>
-<footer>Customer Churn Dashboard v14.0 · New Sales = Active Install ≥ Expired BLS Expiry (same CompGUID)</footer>
+<footer>Customer Churn Dashboard v16.0 · Active Serials Correlation Edition</footer>
 
 <script>
-let expiredData=[],activeData=[],analysisResults={},charts={},currentModalData=[],currentModalAll=[];
+let expiredData=[], activeData=[], analysisResults={}, charts={}, currentModalData=[], currentModalAll=[];
 let modalSearchTimer=null; const ROW_CAP=150;
-window.compNet={}; window.gstNet={}; window.compExpMeta={}; window.compActMeta={};
+window.compNet={}; window.gstNet={}; window.comboNet={}; window.compExpMeta={}; window.compActMeta={};
 const stateGST={'01':'J&K','02':'HP','03':'Punjab','04':'CHD','05':'UK','06':'Haryana','07':'Delhi','08':'Rajasthan','09':'UP','10':'Bihar','11':'Sikkim','18':'Assam','19':'WB','20':'JH','21':'Odisha','22':'CG','23':'MP','24':'Gujarat','27':'Maharashtra','29':'Karnataka','30':'Goa','32':'Kerala','33':'TN','36':'Telangana','37':'AP'};
 
+function logConsole(msg) { console.log(`[Dashboard] ${msg}`); }
 function setStatus(msg,type='info'){
   const sb=document.getElementById('statusBar'); sb.className='status-bar '+type;
   sb.innerHTML=type==='loading'?`<div class="status-spinner"></div><span>${msg}</span>`:`<span>${msg}</span>`;
@@ -247,15 +268,19 @@ function parseArrayOfRows(rows,headers,source){
     else if(l.includes('install'))ii=i;
     else if(l.includes('category')||l.includes('product'))cati=i;
   });
+
   if(ci===-1&&headers.length>=1)ci=0; if(si===-1&&headers.length>=2)si=1; if(gi===-1&&headers.length>=3)gi=2;
   if(ei===-1&&headers.length>=4)ei=3; if(pi===-1&&headers.length>=5)pi=4; if(ii===-1&&headers.length>=6)ii=5; if(cati===-1&&headers.length>=7)cati=6;
+
   const out=[];
   for(let i=0;i<rows.length;i++){
     const cols=rows[i]; if(!cols||!cols.length)continue;
     const comp=String(cols[ci]||'').trim(), sub=String(cols[si]||'').trim(), gst=String(cols[gi]||'').trim();
     if(!comp&&!sub)continue;
+    const validGst = gst.length>=8 ? gst : null;
+    const comboKey = `${validGst || 'NO_GST'}_${comp}`;
     out.push({
-      compGUID:comp, subscriptionId:sub, gstin:gst.length>=8?gst:null,
+      compGUID:comp, subscriptionId:sub, gstin:validGst, comboKey:comboKey,
       currentBlsExpiry:fastParseDate(cols[ei])||new Date(),
       ownerPartner:pi!==-1&&cols[pi]?String(cols[pi]).trim():'Direct / Unassigned',
       installDate:ii!==-1?fastParseDate(cols[ii]):null,
@@ -287,7 +312,7 @@ function parseExcelBuffer(buf,source){
 }
 
 async function autoLoadFromRepo(){
-  setStatus('Connecting to GitHub API...','loading');
+  setStatus('Connecting to GitHub API...', 'loading');
   let owner='sauravgupta412-oss',repo='customer-churn-analysis';
   if(location.hostname.includes('github.io')){owner=location.hostname.split('.')[0];const pp=location.pathname.split('/').filter(Boolean);if(pp[0])repo=pp[0];}
   try{
@@ -321,13 +346,11 @@ async function autoLoadFromRepo(){
   }catch(err){setStatus('⚠️ Auto-load failed: '+err.message,'error');}
 }
 
-/** New Sales: active.installDate >= any expired.blsExpiry for same CompGUID */
 function computeNewSalesFlag(d){
   const metaE=window.compExpMeta[d.compGUID]||[];
   const metaA=window.compActMeta[d.compGUID]||[];
   if(!metaE.length||!metaA.length)return {isNewSales:false,detail:''};
 
-  // Find pairs where active install >= expired bls expiry
   const pairs=[];
   for(const a of metaA){
     if(!a.install)continue;
@@ -340,7 +363,6 @@ function computeNewSalesFlag(d){
   }
   if(!pairs.length)return {isNewSales:false,detail:''};
 
-  // Row-level: if this is an active row, match its install; if expired row, match its expiry
   if(d.source==='active'){
     const hit=pairs.filter(p=>p.activeSub===d.subscriptionId||(d.installDate&&p.install.getTime()===d.installDate.getTime()));
     if(hit.length||pairs.length){
@@ -354,7 +376,6 @@ function computeNewSalesFlag(d){
       const actSubs=[...new Set(hit.map(p=>p.activeSub))].slice(0,5).join(', ');
       return {isNewSales:true,detail:`Replaced by active: ${actSubs}`};
     }
-    // CompGUID-level new sales still tag expired side for visibility in overlap
     if(pairs.length){
       return {isNewSales:true,detail:`Comp has New Sales vs ${[...new Set(pairs.map(p=>p.activeSub))].slice(0,3).join(', ')}`};
     }
@@ -365,11 +386,21 @@ function computeNewSalesFlag(d){
 function analyzeData(){
   const eG=new Set(),aG=new Set();
   const mE={},mA={},sC={},partStats={},catStats={},tenStats={'< 1 Year':0,'1-3 Years':0,'3-5 Years':0,'5+ Years':0};
-  window.compNet={}; window.gstNet={}; window.compExpMeta={}; window.compActMeta={};
+  window.compNet={}; window.gstNet={}; window.comboNet={}; window.compExpMeta={}; window.compActMeta={};
 
-  const processRecord=d=>{
+  const processRecord = (d) => {
+    // Build Networks
     if(!window.compNet[d.compGUID])window.compNet[d.compGUID]={a:[],e:[]};
     window.compNet[d.compGUID][d.source==='active'?'a':'e'].push(d.subscriptionId);
+
+    if(d.gstin){
+      if(!window.gstNet[d.gstin])window.gstNet[d.gstin]={a:[],e:[]};
+      window.gstNet[d.gstin][d.source==='active'?'a':'e'].push(d.subscriptionId);
+    }
+
+    if(!window.comboNet[d.comboKey])window.comboNet[d.comboKey]={a:[],e:[]};
+    window.comboNet[d.comboKey][d.source==='active'?'a':'e'].push(d.subscriptionId);
+
     if(d.source==='expired'){
       if(!window.compExpMeta[d.compGUID])window.compExpMeta[d.compGUID]=[];
       window.compExpMeta[d.compGUID].push({sub:d.subscriptionId,expiry:d.currentBlsExpiry});
@@ -377,25 +408,25 @@ function analyzeData(){
       if(!window.compActMeta[d.compGUID])window.compActMeta[d.compGUID]=[];
       window.compActMeta[d.compGUID].push({sub:d.subscriptionId,install:d.installDate});
     }
-    if(d.gstin){
-      if(!window.gstNet[d.gstin])window.gstNet[d.gstin]={a:[],e:[]};
-      window.gstNet[d.gstin][d.source==='active'?'a':'e'].push(d.subscriptionId);
-    }
-    if(d.source==='expired')eG.add(d.compGUID); else aG.add(d.compGUID);
+
+    if(d.source==='expired') eG.add(d.compGUID); else aG.add(d.compGUID);
     const mon=d.currentBlsExpiry.toISOString().slice(0,7);
-    if(d.source==='expired')mE[mon]=(mE[mon]||0)+1; else mA[mon]=(mA[mon]||0)+1;
+    if(d.source==='expired') mE[mon]=(mE[mon]||0)+1; else mA[mon]=(mA[mon]||0)+1;
+
     if(d.gstin&&d.gstin.length>=2){const st=stateGST[d.gstin.slice(0,2)]||'Other';if(!sC[st])sC[st]={expired:0,active:0};sC[st][d.source]++;}
+
     const pKey=d.ownerPartner||'Direct / Unassigned'; if(!partStats[pKey])partStats[pKey]={expired:0,active:0}; partStats[pKey][d.source]++;
     const cKey=d.categoryName||'Standard'; if(!catStats[cKey])catStats[cKey]={expired:0,active:0}; catStats[cKey][d.source]++;
+
     if(d.installDate&&d.source==='expired'){
       const yrs=(d.currentBlsExpiry-d.installDate)/(1000*60*60*24*365.25);
       if(yrs<1)tenStats['< 1 Year']++; else if(yrs<3)tenStats['1-3 Years']++; else if(yrs<5)tenStats['3-5 Years']++; else tenStats['5+ Years']++;
     }
   };
+
   expiredData.forEach(processRecord);
   activeData.forEach(processRecord);
 
-  // Tag New Sales on every record
   let newSalesActiveSubs=0, newSalesCompGUIDs=new Set();
   const tag=d=>{
     const ns=computeNewSalesFlag(d);
@@ -409,7 +440,7 @@ function analyzeData(){
 
   const oG=new Set(); eG.forEach(x=>{if(aG.has(x))oG.add(x);});
   const fC=new Set(); eG.forEach(x=>{if(!aG.has(x))fC.add(x);});
-  const onlyActive=new Set(); aG.forEach(x=>{if(!eG.has(x))onlyActive.add(x);}); // kept for venn math only, not shown as Healthy
+  const onlyActive=new Set(); aG.forEach(x=>{if(!eG.has(x))onlyActive.add(x);});
   const tot=fC.size+onlyActive.size+oG.size;
 
   analysisResults={
@@ -430,23 +461,36 @@ function chips(list,cls){
   const u=[...new Set(list)];
   return `<div class="chip-wrap">${u.map(s=>`<span class="${cls}">${s}</span>`).join('')}</div>`;
 }
+
 function getL(d){
   const cn=window.compNet[d.compGUID]||{a:[],e:[]};
   const gn=d.gstin?(window.gstNet[d.gstin]||{a:[],e:[]}):{a:[],e:[]};
-  const ca=cn.a.filter(s=>s!==d.subscriptionId), ce=cn.e.filter(s=>s!==d.subscriptionId);
-  const ga=gn.a.filter(s=>s!==d.subscriptionId), ge=gn.e.filter(s=>s!==d.subscriptionId);
+  const ca=cn.a.filter(s=>s!==d.subscriptionId);
+  const ce=cn.e.filter(s=>s!==d.subscriptionId);
+  const ga=gn.a.filter(s=>s!==d.subscriptionId);
+  const ge=gn.e.filter(s=>s!==d.subscriptionId);
   return{
     c:`${ca.length?`<div class="chip-label">Active (${ca.length})</div>`+chips(ca,'chip-act'):''}${ce.length?`<div class="chip-label">Expired (${ce.length})</div>`+chips(ce,'chip-exp'):''}${!ca.length&&!ce.length?'<span style="color:#555;font-size:.6rem">None</span>':''}`,
     g:d.gstin?(`${ga.length?`<div class="chip-label">Active (${ga.length})</div>`+chips(ga,'chip-act'):''}${ge.length?`<div class="chip-label">Expired (${ge.length})</div>`+chips(ge,'chip-exp'):''}${!ga.length&&!ge.length?'<span style="color:#555;font-size:.6rem">None</span>':''}`):'<span style="color:#555;font-size:.6rem">No GSTIN</span>'
   };
 }
+
+function getComboActiveSubsHTML(d){
+  const combo = window.comboNet[d.comboKey];
+  if(!combo || !combo.a || combo.a.length === 0){
+    return '<span style="color:#555;font-size:.65rem">None</span>';
+  }
+  return chips(combo.a, 'chip-act');
+}
+
 function getTenureText(d){
   if(!d.installDate)return'<span style="color:#555">N/A</span>';
   const yrs=(d.currentBlsExpiry-d.installDate)/(1000*60*60*24*365.25);
   return `<span style="color:#22d3ee;font-weight:600">${Math.max(0,yrs).toFixed(1)} yrs</span>`;
 }
+
 function newSalesCell(d){
-  if(d.isNewSales)return`<span class="status-badge status-newsales">New Sales</span><div class="ns-note">${d.newSalesDetail||'Install ≥ Expired BLS Expiry'}</div>`;
+  if(d.isNewSales)return`<span class="status-badge status-newsales">New Sales</span><div class="ns-note">${d.newSalesDetail||'Install ≥ Expired BLS'}</div>`;
   return`<span style="color:#555;font-size:.7rem">—</span>`;
 }
 
@@ -461,22 +505,35 @@ function openDrillDown(title,data,stats){
 
 function renderModalTable(data){
   document.getElementById('modalTableHead').innerHTML=`<tr>
-    <th>Partner / Category</th><th>CompGUID</th><th>Sub No</th><th>GSTIN</th>
-    <th>Install</th><th>BLS Expiry</th><th>Source</th><th>New Sales</th>
-    <th>Linked CompGUID</th><th>Linked GSTIN</th></tr>`;
+    <th>Partner / Category</th>
+    <th>View 1: CompGUID</th>
+    <th>View 2: GSTIN</th>
+    <th>View 3: GSTIN + CompGUID</th>
+    <th>Sub No</th>
+    <th>Expiry</th>
+    <th>Status</th>
+    <th>New Sales</th>
+    <th>Linked by CompGUID</th>
+    <th>Linked by GSTIN</th>
+    <th style="color:#38ef7d;">Active Serials (Same GSTIN + CompGUID)</th>
+  </tr>`;
   const n=Math.min(data.length,ROW_CAP); let html='';
   for(let i=0;i<n;i++){
     const d=data[i], l=getL(d), esc=(d.compGUID||'').replace(/'/g,"\\'");
+    const escCombo=(d.comboKey||'').replace(/'/g,"\\'");
+    const comboActHtml = getComboActiveSubsHTML(d);
     html+=`<tr>
-      <td style="font-size:.7rem"><b style="color:#fff">${d.ownerPartner}</b><br><span style="color:#ffd200">${d.categoryName}</span><br>Tenure: ${getTenureText(d)}</td>
+      <td style="font-size:.7rem"><b style="color:#fff">${d.ownerPartner}</b><br><span style="color:#ffd200">${d.categoryName}</span><br>${getTenureText(d)}</td>
       <td class="compguid-cell" onclick="document.getElementById('modalSearch').value='${esc}';filterModalTable()">${d.compGUID||''}</td>
-      <td>${d.subscriptionId||''}</td>
       <td>${d.gstin||'<span style="color:#555">N/A</span>'}</td>
-      <td>${d.installDate?d.installDate.toLocaleDateString():'—'}</td>
+      <td class="combo-cell" onclick="document.getElementById('modalSearch').value='${escCombo}';filterModalTable()">${d.comboKey}</td>
+      <td>${d.subscriptionId||''}</td>
       <td>${d.currentBlsExpiry.toLocaleDateString()}</td>
       <td><span class="status-badge ${d.source==='expired'?'status-expired':'status-active'}">${d.source}</span></td>
       <td>${newSalesCell(d)}</td>
-      <td>${l.c}</td><td>${l.g}</td>
+      <td>${l.c}</td>
+      <td>${l.g}</td>
+      <td>${comboActHtml}</td>
     </tr>`;
   }
   document.getElementById('modalTableBody').innerHTML=html;
@@ -489,8 +546,9 @@ function filterModalTable(){
   if(!raw){currentModalData=currentModalAll;renderModalTable(currentModalData);return;}
   const q=raw.toLowerCase(), cq=q.replace(/[^a-z0-9]/g,'');
   const out=[];
-  for(const d of currentModalAll){
-    const str=`${d.compGUID} ${d.subscriptionId} ${d.gstin} ${d.ownerPartner} ${d.categoryName} ${d.isNewSales?'new sales':''}`.toLowerCase();
+  for(let i=0;i<currentModalAll.length;i++){
+    const d=currentModalAll[i];
+    const str=`${d.compGUID} ${d.subscriptionId} ${d.gstin} ${d.comboKey} ${d.ownerPartner} ${d.categoryName} ${d.isNewSales?'new sales':''}`.toLowerCase();
     if(str.includes(q)||(cq.length>=2&&str.replace(/[^a-z0-9]/g,'').includes(cq)))out.push(d);
   }
   currentModalData=out; renderModalTable(out);
@@ -501,7 +559,7 @@ function runGlobalSearch(){
   if(!raw){alert('Enter search term');return;}
   const q=raw.toLowerCase(), cq=q.replace(/[^a-z0-9]/g,'');
   const matches=[];
-  const scan=arr=>{for(const d of arr){const str=`${d.compGUID} ${d.subscriptionId} ${d.gstin} ${d.ownerPartner} ${d.categoryName} ${d.isNewSales?'new sales':''}`.toLowerCase();
+  const scan=arr=>{for(let i=0;i<arr.length;i++){const d=arr[i],str=`${d.compGUID} ${d.subscriptionId} ${d.gstin} ${d.comboKey} ${d.ownerPartner} ${d.categoryName} ${d.isNewSales?'new sales':''}`.toLowerCase();
     if(str.includes(q)||(cq.length>=2&&str.replace(/[^a-z0-9]/g,'').includes(cq)))matches.push(d);}};
   scan(expiredData);scan(activeData);
   openDrillDown(`🔍 Search: "${raw}"`,matches,[
@@ -513,19 +571,21 @@ function runGlobalSearch(){
 function closeModal(){document.getElementById('drillModal').classList.remove('show');}
 
 function downloadModalData(){
-  let csv='Partner,Category,Install,TenureYrs,CompGUID,Sub No,GSTIN,BLS Expiry,Source,New Sales,New Sales Detail,Linked Act Comp,Linked Exp Comp,Linked Act GST,Linked Exp GST\n';
+  let csv='Partner,Category,Install,TenureYrs,CompGUID,GSTIN,GSTIN_CompGUID,SubNo,BLSExpiry,Source,NewSales,NewSalesDetail,LinkedActComp,LinkedExpComp,LinkedActGST,LinkedExpGST,ActiveSerialsSameGSTINCompGUID\n';
   currentModalData.forEach(d=>{
     const cn=window.compNet[d.compGUID]||{a:[],e:[]}, gn=d.gstin?(window.gstNet[d.gstin]||{a:[],e:[]}):{a:[],e:[]};
+    const combo=window.comboNet[d.comboKey]||{a:[],e:[]};
     const ten=d.installDate?((d.currentBlsExpiry-d.installDate)/31557600000).toFixed(2):'';
     const inst=d.installDate?d.installDate.toISOString().slice(0,10):'';
-    csv+=`"${d.ownerPartner}","${d.categoryName}","${inst}","${ten}","${d.compGUID}","${d.subscriptionId}","${d.gstin||''}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}","${d.isNewSales?'Yes':'No'}","${(d.newSalesDetail||'').replace(/"/g,"'")}","${[...new Set(cn.a.filter(s=>s!==d.subscriptionId))].join('; ')}","${[...new Set(cn.e.filter(s=>s!==d.subscriptionId))].join('; ')}","${[...new Set(gn.a.filter(s=>s!==d.subscriptionId))].join('; ')}","${[...new Set(gn.e.filter(s=>s!==d.subscriptionId))].join('; ')}"\n`;
+    const comboActList=[...new Set(combo.a)].join('; ');
+    csv+=`"${d.ownerPartner}","${d.categoryName}","${inst}","${ten}","${d.compGUID}","${d.gstin||''}","${d.comboKey}","${d.subscriptionId}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}","${d.isNewSales?'Yes':'No'}","${(d.newSalesDetail||'').replace(/"/g,"'")}","${[...new Set(cn.a.filter(s=>s!==d.subscriptionId))].join('; ')}","${[...new Set(cn.e.filter(s=>s!==d.subscriptionId))].join('; ')}","${[...new Set(gn.a.filter(s=>s!==d.subscriptionId))].join('; ')}","${[...new Set(gn.e.filter(s=>s!==d.subscriptionId))].join('; ')}","${comboActList}"\n`;
   });
   dlFile(csv,'drill_down_export.csv','text/csv');
 }
 
 function drillByCategory(cat){
   const r=analysisResults; let d=[],t='',s=[];
-  if(cat==='total'){d=expiredData.concat(activeData);t='📊 All';s=[{value:(r.totalExpired+r.totalActive).toLocaleString(),label:'Total'},{value:r.totalExpired.toLocaleString(),label:'Expired',color:'#f45c43'},{value:r.totalActive.toLocaleString(),label:'Active',color:'#667eea'}];}
+  if(cat==='total'){d=expiredData.concat(activeData);t='📊 All Subscriptions';s=[{value:(r.totalExpired+r.totalActive).toLocaleString(),label:'Total'},{value:r.totalExpired.toLocaleString(),label:'Expired',color:'#f45c43'},{value:r.totalActive.toLocaleString(),label:'Active',color:'#667eea'}];}
   else if(cat==='churned'){d=expiredData.filter(x=>r.fullChurnSet.has(x.compGUID));t='🔴 Full Churn';s=[{value:d.length.toLocaleString(),label:'Records',color:'#f45c43'}];}
   else if(cat==='overlap'){d=expiredData.concat(activeData).filter(x=>r.overlappingCompGUIDSet.has(x.compGUID));t='🟡 Partial Churn';s=[{value:d.length.toLocaleString(),label:'Records',color:'#a855f7'},{value:d.filter(x=>x.isNewSales).length.toLocaleString(),label:'New Sales rows',color:'#22d3ee'}];}
   else if(cat==='newsales'){d=expiredData.concat(activeData).filter(x=>x.isNewSales);t='🔵 New Sales (Install ≥ Expired BLS)';s=[{value:d.length.toLocaleString(),label:'Tagged rows',color:'#22d3ee'},{value:r.newSalesCompanies.toLocaleString(),label:'Companies',color:'#22d3ee'},{value:r.newSalesActiveSubs.toLocaleString(),label:'Active New Sales',color:'#38ef7d'}];}
@@ -556,9 +616,8 @@ function renderInsights(){
 
 function renderVenn(){
   const r=analysisResults;
-  // Active-only count kept for geometry but NOT labeled Healthy
   document.getElementById('vennDiagram').innerHTML=`
-    <div class="venn-circle venn-active" onclick="drillByCategory('total')" title="Active-only companies (not labeled Healthy)"><div style="margin-left:-20px"><div style="font-size:1.1rem;color:#667eea">${r.onlyActive.toLocaleString()}</div><div style="font-size:.58rem;color:#999">Active only</div></div></div>
+    <div class="venn-circle venn-active" onclick="drillByCategory('total')" title="Active-only companies"><div style="margin-left:-20px"><div style="font-size:1.1rem;color:#667eea">${r.onlyActive.toLocaleString()}</div><div style="font-size:.58rem;color:#999">Active only</div></div></div>
     <div class="venn-circle venn-expired" onclick="drillByCategory('churned')"><div style="margin-left:20px"><div style="font-size:1.1rem;color:#f45c43">${r.fullChurn.toLocaleString()}</div><div style="font-size:.58rem;color:#999">Expired only</div></div></div>
     <div class="venn-overlap-zone" onclick="drillByCategory('overlap')"><div><div>${r.overlappingCompGUIDs.toLocaleString()}</div><div style="font-size:.55rem;color:#ccc">Partial</div></div></div>`;
 }
@@ -582,7 +641,7 @@ function renderCharts(){
   dc('pc');charts.pc=new Chart(document.getElementById('partnerChart'),{type:'bar',data:{labels:pArr.map(x=>x.p.substring(0,20)),datasets:[{label:'Expired',data:pArr.map(x=>x.e),backgroundColor:'rgba(244,92,67,.7)'},{label:'Active',data:pArr.map(x=>x.a),backgroundColor:'rgba(102,126,234,.7)'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{stacked:true,ticks:{color:'#888'}},y:{stacked:true,ticks:{color:'#888'},grid:{color:'rgba(255,255,255,.05)'}}}}});
   const cArr=Object.entries(r.catStats).sort((a,b)=>(b[1].active+b[1].expired)-(a[1].active+a[1].expired)).slice(0,8);
   dc('cc');charts.cc=new Chart(document.getElementById('categoryChart'),{type:'doughnut',data:{labels:cArr.map(x=>x[0]),datasets:[{data:cArr.map(x=>x[1].expired+x[1].active),backgroundColor:['#667eea','#764ba2','#f45c43','#ffd200','#22d3ee','#a855f7','#eb3349','#06b6d4'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#aaa',font:{size:10}}}}}});
-  dc('tc');charts.tc=new Chart(document.getElementById('tenureChart'),{type:'bar',data:{labels:Object.keys(r.tenStats),datasets:[{label:'Expired (churned)',data:Object.values(r.tenStats),backgroundColor:'rgba(168,85,247,.6)',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{ticks:{color:'#888'}},y:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,.05)'}}}}});
+  dc('tc');charts.tc=new Chart(document.getElementById('tenureChart'),{type:'bar',data:{labels:Object.keys(r.tenStats),datasets:[{label:'Expired Subs (Churned)',data:Object.values(r.tenStats),backgroundColor:'rgba(168,85,247,.6)',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{ticks:{color:'#888'}},y:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,.05)'}}}}});
   const months=[...new Set([...Object.keys(r.monthlyExpired),...Object.keys(r.monthlyActive)])].sort();
   dc('tl');charts.tl=new Chart(document.getElementById('timelineChart'),{type:'line',data:{labels:months,datasets:[{label:'Expired',data:months.map(m=>r.monthlyExpired[m]||0),borderColor:'#f45c43',backgroundColor:'rgba(244,92,67,.1)',fill:true,tension:.3},{label:'Active',data:months.map(m=>r.monthlyActive[m]||0),borderColor:'#667eea',backgroundColor:'rgba(102,126,234,.1)',fill:true,tension:.3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{ticks:{color:'#888',maxRotation:45}},y:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#888'}}}}});
   const states=Object.keys(r.stateChurn).sort();
@@ -592,8 +651,7 @@ function renderCharts(){
 function renderDataTable(filter='all'){
   const r=analysisResults; let count=0,html='',shown=0;
   const tryAdd=d=>{
-    const o=r.overlappingCompGUIDSet.has(d.compGUID);
-    const cat=o?'Partial Churn':(d.source==='expired'?'Full Churn':'Active-only');
+    const o=r.overlappingCompGUIDSet.has(d.compGUID), cat=o?'Partial Churn':(d.source==='expired'?'Full Churn':'Active-only');
     if(filter==='overlap'&&!o)return;
     if(filter==='churned'&&!(d.source==='expired'&&r.fullChurnSet.has(d.compGUID)))return;
     if(filter==='newsales'&&!d.isNewSales)return;
@@ -602,18 +660,21 @@ function renderDataTable(filter='all'){
       if(!(d.source==='active'&&d.currentBlsExpiry<=risk&&d.currentBlsExpiry>=today))return;
     }
     count++; if(shown>=ROW_CAP)return; shown++;
-    const L=getL(d), esc=(d.compGUID||'').replace(/'/g,"\\'");
+    const L=getL(d); const esc=(d.compGUID||'').replace(/'/g,"\\'");
+    const escCombo=(d.comboKey||'').replace(/'/g,"\\'");
+    const comboActHtml = getComboActiveSubsHTML(d);
     html+=`<tr>
-      <td style="font-size:.7rem"><b style="color:#fff">${d.ownerPartner}</b><br><span style="color:#ffd200">${d.categoryName}</span><br>${getTenureText(d)}</td>
+      <td style="font-size:0.7rem"><b style="color:#fff">${d.ownerPartner}</b><br><span style="color:#ffd200">${d.categoryName}</span><br>${getTenureText(d)}</td>
       <td class="compguid-cell" onclick="document.getElementById('globalSearchInput').value='${esc}';runGlobalSearch()">${(d.compGUID||'').slice(0,18)}...</td>
-      <td>${d.subscriptionId||''}</td>
       <td>${d.gstin||'<span style="color:#555">N/A</span>'}</td>
-      <td>${d.installDate?d.installDate.toLocaleDateString():'—'}</td>
+      <td class="combo-cell" onclick="document.getElementById('globalSearchInput').value='${escCombo}';runGlobalSearch()">${d.comboKey}</td>
+      <td>${d.subscriptionId||''}</td>
       <td>${d.currentBlsExpiry.toLocaleDateString()}</td>
       <td><span class="status-badge ${d.source==='expired'?'status-expired':'status-active'}">${d.source}</span></td>
       <td>${newSalesCell(d)}</td>
       <td>${L.c}</td>
       <td>${L.g}</td>
+      <td>${comboActHtml}</td>
     </tr>`;
   };
   if(filter!=='atrisk'){for(let i=0;i<expiredData.length;i++)tryAdd(expiredData[i]); for(let i=0;i<activeData.length;i++)tryAdd(activeData[i]);}
@@ -626,24 +687,26 @@ function showTable(f,btn){renderDataTable(f);document.querySelectorAll('.table-t
 function dlFile(c,n,t){const b=new Blob([c],{type:t});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=n;a.click();URL.revokeObjectURL(u);}
 function rowCsv(d){
   const cn=window.compNet[d.compGUID]||{a:[],e:[]}, gn=d.gstin?(window.gstNet[d.gstin]||{a:[],e:[]}):{a:[],e:[]};
+  const combo=window.comboNet[d.comboKey]||{a:[],e:[]};
   const ten=d.installDate?((d.currentBlsExpiry-d.installDate)/31557600000).toFixed(2):'';
   const inst=d.installDate?d.installDate.toISOString().slice(0,10):'';
-  return `"${d.ownerPartner}","${d.categoryName}","${inst}","${ten}","${d.compGUID}","${d.subscriptionId}","${d.gstin||''}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}","${d.isNewSales?'Yes':'No'}","${(d.newSalesDetail||'').replace(/"/g,"'")}","${[...new Set(cn.a.filter(s=>s!==d.subscriptionId))].join('; ')}","${[...new Set(cn.e.filter(s=>s!==d.subscriptionId))].join('; ')}","${[...new Set(gn.a.filter(s=>s!==d.subscriptionId))].join('; ')}","${[...new Set(gn.e.filter(s=>s!==d.subscriptionId))].join('; ')}"\n`;
+  const comboActList=[...new Set(combo.a)].join('; ');
+  return `"${d.ownerPartner}","${d.categoryName}","${inst}","${ten}","${d.compGUID}","${d.gstin||''}","${d.comboKey}","${d.subscriptionId}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}","${d.isNewSales?'Yes':'No'}","${(d.newSalesDetail||'').replace(/"/g,"'")}","${[...new Set(cn.a.filter(s=>s!==d.subscriptionId))].join('; ')}","${[...new Set(cn.e.filter(s=>s!==d.subscriptionId))].join('; ')}","${[...new Set(gn.a.filter(s=>s!==d.subscriptionId))].join('; ')}","${[...new Set(gn.e.filter(s=>s!==d.subscriptionId))].join('; ')}","${comboActList}"\n`;
 }
 function downloadCSV(){
-  let csv='Partner,Category,Install,TenureYrs,CompGUID,SubNo,GSTIN,BLSExpiry,Source,NewSales,NewSalesDetail,LinkedActComp,LinkedExpComp,LinkedActGST,LinkedExpGST\n';
+  let csv='Partner,Category,Install,TenureYrs,CompGUID,GSTIN,GSTIN_CompGUID,SubNo,BLSExpiry,Source,NewSales,NewSalesDetail,LinkedActComp,LinkedExpComp,LinkedActGST,LinkedExpGST,ActiveSerialsSameGSTINCompGUID\n';
   expiredData.forEach(d=>csv+=rowCsv(d)); activeData.forEach(d=>csv+=rowCsv(d));
-  dlFile(csv,'churn_full_export.csv','text/csv');
+  dlFile(csv,'churn_full_3way_active_serials_export.csv','text/csv');
 }
 function downloadOverlap(){
-  const r=analysisResults; let csv='Partner,Category,Install,TenureYrs,CompGUID,SubNo,GSTIN,BLSExpiry,Source,NewSales,NewSalesDetail,LinkedActComp,LinkedExpComp\n';
+  const r=analysisResults; let csv='Partner,Category,Install,TenureYrs,CompGUID,GSTIN,GSTIN_CompGUID,SubNo,BLSExpiry,Source,NewSales,NewSalesDetail,LinkedActComp,LinkedExpComp,ActiveSerialsSameGSTINCompGUID\n';
   const w=d=>{if(!r.overlappingCompGUIDSet.has(d.compGUID))return; csv+=rowCsv(d);};
-  expiredData.forEach(w); activeData.forEach(w); dlFile(csv,'partial_churn_export.csv','text/csv');
+  expiredData.forEach(w); activeData.forEach(w); dlFile(csv,'partial_churn_3way_active_serials_export.csv','text/csv');
 }
 function downloadNewSales(){
-  let csv='Partner,Category,Install,TenureYrs,CompGUID,SubNo,GSTIN,BLSExpiry,Source,NewSales,NewSalesDetail,LinkedActComp,LinkedExpComp,LinkedActGST,LinkedExpGST\n';
+  let csv='Partner,Category,Install,TenureYrs,CompGUID,GSTIN,GSTIN_CompGUID,SubNo,BLSExpiry,Source,NewSales,NewSalesDetail,LinkedActComp,LinkedExpComp,LinkedActGST,LinkedExpGST,ActiveSerialsSameGSTINCompGUID\n';
   expiredData.concat(activeData).filter(d=>d.isNewSales).forEach(d=>csv+=rowCsv(d));
-  dlFile(csv,'new_sales_export.csv','text/csv');
+  dlFile(csv,'new_sales_3way_active_serials_export.csv','text/csv');
 }
 
 function runAnalysis(){
