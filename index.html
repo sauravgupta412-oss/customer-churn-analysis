@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Customer Churn & Retention Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -34,42 +35,24 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-g
 .kpi-card.orange::before{background:linear-gradient(90deg,#f7971e,#ffd200)}
 .kpi-card.purple::before{background:linear-gradient(90deg,#a855f7,#ec4899)}
 .kpi-card.cyan::before{background:linear-gradient(90deg,#06b6d4,#22d3ee)}
-.kpi-card.ghost::before{background:linear-gradient(90deg,#ec4899,#f43f5e)}
 .kpi-card:hover{transform:translateY(-3px);border-color:rgba(255,255,255,.2)}
 .kpi-value{font-size:1.55rem;font-weight:700;margin:4px 0}
 .kpi-card.blue .kpi-value{color:#667eea}.kpi-card.green .kpi-value{color:#38ef7d}.kpi-card.red .kpi-value{color:#f45c43}
-.kpi-card.orange .kpi-value{color:#ffd200}.kpi-card.purple .kpi-value{color:#a855f7}.kpi-card.cyan .kpi-value{color:#22d3ee}.kpi-card.ghost .kpi-value{color:#f43f5e}
+.kpi-card.orange .kpi-value{color:#ffd200}.kpi-card.purple .kpi-value{color:#a855f7}.kpi-card.cyan .kpi-value{color:#22d3ee}
 .kpi-label{font-size:.7rem;color:#999;text-transform:uppercase;letter-spacing:1px}
 .kpi-sublabel{font-size:.65rem;color:#666;margin-top:2px}
 
 .section-header{margin:22px 30px 4px;display:flex;align-items:center;gap:10px}
 .section-header h2{font-size:1.15rem;color:#ddd}
 .section-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(102,126,234,.2),transparent);margin:6px 30px 14px}
-.dashboard{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:0 30px 14px}
-@media(max-width:900px){.dashboard{grid-template-columns:1fr}}
+.dashboard{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin:0 30px 14px}
+@media(max-width:1200px){.dashboard{grid-template-columns:1fr 1fr}}
+@media(max-width:800px){.dashboard{grid-template-columns:1fr}}
 .chart-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:18px}
 .chart-card.full-width{grid-column:1/-1}
 .chart-title{font-size:.95rem;font-weight:600;margin-bottom:12px;color:#ddd}
 .chart-container{position:relative;width:100%;height:280px}
 .chart-container.tall{height:340px}
-
-.action-block{background:rgba(14,165,233,.08);border-left:4px solid #0ea5e9;padding:16px 20px;margin:0 30px 20px;border-radius:0 10px 10px 0;font-size:.85rem;line-height:1.6}
-.action-block h4{color:#22d3ee;margin-bottom:8px;font-size:1rem;display:flex;align-items:center;gap:8px}
-.action-item{margin-bottom:6px;padding-left:18px;position:relative}
-.action-item::before{content:'→';position:absolute;left:0;color:#0ea5e9;font-weight:bold}
-
-.flow-container{padding:8px}
-.flow-row{display:flex;align-items:center;gap:8px;margin:6px 0;padding:8px 12px;border-radius:8px;cursor:pointer}
-.flow-row:hover{background:rgba(255,255,255,.04)}
-.flow-bar-container{flex:1}
-.flow-bar{height:22px;border-radius:4px;display:flex;align-items:center;padding-left:8px;font-size:.7rem;font-weight:600}
-.flow-bar.healthy{background:linear-gradient(90deg,rgba(56,239,125,.25),rgba(56,239,125,.55))}
-.flow-bar.partial{background:linear-gradient(90deg,rgba(168,85,247,.25),rgba(168,85,247,.55))}
-.flow-bar.churned{background:linear-gradient(90deg,rgba(244,92,67,.25),rgba(244,92,67,.55))}
-.flow-bar.newsales{background:linear-gradient(90deg,rgba(6,182,212,.25),rgba(34,211,238,.55))}
-.flow-bar.atrisk{background:linear-gradient(90deg,rgba(255,210,0,.25),rgba(255,210,0,.55))}
-.flow-label{font-size:.72rem;color:#999;min-width:110px}
-.flow-value{font-size:.82rem;font-weight:700;min-width:50px;text-align:right}
 
 .venn-container{display:flex;justify-content:center;align-items:center;height:260px;position:relative}
 .venn-circle{width:160px;height:160px;border-radius:50%;position:absolute;display:flex;align-items:center;justify-content:center;font-weight:700;cursor:pointer}
@@ -77,10 +60,9 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-g
 .venn-expired{background:rgba(244,92,67,.18);border:2px solid rgba(244,92,67,.45);left:calc(50% - 20px)}
 .venn-overlap-zone{position:absolute;background:rgba(168,85,247,.28);border:2px solid rgba(168,85,247,.55);border-radius:50%;width:80px;height:160px;left:calc(50% - 80px);display:flex;align-items:center;justify-content:center;font-weight:700;color:#a855f7;clip-path:ellipse(50% 50%);cursor:pointer}
 
-/* MODAL & 360 POPUP */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(10,10,26,.95);z-index:2000;justify-content:center;align-items:center;padding:16px}
 .modal-overlay.show{display:flex}
-.modal{background:#1a1a3e;border:1px solid rgba(255,255,255,.12);border-radius:12px;width:100%;max-width:1550px;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.modal{background:#1a1a3e;border:1px solid rgba(255,255,255,.12);border-radius:12px;width:100%;max-width:1600px;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.5)}
 .modal-header{background:linear-gradient(135deg,#667eea,#764ba2);padding:14px 20px;display:flex;justify-content:space-between;align-items:center}
 .modal-header h3{color:#fff;font-size:1.05rem}
 .modal-close{background:rgba(255,255,255,.2);border:none;color:#fff;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:background 0.2s}
@@ -96,9 +78,9 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-g
 .ctrl-input option { background-color:#1a1a3e; color:#fff; }
 
 .modal-body{padding:0;overflow-y:auto;flex:1;overflow-x:auto;}
-.modal-table{width:100%;border-collapse:collapse;font-size:.74rem;min-width:1380px}
+.modal-table{width:100%;border-collapse:collapse;font-size:.74rem;min-width:1450px}
 .modal-table thead th{background:rgba(30,30,60,.97);padding:9px 12px;text-align:left;color:#999;font-weight:600;text-transform:uppercase;font-size:.65rem;position:sticky;top:0;z-index:1;white-space:nowrap;border-bottom:1px solid rgba(255,255,255,.05)}
-.modal-table tbody td{padding:8px 14px;border-bottom:1px solid rgba(255,255,255,.03);vertical-align:middle}
+.modal-table tbody td{padding:7px 12px;border-bottom:1px solid rgba(255,255,255,.03);vertical-align:middle}
 .modal-table tbody tr:hover{background:rgba(102,126,234,.06)}
 
 .pagination-controls{display:flex;justify-content:space-between;align-items:center;padding:10px 20px;background:rgba(255,255,255,.03);border-top:1px solid rgba(255,255,255,.06)}
@@ -117,13 +99,11 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-g
 .linked-summary-badge .exp-num{color:#f45c43;font-weight:700}
 .linked-summary-badge .hint{font-size:.62rem;color:#888;margin-left:4px}
 
-/* INLINE BADGES */
 .status-badge{padding:3px 8px;border-radius:10px;font-size:.62rem;font-weight:600;white-space:nowrap;display:inline-block;}
-.status-active{background:rgba(56,239,125,.12);color:#38ef7d}
-.status-expired{background:rgba(244,92,67,.12);color:#f45c43}
-.status-newsales{background:rgba(34,211,238,.15);color:#22d3ee;border:1px solid rgba(34,211,238,.35)}
-.status-ghost{background:rgba(244,63,94,.15);color:#f43f5e;border:1px solid rgba(244,63,94,.35);margin-left:4px;}
-.status-rdp{background:rgba(56,189,248,.15);color:#38bdf8;border:1px solid rgba(56,189,248,.35);margin-left:4px;cursor:help;}
+.status-active{background:rgba(56,239,125,.12);color:#38ef7d;border:1px solid rgba(56,239,125,.35)}
+.status-expired{background:rgba(244,92,67,.12);color:#f45c43;border:1px solid rgba(244,92,67,.35)}
+.status-rdp{background:rgba(56,189,248,.15);color:#38bdf8;border:1px solid rgba(56,189,248,.4);margin-left:4px;cursor:help;}
+.status-newsales{background:rgba(34,211,238,.15);color:#22d3ee;border:1px solid rgba(34,211,238,.4);margin-left:4px;cursor:help;}
 
 .data-table-container{margin:14px 30px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;overflow:hidden}
 .table-header{padding:14px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,.06);flex-wrap:wrap;gap:8px}
@@ -133,26 +113,18 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-g
 .table-tab:hover:not(.active){border-color:#667eea;color:#667eea}
 .table-scroll{max-height:500px;overflow:auto}
 
-.download-section{margin:12px 30px;display:flex;gap:8px;flex-wrap:wrap}
+.download-section{margin:12px 30px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
 .btn-download{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#bbb;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;transition:0.2s}
 .btn-download:hover{background:rgba(102,126,234,.15);border-color:#667eea;color:#fff}
 
 .loading-overlay{display:none;position:fixed;inset:0;background:rgba(10,10,26,.92);z-index:3000;justify-content:center;align-items:center;flex-direction:column;gap:14px}
 .loading-overlay.show{display:flex}
-.file-btn-sm{background:linear-gradient(135deg,#667eea,#764ba2);border:none;color:#fff;padding:4px 12px;border-radius:4px;cursor:pointer;font-size:.75rem;margin-left:8px}
 footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
-
-.header-360 {background:rgba(255,255,255,0.02); padding:10px 15px; margin:14px 20px 8px; border-radius:8px; border-left:4px solid #38ef7d; font-weight:600; color:#38ef7d; display:flex; align-items:center; font-size:0.9rem;}
-.header-360.exp { border-left-color: #f45c43; color: #f45c43; background:rgba(244,92,67,0.05); }
-.header-360.act { border-left-color: #38ef7d; color: #38ef7d; background:rgba(56,239,125,0.05); }
 </style>
 </head>
 <body>
 
 <div class="loading-overlay" id="loadingOverlay"><div class="status-spinner" style="width:40px;height:40px"></div><p style="color:#667eea" id="loadingText">Processing Data...</p></div>
-
-<input type="file" id="expiredFileInput" accept=".csv,.xlsx,.xls" style="display:none" onchange="handleFileUpload('expired',this)">
-<input type="file" id="activeFileInput" accept=".csv,.xlsx,.xls" style="display:none" onchange="handleFileUpload('active',this)">
 
 <!-- MODAL DRILL-DOWN -->
 <div class="modal-overlay" id="drillModal">
@@ -161,20 +133,25 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
     <div class="modal-stats" id="modalStats"></div>
     
     <div class="table-controls">
-      <input type="text" class="ctrl-input" style="flex:1" id="modalSearch" placeholder="🔍 Search GSTIN+CompGUID, Sub ID, Partner..." oninput="triggerModalUpdate()">
+      <input type="text" class="ctrl-input" style="flex:1" id="modalSearch" placeholder="🔍 Search GSTIN+CompGUID, Sub ID, Partner, RDP..." oninput="triggerModalUpdate()">
+      <select class="ctrl-input" id="modalRdpFilter" onchange="triggerModalUpdate()">
+        <option value="ALL">All Licenses</option>
+        <option value="RDP_ONLY">RDP Cases Only</option>
+        <option value="NON_RDP">Non-RDP Cases</option>
+      </select>
       <select class="ctrl-input" id="modalTenureFilter" onchange="triggerModalUpdate()">
         <option value="ALL">All Tenures</option>
         <option value="< 1 Year">< 1 Year</option>
         <option value="1-3 Years">1-3 Years</option>
         <option value="3-5 Years">3-5 Years</option>
         <option value="5+ Years">5+ Years</option>
-        <option value="Unknown">Unknown (No Install Date)</option>
+        <option value="Unknown">Unknown (No Install)</option>
       </select>
       <select class="ctrl-input" id="modalSort" onchange="triggerModalUpdate()">
         <option value="exp_desc">Sort: Expiry (Newest)</option>
         <option value="exp_asc">Sort: Expiry (Oldest)</option>
-        <option value="install_desc">Sort: Install Date (Newest)</option>
-        <option value="install_asc">Sort: Install Date (Oldest)</option>
+        <option value="install_desc">Sort: Install (Newest)</option>
+        <option value="install_asc">Sort: Install (Oldest)</option>
         <option value="tenure_desc">Sort: Tenure (High-Low)</option>
         <option value="tenure_asc">Sort: Tenure (Low-High)</option>
       </select>
@@ -189,7 +166,7 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
     </div>
     
     <div class="pagination-controls">
-        <button class="page-btn" id="modPrevBtn" onclick="modChangePage(-1)">◀ Previous 50</button>
+        <button class="page-btn" id="modPrevBtn" onclick="modChangePage(-1)">◀ Prev 50</button>
         <div class="page-info" id="modPageInfo">Page 1 of 1</div>
         <button class="page-btn" id="modNextBtn" onclick="modChangePage(1)">Next 50 ▶</button>
     </div>
@@ -216,8 +193,8 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
 
 <div class="header">
   <h1>📊 Enterprise Customer Churn & Retention Dashboard</h1>
-  <p>Esc Key Support · Inline RDP Badges · Deduplicated Precision Engine</p>
-  <div class="header-badge">v34.0 — Inline RDP Badges & Optimized Table Layout</div>
+  <p>Deduplicated Engine · Interactive Chart Data Labels · RDP Shift & New Sales Logic</p>
+  <div class="header-badge">v37.0 — Precise Logic Engine & Data Label Charts</div>
 </div>
 
 <div class="status-bar loading" id="statusBar">
@@ -227,42 +204,56 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
 
 <div class="global-search-container">
   <span>🔍</span>
-  <input type="text" id="globalSearchInput" placeholder="Global Search: Partner, CompGUID, Sub ID, GSTIN, RDP..." onkeydown="if(event.key==='Enter')runGlobalSearch()">
+  <input type="text" id="globalSearchInput" placeholder="Global Search: Partner, CompGUID, Sub ID, GSTIN, RDP License..." onkeydown="if(event.key==='Enter')runGlobalSearch()">
   <button class="global-search-btn" onclick="runGlobalSearch()">Search All</button>
 </div>
 
 <div class="kpi-strip" id="kpiStrip"></div>
-<div class="insight-box" id="insightBox"></div>
 
-<div class="download-section" style="justify-content:center; margin-top:20px;">
+<div class="download-section">
   <button class="btn-download" onclick="downloadCSV()">📥 Export Full CSV</button>
   <button class="btn-download" onclick="downloadOverlap()">📥 Export Partial Churn</button>
   <button class="btn-download" onclick="downloadNewSales()">📥 Export New Sales</button>
 </div>
 
 <!-- SECTION 1: CORRELATION -->
-<div class="section-header"><h2>🔗 Churn Correlation Engine</h2></div>
+<div class="section-header"><h2>🔗 Health & Retention</h2></div>
 <div class="section-divider"></div>
-<div class="dashboard">
-  <div class="chart-card"><div class="chart-title">⭕ CompGUID Overlap</div><div class="venn-container" id="vennDiagram"></div></div>
-  <div class="chart-card"><div class="chart-title">📊 Churn & New Sales Flow</div><div class="flow-container" id="flowDiagram"></div></div>
+<div class="dashboard" style="grid-template-columns: 1fr;">
+  <div class="chart-card"><div class="chart-title">⭕ Customer State (Venn)</div><div class="venn-container" id="vennDiagram"></div></div>
 </div>
 
-<div class="action-block">
-    <h4>💡 Playbook: Correlation & Recovery</h4>
-    <div class="action-item"><strong>For Ghost Churn (Pink):</strong> Active subscriptions unused in 90+ days. <em>Action: Reach out immediately to offer training or technical support.</em></div>
-    <div class="action-item"><strong>For Partial Churn (Yellow):</strong> Dropped some licenses but kept others. <em>Action: Click any row to open the 360° Account Popup and see all linked serials.</em></div>
-</div>
-
-<!-- SECTION 2: TOP PARTNER CHURN -->
-<div class="section-header"><h2>🤝 Partner Performance Analysis</h2></div>
+<!-- SECTION 2: TOP PARTNER CHURN & SHIFT CORRELATION -->
+<div class="section-header"><h2>🤝 Partner Performance & Migration Analytics</h2></div>
 <div class="section-divider"></div>
 <div class="dashboard">
+  <!-- Chart 1: Standard Churn Rate -->
   <div class="chart-card full-width">
-    <div class="chart-title">🏆 Top Partners by Churn Rate (%)</div>
-    <div style="font-size: 0.75rem; color: #aaa; margin-bottom: 10px;">Showing partners with highest churn percentage (minimum 2 total subscriptions).</div>
+    <div class="chart-title" style="cursor:pointer" title="Click to interact">🏆 Top Partners by Churn Rate (%)</div>
+    <div style="font-size: 0.75rem; color: #aaa; margin-bottom: 10px;">Highest pure churn rate (min 5 total subs). <strong>Click a bar</strong> to drill-down into that partner's churned base.</div>
     <div class="chart-container"><canvas id="partnerChurnChart"></canvas></div>
   </div>
+  
+  <!-- Chart 2: RDP Shift -->
+  <div class="chart-card">
+    <div class="chart-title" style="cursor:pointer" title="Click to interact">🔄 Top Partners by Churn + RDP Shift (%)</div>
+    <div style="font-size: 0.7rem; color: #aaa; margin-bottom: 8px;">
+        <strong>Red:</strong> Pure Churn &nbsp;|&nbsp; <strong>Cyan:</strong> Shifted to RDP &nbsp;|&nbsp; <strong>Line:</strong> RDP Conversion %<br>
+        <strong>Click a bar</strong> to drill-down.
+    </div>
+    <div class="chart-container"><canvas id="partnerRdpChart"></canvas></div>
+  </div>
+
+  <!-- Chart 3: New Sales Shift -->
+  <div class="chart-card">
+    <div class="chart-title" style="cursor:pointer" title="Click to interact">🆕 Top Partners by Churn + New Sales (%)</div>
+    <div style="font-size: 0.7rem; color: #aaa; margin-bottom: 8px;">
+        <strong>Red:</strong> Pure Churn &nbsp;|&nbsp; <strong>Blue:</strong> Shifted to New Sales (Renewed ≤ 90 days) &nbsp;|&nbsp; <strong>Line:</strong> NS Conversion %<br>
+        <strong>Click a bar</strong> to drill-down.
+    </div>
+    <div class="chart-container"><canvas id="partnerNsChart"></canvas></div>
+  </div>
+  
   <div class="chart-card"><div class="chart-title">📦 Category Mix</div><div class="chart-container"><canvas id="categoryChart"></canvas></div></div>
   <div class="chart-card"><div class="chart-title">⏳ Tenure of Churned Customers</div><div class="chart-container"><canvas id="tenureChart"></canvas></div></div>
 </div>
@@ -277,7 +268,6 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
       <button class="table-tab" onclick="setMainTab('overlap',this)">🟡 Partial</button>
       <button class="table-tab" onclick="setMainTab('churned',this)">🔴 Full Churn</button>
       <button class="table-tab" onclick="setMainTab('newsales',this)">🔵 New Sales</button>
-      <button class="table-tab" onclick="setMainTab('ghost',this)">👻 Ghost Churn</button>
       <button class="table-tab" onclick="setMainTab('atrisk',this)">⚠️ At Risk</button>
     </div>
     <div style="font-size:.8rem;color:#888" id="mainTableCount"></div>
@@ -285,6 +275,11 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
   
   <div class="table-controls">
       <input type="text" class="ctrl-input" style="flex:1" id="mainSearch" placeholder="🔍 Search records..." oninput="triggerMainUpdate()">
+      <select class="ctrl-input" id="mainRdpFilter" onchange="triggerMainUpdate()">
+        <option value="ALL">All Licenses</option>
+        <option value="RDP_ONLY">RDP Cases Only</option>
+        <option value="NON_RDP">Non-RDP Cases</option>
+      </select>
       <select class="ctrl-input" id="mainTenureFilter" onchange="triggerMainUpdate()">
         <option value="ALL">All Tenures</option>
         <option value="< 1 Year">< 1 Year</option>
@@ -315,7 +310,6 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
           <th>Last Used</th>
           <th>BLS Expiry</th>
           <th>Status</th>
-          <th>New Sales</th>
           <th>Linked by CompGUID</th>
           <th>Linked by GSTIN</th>
           <th style="color:#38ef7d">Active Serials (Combo)</th>
@@ -332,9 +326,13 @@ footer{text-align:center;padding:20px;color:#444;font-size:.72rem}
   </div>
 </div>
 
-<footer>Customer Churn Dashboard v34.0 · Inline RDP Badging Engine</footer>
+<footer>Customer Churn Dashboard v37.0 · Data Labels & Precision Drill-Down Logic</footer>
 
 <script>
+// ==================== GLOBAL CONSTANTS & HELPERS ====================
+Chart.register(ChartDataLabels);
+Chart.defaults.plugins.datalabels.display = false;
+
 window.stateGST = {
   '01':'J&K','02':'HP','03':'Punjab','04':'Chandigarh','05':'Uttarakhand','06':'Haryana',
   '07':'Delhi','08':'Rajasthan','09':'UP','10':'Bihar','11':'Sikkim','12':'Arunachal',
@@ -353,51 +351,10 @@ function getStateName(gstin) {
 function safeSetHTML(id, html) { const el = document.getElementById(id); if (el) el.innerHTML = html; }
 function safeSetText(id, txt) { const el = document.getElementById(id); if (el) el.textContent = txt; }
 
-function parseDateRobust(val) {
-    if (!val) return null;
-    if (val instanceof Date) return isNaN(val.getTime()) ? null : val;
-    if (typeof val === 'number') {
-        if (val < 1000) return null;
-        const d = new Date((val - 25569) * 86400000);
-        return isNaN(d.getTime()) ? null : d;
-    }
-    let s = String(val).trim();
-    if (!s || s.toLowerCase() === 'n/a' || s.toLowerCase() === 'null' || s.toLowerCase() === 'undefined') return null;
-
-    const datePart = s.split(' ')[0].trim();
-    let d = new Date(datePart);
-    if (!isNaN(d.getTime())) return d;
-
-    const p = datePart.split(/[\/\-\.]/);
-    if (p.length === 3) {
-        let p0 = parseInt(p[0], 10);
-        let p1 = parseInt(p[1], 10);
-        let p2 = parseInt(p[2], 10);
-        if (isNaN(p0) || isNaN(p1) || isNaN(p2)) return null;
-        let yr, mo, day;
-        if (p0 > 1000) { yr = p0; mo = p1 - 1; day = p2; }
-        else if (p2 > 1000 || p2 > 50) {
-            yr = p2 < 100 ? 2000 + p2 : p2;
-            mo = p1 - 1; day = p0;
-        } else return null;
-        d = new Date(yr, mo, day);
-        return isNaN(d.getTime()) ? null : d;
-    }
-    return null;
-}
-
-function formatDateFast(d) {
-    if (!d || isNaN(d.getTime())) return 'N/A';
-    return (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear();
-}
-
 function getTenureYrs(d) {
     if (!d || !d.installDate || !d.currentBlsExpiry) return -1;
-    const diffMs = d.currentBlsExpiry.getTime() - d.installDate.getTime();
-    if (diffMs < 0) return 0;
-    return diffMs / (1000 * 60 * 60 * 24 * 365.25);
+    return (d.currentBlsExpiry - d.installDate) / (1000 * 60 * 60 * 24 * 365.25);
 }
-
 function getTenureLabel(d) {
     const y = getTenureYrs(d);
     if (y < 0) return 'Unknown';
@@ -406,28 +363,27 @@ function getTenureLabel(d) {
     if (y < 5) return '3-5 Years';
     return '5+ Years';
 }
-
 function getTenureText(d) {
     const y = getTenureYrs(d);
     if (y < 0) return '<span style="color:#555">N/A</span>';
-    return `<span style="color:#22d3ee;font-weight:600">${y.toFixed(1)} yrs</span>`;
+    return `<span style="color:#22d3ee;font-weight:600">${Math.max(0, y).toFixed(1)} yrs</span>`;
 }
 
 // CHECK IF RDP IS PRESENT
 function hasRDP(d) {
-    if (!d.rdpLicense) return false;
+    if (!d || !d.rdpLicense) return false;
     const v = String(d.rdpLicense).trim().toLowerCase();
     return v !== '' && v !== 'n/a' && v !== 'no' && v !== '0' && v !== 'false' && v !== 'null';
 }
 
-// RDP INLINE BADGE WITH STATUS
+// STATUS CELL COMBINER
 function statusCell(d) {
     const stBadge = `<span class="status-badge ${d.source==='expired'?'status-expired':'status-active'}">${d.source}</span>`;
-    const rdpBadge = hasRDP(d) ? `<span class="status-badge status-rdp" title="RDP License: ${d.rdpLicense}">🖥️ RDP</span>` : '';
-    return `${stBadge}${rdpBadge}`;
+    const rdpBadge = hasRDP(d) ? `<span class="status-badge status-rdp" title="RDP License: ${d.rdpLicense}">🖥️ RDP</span>` : (d.source==='expired' && d.shiftedToRDP ? `<span class="status-badge status-rdp" style="border-style:dashed" title="Shifted to an Active RDP License">🔄 RDP Shift</span>` : '');
+    const nsBadge = d.shiftedToNewSales ? `<span class="status-badge status-newsales" title="Customer renewed with a new installation within 90 days of expiry">🔄 NS Shift</span>` : (d.isNewSales ? `<span class="status-badge status-newsales" title="Install Date <= 90 days from expired license">🔵 New Sale</span>` : '');
+    return `${stBadge} ${rdpBadge} ${nsBadge}`;
 }
 
-// ESC KEY LISTENER TO CLOSE POPUPS
 document.addEventListener('keydown', function(event) {
     if (event.key === 'Escape') {
         closeModal('drillModal');
@@ -436,7 +392,7 @@ document.addEventListener('keydown', function(event) {
 });
 
 let expiredData=[], activeData=[], analysisResults={}, charts={};
-window.compNet={}; window.gstNet={}; window.comboNet={}; window.compMinExpDate={};
+window.compNet={}; window.gstNet={}; window.comboNet={};
 
 const PAGE_SIZE = 50;
 let mainBaseData = [];     
@@ -455,15 +411,39 @@ function setStatus(msg, type='info'){
   const sb=document.getElementById('statusBar');
   if(!sb) return;
   sb.className='status-bar '+type;
-  if(type==='loading') {
-      sb.innerHTML=`<div class="status-spinner"></div><span id="statusText">${msg}</span>`;
-  } else if(type==='error') {
-      sb.innerHTML=`<span>${msg}</span> 
-        <button class="file-btn-sm" onclick="document.getElementById('expiredFileInput').click()">Upload Expired CSV</button>
-        <button class="file-btn-sm" onclick="document.getElementById('activeFileInput').click()">Upload Active CSV</button>`;
-  } else {
-      sb.innerHTML=`<span>${msg}</span>`;
-  }
+  if(type==='loading') sb.innerHTML=`<div class="status-spinner"></div><span id="statusText">${msg}</span>`;
+  else sb.innerHTML=`<span>${msg}</span>`;
+}
+
+function formatDateFast(d) {
+    if (!d || isNaN(d.getTime())) return 'N/A';
+    return (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear();
+}
+function parseDateRobust(val) {
+    if (!val) return null;
+    if (val instanceof Date) return isNaN(val.getTime()) ? null : val;
+    if (typeof val === 'number') {
+        if (val < 1000) return null;
+        const d = new Date((val - 25569) * 86400000);
+        return isNaN(d.getTime()) ? null : d;
+    }
+    let s = String(val).trim();
+    if (!s || s.toLowerCase() === 'n/a' || s.toLowerCase() === 'null' || s.toLowerCase() === 'undefined') return null;
+    const datePart = s.split(' ')[0].trim();
+    let d = new Date(datePart);
+    if (!isNaN(d.getTime())) return d;
+    const p = datePart.split(/[\/\-\.]/);
+    if (p.length === 3) {
+        let p0 = parseInt(p[0], 10), p1 = parseInt(p[1], 10), p2 = parseInt(p[2], 10);
+        if (isNaN(p0) || isNaN(p1) || isNaN(p2)) return null;
+        let yr, mo, day;
+        if (p0 > 1000) { yr = p0; mo = p1 - 1; day = p2; }
+        else if (p2 > 1000 || p2 > 50) { yr = p2 < 100 ? 2000 + p2 : p2; mo = p1 - 1; day = p0; }
+        else return null;
+        d = new Date(yr, mo, day);
+        return isNaN(d.getTime()) ? null : d;
+    }
+    return null;
 }
 
 function decodeArrayBufferSmart(buffer){
@@ -485,22 +465,18 @@ function parseArrayOfRows(rows,headers,source){
     else if(l.includes('last')&&(l.includes('use')||l.includes('active')||l.includes('login')))ludi=i;
     else if(l.includes('rdp'))rdpi=i;
   });
-  
   if(ci===-1&&headers.length>=1)ci=0; if(si===-1&&headers.length>=2)si=1; if(gi===-1&&headers.length>=3)gi=2;
   if(ei===-1&&headers.length>=4)ei=3; if(pi===-1&&headers.length>=5)pi=4; if(ii===-1&&headers.length>=6)ii=5; 
   if(cati===-1&&headers.length>=7)cati=6; if(rdpi===-1&&headers.length>=8)rdpi=7;
 
-  const out=[];
-  const seen = new Set();
-
+  const out=[]; const seen = new Set();
   for(let i=0;i<rows.length;i++){
     const cols=rows[i]; if(!cols||!cols.length)continue;
     const comp=String(cols[ci]||'').trim(), sub=String(cols[si]||'').trim(), gst=String(cols[gi]||'').trim();
     if(!comp&&!sub)continue;
     
     const dt = parseDateRobust(cols[ei]) || new Date(2025, 0, 1);
-    
-    const uniqueKey = `${comp}_${sub}_${gst}_${dt.getTime()}_${source}`;
+    const uniqueKey = `${comp}_${sub}_${dt.getTime()}_${source}`;
     if (seen.has(uniqueKey)) continue;
     seen.add(uniqueKey);
 
@@ -514,7 +490,7 @@ function parseArrayOfRows(rows,headers,source){
       categoryName:cati!==-1&&cols[cati]?String(cols[cati]).trim():'Standard',
       lastUseDate:ludi!==-1?parseDateRobust(cols[ludi]):null,
       rdpLicense:rdpi!==-1&&cols[rdpi]?String(cols[rdpi]).trim():'N/A',
-      source
+      source, shiftedToRDP:false, shiftedToNewSales:false, isNewSales:false
     });
   }
   return out;
@@ -532,7 +508,7 @@ function parseExcelBuffer(buf,src){
   try{
     const wb=XLSX.read(new Uint8Array(buf),{type:'array',cellDates:true});
     const json=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:''});
-    if(!json||json.length<2)return[]; return parseArrayOfRows(json.slice(1),json[0],src);
+    return parseArrayOfRows(json.slice(1),json[0]||[],src);
   }catch(e){return[];}
 }
 
@@ -571,130 +547,116 @@ async function autoLoadFromRepo() {
             setStatus(`✅ Real Unique Data Loaded: ${expiredData.length.toLocaleString()} expired + ${activeData.length.toLocaleString()} active records`, 'success');
             runAnalysis();
         } else {
-            throw new Error(`Could not parse records automatically.`);
+            setStatus(`⚠️ Auto-load failed. Could not parse records automatically.`, 'error');
         }
     } catch(err) {
-        setStatus(`⚠️ Auto-load failed. Click below to upload CSV files manually.`, 'error');
+        setStatus(`⚠️ Auto-load failed. Upload CSV files manually below.`, 'error');
     }
-}
-
-async function handleFileUpload(type, input) {
-    const file = input.files[0]; if(!file) return;
-    setStatus(`Reading ${file.name}...`, 'loading');
-    try {
-        const buf = await file.arrayBuffer();
-        let parsed = parseExcelBuffer(buf, type);
-        if(!parsed.length) {
-            const text = decodeArrayBufferSmart(buf);
-            parsed = parseCSVFast(text, type);
-        }
-        if(type==='expired') expiredData = parsed; else activeData = parsed;
-        if(expiredData.length > 0 && activeData.length > 0) {
-            setStatus(`✅ Uploaded: ${expiredData.length.toLocaleString()} expired + ${activeData.length.toLocaleString()} active records`, 'success');
-            runAnalysis();
-        } else {
-            setStatus(`Loaded ${parsed.length.toLocaleString()} ${type} records. Upload the other file.`, 'info');
-        }
-    } catch(e) { setStatus(`❌ File error: ${e.message}`, 'error'); }
 }
 
 function analyzeData(){
-  const eG=new Set(), aG=new Set(), today=new Date(), nDA=today.getTime()-90*86400000;
-  const mE={}, mA={}, sC={}, partStats={}, catStats={}, tenStats={'< 1 Year':0,'1-3 Years':0,'3-5 Years':0,'5+ Years':0, 'Unknown':0};
-  window.compNet={}; window.gstNet={}; window.comboNet={}; window.compMinExpDate={};
+  const eG=new Set(), aG=new Set();
+  const partStats={}, tenStats={'< 1 Year':0,'1-3 Years':0,'3-5 Years':0,'5+ Years':0, 'Unknown':0};
+  window.compNet={}; window.gstNet={}; window.comboNet={}; 
   
-  expiredData.forEach(d=>{
-    if(!window.compNet[d.compGUID]) window.compNet[d.compGUID]={a:[],e:[]};
-    const m = {sub:d.subscriptionId, expStr:d.expStr, expiry:d.currentBlsExpiry};
-    window.compNet[d.compGUID].e.push(m);
-    if(d.gstin){ if(!window.gstNet[d.gstin])window.gstNet[d.gstin]={a:[],e:[]}; window.gstNet[d.gstin].e.push(m); }
-    if(!window.comboNet[d.comboKey])window.comboNet[d.comboKey]={a:[],e:[]}; window.comboNet[d.comboKey].e.push(m);
-    const et=d.currentBlsExpiry.getTime(); if(!window.compMinExpDate[d.compGUID]||et<window.compMinExpDate[d.compGUID])window.compMinExpDate[d.compGUID]=et;
-    eG.add(d.compGUID);
-    const mon=d.currentBlsExpiry.toISOString().slice(0,7);
-    mE[mon]=(mE[mon]||0)+1;
-    if(d.gstin){
-      const st = getStateName(d.gstin);
-      if(!sC[st])sC[st]={expired:0,active:0};
-      sC[st].expired++;
-    }
-    const pk=d.ownerPartner; if(!partStats[pk])partStats[pk]={expired:0,active:0}; partStats[pk].expired++;
-    const ck=d.categoryName; if(!catStats[ck])catStats[ck]={expired:0,active:0}; catStats[ck].expired++;
-    
-    const tl=getTenureLabel(d); if(tl)tenStats[tl]++;
+  // 1. Map Active Data for Shift Logic
+  const compActiveMeta = {}; // { compGUID: { hasRDP: bool, installs: [dates] } }
+  activeData.forEach(d => {
+      if(!compActiveMeta[d.compGUID]) compActiveMeta[d.compGUID] = { hasRDP: false, installs: [] };
+      if(hasRDP(d)) compActiveMeta[d.compGUID].hasRDP = true;
+      if(d.installDate) compActiveMeta[d.compGUID].installs.push(d.installDate.getTime());
+      
+      if(!window.compNet[d.compGUID]) window.compNet[d.compGUID]={a:[],e:[]};
+      const m = {sub:d.subscriptionId, expStr:d.expStr, expiry:d.currentBlsExpiry};
+      window.compNet[d.compGUID].a.push(m);
+      if(d.gstin){ if(!window.gstNet[d.gstin])window.gstNet[d.gstin]={a:[],e:[]}; window.gstNet[d.gstin].a.push(m); }
+      if(!window.comboNet[d.comboKey])window.comboNet[d.comboKey]={a:[],e:[]}; window.comboNet[d.comboKey].a.push(m);
+      
+      aG.add(d.compGUID);
+      const pk=d.ownerPartner||'Direct / Unassigned'; 
+      if(!partStats[pk]) partStats[pk]={e:0, a:0, rdpShift:0, nsShift:0}; 
+      partStats[pk].a++;
   });
 
-  let ghosts=0, nsActive=0; const nsComp=new Set();
-  const rd=30, riskD=new Date(today.getTime()+rd*86400000);
-  activeData.forEach(d=>{
-    if(!window.compNet[d.compGUID]) window.compNet[d.compGUID]={a:[],e:[]};
-    const m = {sub:d.subscriptionId, expStr:d.expStr, expiry:d.currentBlsExpiry};
-    window.compNet[d.compGUID].a.push(m);
-    if(d.gstin){ if(!window.gstNet[d.gstin])window.gstNet[d.gstin]={a:[],e:[]}; window.gstNet[d.gstin].a.push(m); }
-    if(!window.comboNet[d.comboKey])window.comboNet[d.comboKey]={a:[],e:[]}; window.comboNet[d.comboKey].a.push(m);
-    aG.add(d.compGUID);
-    const mon=d.currentBlsExpiry.toISOString().slice(0,7); mA[mon]=(mA[mon]||0)+1;
-    if(d.gstin){
-      const st = getStateName(d.gstin);
-      if(!sC[st])sC[st]={expired:0,active:0};
-      sC[st].active++;
-    }
-    const pk=d.ownerPartner; if(!partStats[pk])partStats[pk]={expired:0,active:0}; partStats[pk].active++;
-    const ck=d.categoryName; if(!catStats[ck])catStats[ck]={expired:0,active:0}; catStats[ck].active++;
-    if(d.lastUseDate&&d.lastUseDate.getTime()<nDA){d.isGhost=true;ghosts++;}
-    const minE=window.compMinExpDate[d.compGUID]; if(minE&&d.installDate&&d.installDate.getTime()>=minE){d.isNewSales=true;nsActive++;nsComp.add(d.compGUID);}
+  // 2. Evaluate Expired Data (RDP Shift & NS Shift)
+  expiredData.forEach(d => {
+      d.shiftedToRDP = false;
+      d.shiftedToNewSales = false;
+
+      const meta = compActiveMeta[d.compGUID];
+      if(meta) {
+          if(meta.hasRDP) d.shiftedToRDP = true;
+          
+          if(meta.installs.length > 0 && d.currentBlsExpiry) {
+              const expTime = d.currentBlsExpiry.getTime();
+              for(const instTime of meta.installs) {
+                  // New Sales Logic: Absolute difference <= 90 days
+                  if(Math.abs(instTime - expTime) <= (90 * 86400000)) {
+                      d.shiftedToNewSales = true;
+                      break;
+                  }
+              }
+          }
+      }
+
+      if(!window.compNet[d.compGUID]) window.compNet[d.compGUID]={a:[],e:[]};
+      const m = {sub:d.subscriptionId, expStr:d.expStr, expiry:d.currentBlsExpiry};
+      window.compNet[d.compGUID].e.push(m);
+      if(d.gstin){ if(!window.gstNet[d.gstin])window.gstNet[d.gstin]={a:[],e:[]}; window.gstNet[d.gstin].e.push(m); }
+      if(!window.comboNet[d.comboKey])window.comboNet[d.comboKey]={a:[],e:[]}; window.comboNet[d.comboKey].e.push(m);
+      
+      eG.add(d.compGUID);
+      
+      const pk=d.ownerPartner||'Direct / Unassigned'; 
+      if(!partStats[pk]) partStats[pk]={e:0, a:0, rdpShift:0, nsShift:0}; 
+      partStats[pk].e++;
+      
+      if(d.shiftedToRDP) partStats[pk].rdpShift++;
+      if(d.shiftedToNewSales) partStats[pk].nsShift++;
+      
+      const tl = getTenureLabel(d);
+      if(tl) tenStats[tl]++;
   });
-  expiredData.forEach(d=>{ if(nsComp.has(d.compGUID))d.isNewSales=true; });
+
+  // Mark active records conceptually if they caused a new sales shift
+  // For drill down context, we map backwards
+  activeData.forEach(d => {
+      const eList = window.compNet[d.compGUID]?.e || [];
+      if(d.installDate) {
+          const it = d.installDate.getTime();
+          for(let e of eList) {
+              if(e.expiry && Math.abs(it - e.expiry.getTime()) <= (90 * 86400000)) {
+                  d.isNewSales = true;
+                  break;
+              }
+          }
+      }
+  });
 
   const oG=new Set(); eG.forEach(x=>{if(aG.has(x))oG.add(x);});
   const fC=new Set(); eG.forEach(x=>{if(!aG.has(x))fC.add(x);});
-  const onlyActive=new Set(); aG.forEach(x=>{if(!eG.has(x))onlyActive.add(x);});
-  const tot=fC.size+onlyActive.size+oG.size;
+  const tot=fC.size+aG.size; // total unique companies
 
   analysisResults={
-    totalExpired:expiredData.length,totalActive:activeData.length,
-    overlappingCompGUIDs:oG.size,fullChurn:fC.size,onlyActive:onlyActive.size,
-    atRisk:activeData.filter(d=>d.currentBlsExpiry<=riskD&&d.currentBlsExpiry>=today).length,
-    atRiskData:activeData.filter(d=>d.currentBlsExpiry<=riskD&&d.currentBlsExpiry>=today),
-    newSalesActiveSubs:nsActive,newSalesCompanies:nsComp.size,ghostCount:ghosts,
+    totalExpired:expiredData.length, totalActive:activeData.length,
+    overlappingCompGUIDs:oG.size, fullChurn:fC.size,
     churnRate:tot?((fC.size/tot)*100).toFixed(1):'0',
-    retentionRate:tot?((onlyActive.size/tot)*100).toFixed(1):'0',
-    partialChurnRate:tot?((oG.size/tot)*100).toFixed(1):'0',
-    monthlyExpired:mE,monthlyActive:mA,stateChurn:sC,partStats,catStats,tenStats,
-    overlappingCompGUIDSet:oG,fullChurnSet:fC,healthySet:onlyActive,totalCompanies:tot
+    partStats, tenStats,
+    overlappingCompGUIDSet:oG, fullChurnSet:fC, totalCompanies:tot
   };
 }
 
 function getSummaryBadgeHTML(d, type) {
     const escVal = (d[type==='comp'?'compGUID':(type==='gst'?'gstin':'comboKey')] || '').replace(/'/g, "\\'");
     let ca = 0, ce = 0;
-
-    if (type === 'comp') {
-        const cn = window.compNet[d.compGUID] || { a: [], e: [] };
-        ca = cn.a.length; ce = cn.e.length;
-    } else if (type === 'gst') {
-        if (!d.gstin) return '<span style="color:#555;font-size:.65rem">No GSTIN</span>';
-        const gn = window.gstNet[d.gstin] || { a: [], e: [] };
-        ca = gn.a.length; ce = gn.e.length;
-    } else {
-        const combo = window.comboNet[d.comboKey] || { a: [], e: [] };
-        ca = combo.a.length; ce = combo.e.length;
-    }
-
+    if (type === 'comp') { const cn = window.compNet[d.compGUID] || { a: [], e: [] }; ca = cn.a.length; ce = cn.e.length; } 
+    else if (type === 'gst') { if (!d.gstin) return '<span style="color:#555;font-size:.65rem">No GSTIN</span>'; const gn = window.gstNet[d.gstin] || { a: [], e: [] }; ca = gn.a.length; ce = gn.e.length; } 
+    else { const combo = window.comboNet[d.comboKey] || { a: [], e: [] }; ca = combo.a.length; ce = combo.e.length; }
     if (ca === 0 && ce === 0) return '<span style="color:#555;font-size:.65rem">None</span>';
-
     return `<div class="linked-summary-badge" onclick="openAccount360('${type}', '${escVal}')" title="Click to open 360° Account Window">
-        <span class="act-num">🟢 ${ca} Act</span>
-        <span style="color:#555">|</span>
-        <span class="exp-num">🔴 ${ce} Exp</span>
+        <span class="act-num">🟢 ${ca} Act</span> <span style="color:#555">|</span> <span class="exp-num">🔴 ${ce} Exp</span>
         <span class="hint">🔍 360°</span>
     </div>`;
-}
-
-function newSalesCell(d){
-  if(d.isGhost) return `<span class="status-badge status-ghost">👻 Ghost Churn</span>`;
-  if(d.isNewSales) return `<span class="status-badge status-newsales">New Sales</span>`;
-  return `<span style="color:#555;font-size:.7rem">—</span>`;
 }
 
 function rowHtml(d) {
@@ -712,7 +674,6 @@ function rowHtml(d) {
       <td>${lastUseStr}</td>
       <td><b style="color:${d.source === 'expired' ? '#f45c43' : '#38ef7d'}">${d.expStr}</b></td>
       <td>${statusCell(d)}</td>
-      <td>${newSalesCell(d)}</td>
       <td>${getSummaryBadgeHTML(d, 'comp')}</td>
       <td>${getSummaryBadgeHTML(d, 'gst')}</td>
       <td>${getSummaryBadgeHTML(d, 'combo')}</td>
@@ -725,16 +686,9 @@ function openAccount360(type, val) {
     let title = '';
     const all = expiredData.concat(activeData);
 
-    if (type === 'comp') {
-        matches = all.filter(d => d.compGUID === val);
-        title = `🏢 Account 360° View — CompGUID: ${val}`;
-    } else if (type === 'gst') {
-        matches = all.filter(d => d.gstin === val);
-        title = `📜 Account 360° View — GSTIN: ${val}`;
-    } else {
-        matches = all.filter(d => d.comboKey === val);
-        title = `🔗 Account 360° View — Combo Key: ${val}`;
-    }
+    if (type === 'comp') { matches = all.filter(d => d.compGUID === val); title = `🏢 Account 360° View — CompGUID: ${val}`; } 
+    else if (type === 'gst') { matches = all.filter(d => d.gstin === val); title = `📜 Account 360° View — GSTIN: ${val}`; } 
+    else { matches = all.filter(d => d.comboKey === val); title = `🔗 Account 360° View — Combo Key: ${val}`; }
 
     currentAcc360Data = matches;
     const activeSubs = matches.filter(d => d.source === 'active');
@@ -767,13 +721,11 @@ function openAccount360(type, val) {
                 <td>${d.installDate ? formatDateFast(d.installDate) : '<span style="color:#555">N/A</span>'}</td>
                 <td><b style="color:#38ef7d">${d.expStr}</b></td>
                 <td>${d.lastUseDate ? formatDateFast(d.lastUseDate) : '<span style="color:#555">N/A</span>'}</td>
-                <td>${statusCell(d)} ${d.isGhost ? '<span class="status-badge status-ghost">👻 Ghost</span>' : ''}</td>
+                <td>${statusCell(d)}</td>
             </tr>`).join('')}
             </tbody>
         </table>
         </div>`;
-    } else {
-        contentHtml += `<div class="header-360 act" style="opacity:0.5; font-weight:normal">🟢 Active Subscriptions (0) — None found.</div>`;
     }
 
     if (expiredSubs.length > 0) {
@@ -794,8 +746,6 @@ function openAccount360(type, val) {
             </tbody>
         </table>
         </div>`;
-    } else {
-        contentHtml += `<div class="header-360 exp" style="opacity:0.5; font-weight:normal; margin-bottom:20px;">🔴 Expired Subscriptions (0) — None found.</div>`;
     }
 
     safeSetHTML('acc360Title', title);
@@ -821,21 +771,35 @@ function closeModal(modalId) {
     if(el) el.classList.remove('show');
 }
 
-function applyFiltersAndSort(sourceData, searchId, tenureId, sortId) {
+function applyFiltersAndSort(sourceData, searchId, tenureId, sortId, rdpId) {
     const rawQ = document.getElementById(searchId).value.trim();
     const tenureF = document.getElementById(tenureId) ? document.getElementById(tenureId).value : 'ALL';
     const sortF = document.getElementById(sortId) ? document.getElementById(sortId).value : 'exp_desc';
+    const rdpF = document.getElementById(rdpId) ? document.getElementById(rdpId).value : 'ALL';
 
     const q = rawQ.toLowerCase(), cq = q.replace(/[^a-z0-9]/g, '');
     let res = [];
 
     for (let i = 0; i < sourceData.length; i++) {
         const d = sourceData[i];
+        
+        // Tenure Filter
         if (tenureF !== 'ALL') {
             if (getTenureLabel(d) !== tenureF) continue;
         }
+        
+        // RDP Filter
+        if (rdpF === 'RDP_ONLY') {
+            if (d.source === 'active' && !hasRDP(d)) continue;
+            if (d.source === 'expired' && !d.shiftedToRDP) continue;
+        } else if (rdpF === 'NON_RDP') {
+            if (d.source === 'active' && hasRDP(d)) continue;
+            if (d.source === 'expired' && d.shiftedToRDP) continue;
+        }
+
+        // Global Search string
         if (rawQ) {
-            const str = `${d.compGUID} ${d.subscriptionId} ${d.gstin} ${d.comboKey} ${d.ownerPartner} ${d.categoryName} ${d.rdpLicense}`.toLowerCase();
+            const str = `${d.compGUID} ${d.subscriptionId} ${d.gstin} ${d.comboKey} ${d.ownerPartner} ${d.categoryName}`.toLowerCase();
             let match = str.includes(q);
             if (!match && cq.length >= 2) match = str.replace(/[^a-z0-9]/g, '').includes(cq);
             if (!match) continue;
@@ -862,7 +826,7 @@ function setMainTab(f,btn){
     document.querySelectorAll('.table-tab').forEach(t => t.classList.remove('active'));
     if(btn) btn.classList.add('active');
     
-    const r = analysisResults, rd = 30, today = new Date(), riskDate = new Date(today.getTime() + rd * 86400000);
+    const r = analysisResults;
     const all = expiredData.concat(activeData);
     mainBaseData = [];
 
@@ -870,13 +834,12 @@ function setMainTab(f,btn){
         const d = all[i];
         const o = r.overlappingCompGUIDSet.has(d.compGUID);
         const cat = o ? 'Partial Churn' : (d.source === 'expired' ? 'Full Churn' : 'Healthy');
+        
         if(f === 'overlap' && !o) continue;
         if(f === 'churned' && cat !== 'Full Churn') continue;
-        if(f === 'newsales' && !d.isNewSales) continue;
-        if(f === 'ghost' && !d.isGhost) continue;
-        if(f === 'healthy' && cat !== 'Healthy') continue;
-        if(f === 'atrisk') {
-            if(!(d.source === 'active' && d.currentBlsExpiry <= riskDate && d.currentBlsExpiry >= today)) continue;
+        if(f === 'newsales') {
+            if(d.source === 'active' && !d.isNewSales) continue;
+            if(d.source === 'expired' && !d.shiftedToNewSales) continue;
         }
         mainBaseData.push(d);
     }
@@ -888,7 +851,7 @@ function setMainTab(f,btn){
 function triggerMainUpdate() {
     clearTimeout(uiTimer);
     uiTimer = setTimeout(() => {
-        mainFilteredData = applyFiltersAndSort(mainBaseData, 'mainSearch', 'mainTenureFilter', 'mainSort');
+        mainFilteredData = applyFiltersAndSort(mainBaseData, 'mainSearch', 'mainTenureFilter', 'mainSort', 'mainRdpFilter');
         mainPage = 1;
         renderMainTablePage();
     }, 100);
@@ -926,6 +889,7 @@ function openDrillDown(title, data, statsArray) {
     safeSetHTML('modalStats', statsArray.map(s => `<div class="modal-stat"><div class="modal-stat-value" style="color:${s.color||'#667eea'}">${s.value}</div><div class="modal-stat-label">${s.label}</div></div>`).join(''));
     document.getElementById('modalSearch').value = '';
     if(document.getElementById('modalTenureFilter')) document.getElementById('modalTenureFilter').value = 'ALL';
+    if(document.getElementById('modalRdpFilter')) document.getElementById('modalRdpFilter').value = 'ALL';
     
     triggerModalUpdate();
     document.getElementById('drillModal').classList.add('show');
@@ -934,7 +898,7 @@ function openDrillDown(title, data, statsArray) {
 function triggerModalUpdate() {
     clearTimeout(uiTimer);
     uiTimer = setTimeout(() => {
-        modalFilteredData = applyFiltersAndSort(modalBaseData, 'modalSearch', 'modalTenureFilter', 'modalSort');
+        modalFilteredData = applyFiltersAndSort(modalBaseData, 'modalSearch', 'modalTenureFilter', 'modalSort', 'modalRdpFilter');
         modalPage = 1;
         renderModalTablePage();
     }, 100);
@@ -946,7 +910,7 @@ function modChangePage(dir) {
 }
 
 function renderModalTablePage() {
-    document.getElementById('modalTableHead').innerHTML = `<tr><th>Partner / Category</th><th>View 1: CompGUID</th><th>View 2: GSTIN</th><th>View 3: GSTIN + CompGUID</th><th>Sub No</th><th>Last Used</th><th>BLS Expiry</th><th>Status</th><th>New Sales</th><th>Linked by CompGUID</th><th>Linked by GSTIN</th><th style="color:#38ef7d;">Active Serials (Combo)</th></tr>`;
+    document.getElementById('modalTableHead').innerHTML = `<tr><th>Partner / Category / Tenure</th><th>View 1: CompGUID</th><th>View 2: GSTIN</th><th>View 3: Combo (GSTIN_CompGUID)</th><th>Sub No</th><th>Last Used</th><th>BLS Expiry</th><th>Status</th><th>Linked by CompGUID</th><th>Linked by GSTIN</th><th style="color:#38ef7d;">Active Serials (Combo)</th></tr>`;
     
     const total = modalFilteredData.length;
     const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
@@ -976,156 +940,238 @@ function runGlobalSearch(){
   const scan = arr => {
       for(let i=0; i<arr.length; i++) {
           const d = arr[i];
-          const str = `${d.compGUID} ${d.subscriptionId} ${d.gstin} ${d.comboKey} ${d.ownerPartner} ${d.categoryName} ${d.rdpLicense} ${d.isNewSales ? 'new sales' : ''} ${d.isGhost ? 'ghost' : ''}`.toLowerCase();
+          const str = `${d.compGUID} ${d.subscriptionId} ${d.gstin} ${d.comboKey} ${d.ownerPartner} ${d.categoryName}`.toLowerCase();
           if(str.includes(q) || (cq.length >= 2 && str.replace(/[^a-z0-9]/g, '').includes(cq))) matches.push(d);
       }
   };
   scan(expiredData); scan(activeData);
   openDrillDown(`🔍 Search: "${raw}"`, matches, [
     { value: matches.length.toLocaleString(), label: 'Matches', color: '#667eea' },
-    { value: matches.filter(d => d.isNewSales).length.toLocaleString(), label: 'New Sales', color: '#22d3ee' },
-    { value: matches.filter(d => d.isGhost).length.toLocaleString(), label: 'Ghost Churn', color: '#f43f5e' },
-    { value: matches.filter(d => d.source === 'expired').length.toLocaleString(), label: 'Expired', color: '#f45c43' }
+    { value: matches.filter(d => d.source === 'expired').length.toLocaleString(), label: 'Expired', color: '#f45c43' },
+    { value: matches.filter(d => d.source === 'active').length.toLocaleString(), label: 'Active', color: '#38ef7d' }
   ]);
 }
 
-function drillByCategory(cat){
-  const r = analysisResults; let d = [], t = '', s = [];
-  if(cat === 'total'){ d = expiredData.concat(activeData); t = '📊 All Subscriptions'; s = [{ value: (r.totalExpired + r.totalActive).toLocaleString(), label: 'Total' }, { value: r.totalExpired.toLocaleString(), label: 'Expired', color: '#f45c43' }, { value: r.totalActive.toLocaleString(), label: 'Active', color: '#667eea' }]; }
-  else if(cat === 'churned'){ d = expiredData.filter(x => r.fullChurnSet.has(x.compGUID)); t = '🔴 Full Churn'; s = [{ value: d.length.toLocaleString(), label: 'Records', color: '#f45c43' }]; }
-  else if(cat === 'healthy'){ d = activeData.filter(x => r.healthySet.has(x.compGUID)); t = '🟢 Healthy'; s = [{ value: d.length.toLocaleString(), label: 'Records', color: '#38ef7d' }]; }
-  else if(cat === 'overlap'){ d = expiredData.concat(activeData).filter(x => r.overlappingCompGUIDSet.has(x.compGUID)); t = '🟡 Partial Churn'; s = [{ value: d.length.toLocaleString(), label: 'Records', color: '#a855f7' }, { value: d.filter(x => x.isNewSales).length.toLocaleString(), label: 'New Sales rows', color: '#22d3ee' }]; }
-  else if(cat === 'newsales'){ d = expiredData.concat(activeData).filter(x => x.isNewSales); t = '🔵 New Sales'; s = [{ value: d.length.toLocaleString(), label: 'Tagged rows', color: '#22d3ee' }, { value: r.newSalesCompanies.toLocaleString(), label: 'Companies', color: '#22d3ee' }]; }
-  else if(cat === 'ghost'){ d = activeData.filter(x => x.isGhost); t = '👻 Ghost Churn (Active but Unused >90 days)'; s = [{ value: d.length.toLocaleString(), label: 'Abandoned Subscriptions', color: '#f43f5e' }]; }
-  else if(cat === 'atrisk'){ d = r.atRiskData; t = '⚠️ At-Risk Active'; s = [{ value: d.length.toLocaleString(), label: 'Records', color: '#ffd200' }]; }
-  openDrillDown(t, d, s);
-}
+// DRILL DOWN FOR PARTNER CHARTS
+function drillByPartnerChart(partner, context) {
+    const allData = expiredData.concat(activeData);
+    let matches = [];
+    let title = '';
 
-function renderKPIs(){
-  const r = analysisResults;
-  safeSetHTML('kpiStrip', `
-    <div class="kpi-card blue" onclick="drillByCategory('total')"><div class="kpi-label">Total Subs</div><div class="kpi-value">${(r.totalExpired + r.totalActive).toLocaleString()}</div><div class="kpi-sublabel">${r.totalExpired.toLocaleString()} exp · ${r.totalActive.toLocaleString()} act</div></div>
-    <div class="kpi-card red" onclick="drillByCategory('churned')"><div class="kpi-label">Full Churn</div><div class="kpi-value">${r.churnRate}%</div><div class="kpi-sublabel">${r.fullChurn.toLocaleString()} companies</div></div>
-    <div class="kpi-card purple" onclick="drillByCategory('overlap')"><div class="kpi-label">Partial Churn</div><div class="kpi-value">${r.overlappingCompGUIDs.toLocaleString()}</div><div class="kpi-sublabel">${r.partialChurnRate}% overlap</div></div>
-    <div class="kpi-card cyan" onclick="drillByCategory('newsales')"><div class="kpi-label">New Sales</div><div class="kpi-value">${r.newSalesCompanies.toLocaleString()}</div><div class="kpi-sublabel">${r.newSalesActiveSubs.toLocaleString()} active installs ≥ exp</div></div>
-    <div class="kpi-card ghost" onclick="drillByCategory('ghost')"><div class="kpi-label">Ghost Churn</div><div class="kpi-value">${r.ghostCount.toLocaleString()}</div><div class="kpi-sublabel">unused > 90 days</div></div>
-    <div class="kpi-card orange" onclick="drillByCategory('atrisk')"><div class="kpi-label">At-Risk</div><div class="kpi-value">${r.atRisk.toLocaleString()}</div><div class="kpi-sublabel">active near expiry</div></div>`);
-}
+    if(context === 'ALL_CHURN') {
+        matches = expiredData.filter(d => d.ownerPartner === partner);
+        title = `🔴 Pure Churn Drill-Down: ${partner}`;
+    } 
+    else if(context === 'RDP_SHIFT') {
+        // Find CompGUIDs for this partner that shifted to RDP
+        const shiftedComps = new Set(expiredData.filter(d => d.ownerPartner === partner && d.shiftedToRDP).map(d => d.compGUID));
+        matches = allData.filter(d => shiftedComps.has(d.compGUID));
+        title = `🔄 RDP Shift Drill-Down: ${partner} (Shows Expired + Active RDP subs)`;
+    }
+    else if(context === 'PURE_CHURN_RDP') {
+        const shiftedComps = new Set(expiredData.filter(d => d.ownerPartner === partner && d.shiftedToRDP).map(d => d.compGUID));
+        matches = expiredData.filter(d => d.ownerPartner === partner && !shiftedComps.has(d.compGUID));
+        title = `🔴 Pure Churn (No RDP) Drill-Down: ${partner}`;
+    }
+    else if(context === 'NS_SHIFT') {
+        const shiftedComps = new Set(expiredData.filter(d => d.ownerPartner === partner && d.shiftedToNewSales).map(d => d.compGUID));
+        matches = allData.filter(d => shiftedComps.has(d.compGUID));
+        title = `🆕 New Sales Shift Drill-Down: ${partner} (Shows Expired + Renewed subs)`;
+    }
+    else if(context === 'PURE_CHURN_NS') {
+        const shiftedComps = new Set(expiredData.filter(d => d.ownerPartner === partner && d.shiftedToNewSales).map(d => d.compGUID));
+        matches = expiredData.filter(d => d.ownerPartner === partner && !shiftedComps.has(d.compGUID));
+        title = `🔴 Pure Churn (No New Sales) Drill-Down: ${partner}`;
+    }
 
-function renderInsights(){
-  const r = analysisResults, cr = +r.churnRate, ins = [];
-  if (cr > 40) ins.push('🔴 <strong>HIGH FULL CHURN:</strong> ' + r.churnRate + '%');
-  else ins.push('✅ <strong>FULL CHURN:</strong> ' + r.churnRate + '%');
-  if (r.overlappingCompGUIDs) ins.push('🟣 <strong>PARTIAL CHURN:</strong> ' + r.overlappingCompGUIDs.toLocaleString() + ' companies in both datasets — click any company for 360° view');
-  if (r.ghostCount) ins.push('👻 <strong>GHOST CHURN WARNING:</strong> ' + r.ghostCount.toLocaleString() + ' active subscriptions unused 90+ days.');
-  safeSetHTML('insightBox', '<h4>💡 Insights</h4>' + ins.map(t => '<div class="insight-item">' + t + '</div>').join(''));
-}
-
-function renderVenn(){
-  const r = analysisResults;
-  safeSetHTML('vennDiagram', `
-    <div class="venn-circle venn-active" onclick="drillByCategory('total')" title="Active-only companies"><div style="margin-left:-20px"><div style="font-size:1.1rem;color:#667eea">${r.healthySet.size.toLocaleString()}</div><div style="font-size:.58rem;color:#999">Active only</div></div></div>
-    <div class="venn-circle venn-expired" onclick="drillByCategory('churned')"><div style="margin-left:20px"><div style="font-size:1.1rem;color:#f45c43">${r.fullChurn.toLocaleString()}</div><div style="font-size:.58rem;color:#999">Expired only</div></div></div>
-    <div class="venn-overlap-zone" onclick="drillByCategory('overlap')"><div><div>${r.overlappingCompGUIDs.toLocaleString()}</div><div style="font-size:.55rem;color:#ccc">Partial</div></div></div>`);
-}
-
-function renderFlowDiagram(){
-  const r = analysisResults, tot = r.totalCompanies || 1;
-  const pp = ((r.overlappingCompGUIDs / tot) * 100).toFixed(1), fp = ((r.fullChurn / tot) * 100).toFixed(1);
-  safeSetHTML('flowDiagram', `
-    <div class="flow-row" onclick="drillByCategory('overlap')"><div class="flow-label">🟡 Partial Churn</div><div class="flow-bar-container"><div class="flow-bar partial" style="width:${Math.max(+pp, 5)}%">${r.overlappingCompGUIDs.toLocaleString()}</div></div><div class="flow-value" style="color:#a855f7">${pp}%</div></div>
-    <div class="flow-row" onclick="drillByCategory('churned')"><div class="flow-label">🔴 Full Churn</div><div class="flow-bar-container"><div class="flow-bar churned" style="width:${Math.max(+fp, 5)}%">${r.fullChurn.toLocaleString()}</div></div><div class="flow-value" style="color:#f45c43">${fp}%</div></div>`);
+    openDrillDown(title, matches, [
+        { value: matches.length.toLocaleString(), label: 'Total Records', color: '#667eea' },
+        { value: matches.filter(d => d.source === 'expired').length.toLocaleString(), label: 'Expired', color: '#f45c43' },
+        { value: matches.filter(d => d.source === 'active').length.toLocaleString(), label: 'Active', color: '#38ef7d' }
+    ]);
 }
 
 function dc(n) { if (charts[n]) { charts[n].destroy(); charts[n] = null; } }
+
 function renderCharts(){
   const r = analysisResults;
   
-  const pcEl = document.getElementById('partnerChurnChart');
-  if(pcEl){
+  // 1. CHART: TOP PARTNERS BY CHURN RATE (Standard)
+  const pcEl1 = document.getElementById('partnerChurnChart');
+  if(pcEl1){
       const pArr = Object.entries(r.partStats).map(([k, v]) => {
-          const tot = v.active + v.expired;
-          return { p: k, a: v.active, e: v.expired, t: tot, rate: tot > 0 ? (v.expired / tot) * 100 : 0 };
-      }).filter(x => x.t >= 2 && x.p !== 'Direct / Unassigned' && x.p !== 'Direct')
-        .sort((a, b) => b.rate - a.rate)
-        .slice(0, 15);
+          const tot = v.a + v.e;
+          return { p: k, a: v.a, e: v.e, t: tot, rate: tot > 0 ? (v.e / tot) * 100 : 0 };
+      }).filter(x => x.t >= 5 && x.p !== 'Direct / Unassigned' && x.p !== 'Direct')
+        .sort((a, b) => b.rate - a.rate).slice(0, 10);
 
-      dc('pc'); charts.pc = new Chart(pcEl,{
+      dc('pc1'); charts.pc1 = new Chart(pcEl1,{
           type:'bar',
           data:{
-              labels:pArr.map(x=>x.p.substring(0,25) + (x.p.length>25?'...':'')),
-              datasets:[{label:'Churn Rate %', data:pArr.map(x=>x.rate.toFixed(1)), backgroundColor:'rgba(244,92,67,.7)', borderColor: '#f45c43', borderWidth: 1}]
+              labels: pArr.map(x=>x.p.substring(0,25) + (x.p.length>25?'...':'')),
+              datasets:[{
+                  label:'Churn Rate %', data:pArr.map(x=>x.rate.toFixed(1)), 
+                  backgroundColor:'rgba(244,92,67,.7)', borderColor: '#f45c43', borderWidth: 1,
+                  datalabels: { display: true, color: '#fff', align: 'top', anchor: 'end', formatter: v => v + '%' }
+              }]
           },
           options:{
               responsive:true, maintainAspectRatio:false,
-              plugins:{
-                  legend:{display:false},
-                  tooltip: { callbacks: { label: (ctx) => { const d = pArr[ctx.dataIndex]; return `Churn Rate: ${d.rate.toFixed(1)}% (${d.e} / ${d.t} subs)`; } } }
-              },
-              scales:{
-                  x:{ticks:{color:'#888'}},
-                  y:{ticks:{color:'#888', callback: v=>v+'%'}, grid:{color:'rgba(255,255,255,.05)'}, max:100}
-              }
+              onClick: (e, elements) => { if(elements.length) drillByPartnerChart(pArr[elements[0].index].p, 'ALL_CHURN'); },
+              plugins:{ legend:{display:false} },
+              scales:{ x:{ticks:{color:'#888'}}, y:{ticks:{color:'#888'}, grid:{color:'rgba(255,255,255,.05)'}, max:100} }
           }
       }); 
   }
   
-  const ccEl = document.getElementById('categoryChart');
-  if(ccEl){
-      const cArr = Object.entries(r.catStats).sort((a, b) => (b[1].active + b[1].expired) - (a[1].active + a[1].expired)).slice(0, 8);
-      dc('cc'); charts.cc = new Chart(ccEl,{type:'doughnut',data:{labels:cArr.map(x=>x[0]),datasets:[{data:cArr.map(x=>x[1].expired+x[1].active),backgroundColor:['#667eea','#764ba2','#f45c43','#ffd200','#22d3ee','#a855f7','#eb3349','#06b6d4'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#aaa',font:{size:10}}}}}}); 
+  // 2. CHART: TOP PARTNERS BY CHURN + RDP SHIFT
+  const pcEl2 = document.getElementById('partnerRdpChart');
+  if(pcEl2){
+      const pArr = Object.entries(r.partStats).map(([k, v]) => {
+          const tot = v.a + v.e;
+          return { 
+              p: k, a: v.a, e: v.e, t: tot, 
+              rdpShifted: v.rdpShift, 
+              pureChurn: Math.max(0, v.e - v.rdpShift),
+              rdpRate: v.e > 0 ? (v.rdpShift / v.e) * 100 : 0
+          };
+      }).filter(x => x.t >= 5 && x.p !== 'Direct / Unassigned' && x.p !== 'Direct' && x.e > 0)
+        .sort((a, b) => b.rdpRate - a.rdpRate).slice(0, 10);
+
+      dc('pc2'); charts.pc2 = new Chart(pcEl2,{
+          type:'bar',
+          data:{
+              labels: pArr.map(x=>x.p.substring(0,25) + (x.p.length>25?'...':'')),
+              datasets:[
+                  {
+                      label:'Pure Churn (No RDP)', data:pArr.map(x=>x.pureChurn), 
+                      backgroundColor:'rgba(244,92,67,.75)', borderColor: '#f45c43', borderWidth: 1, stack: 'churn',
+                      datalabels: { display: false }
+                  },
+                  {
+                      label:'Shifted to RDP (RDP = Yes)', data:pArr.map(x=>x.rdpShifted), 
+                      backgroundColor:'rgba(56,189,248,.8)', borderColor: '#38bdf8', borderWidth: 1, stack: 'churn',
+                      datalabels: { display: false }
+                  },
+                  {
+                      label:'RDP Shift Rate %', data:pArr.map(x=>x.rdpRate.toFixed(1)), 
+                      type: 'line', borderColor:'#ffd200', backgroundColor:'rgba(255,210,0,.1)',
+                      borderWidth:2, pointBackgroundColor:'#ffd200', pointRadius:3, yAxisID:'y1', tension:0.3,
+                      datalabels: { display: true, color: '#fff', align: 'top', anchor: 'end', formatter: v => v + '%' }
+                  }
+              ]
+          },
+          options:{
+              responsive:true, maintainAspectRatio:false,
+              onClick: (e, elements) => { 
+                  if(elements.length) {
+                      const idx = elements[0].index;
+                      const datasetIdx = elements[0].datasetIndex;
+                      const partnerName = pArr[idx].p;
+                      if(datasetIdx === 0) drillByPartnerChart(partnerName, 'PURE_CHURN_RDP'); // Clicked Red
+                      else drillByPartnerChart(partnerName, 'RDP_SHIFT'); // Clicked Cyan or Line
+                  }
+              },
+              plugins:{ legend:{display:true, labels:{color:'#aaa', font:{size:10}}} },
+              scales:{
+                  x:{stacked:true, ticks:{color:'#888'}},
+                  y:{stacked:true, ticks:{color:'#888'}, grid:{color:'rgba(255,255,255,.05)'}, title:{display:true, text:'Churned Subs', color:'#888'}},
+                  y1:{position:'right', ticks:{color:'#ffd200'}, grid:{display:false}, max:100}
+              }
+          }
+      }); 
   }
 
+  // 3. CHART: TOP PARTNERS BY CHURN + NEW SALES SHIFT
+  const pcEl3 = document.getElementById('partnerNsChart');
+  if(pcEl3){
+      const pArr = Object.entries(r.partStats).map(([k, v]) => {
+          const tot = v.a + v.e;
+          return { 
+              p: k, a: v.a, e: v.e, t: tot, 
+              nsShifted: v.nsShift, 
+              pureChurn: Math.max(0, v.e - v.nsShift),
+              nsRate: v.e > 0 ? (v.nsShift / v.e) * 100 : 0
+          };
+      }).filter(x => x.t >= 5 && x.p !== 'Direct / Unassigned' && x.p !== 'Direct' && x.e > 0)
+        .sort((a, b) => b.nsRate - a.nsRate).slice(0, 10);
+
+      dc('pc3'); charts.pc3 = new Chart(pcEl3,{
+          type:'bar',
+          data:{
+              labels: pArr.map(x=>x.p.substring(0,25) + (x.p.length>25?'...':'')),
+              datasets:[
+                  {
+                      label:'Pure Churn (No New Sales)', data:pArr.map(x=>x.pureChurn), 
+                      backgroundColor:'rgba(244,92,67,.75)', borderColor: '#f45c43', borderWidth: 1, stack: 'churn',
+                      datalabels: { display: false }
+                  },
+                  {
+                      label:'Shifted to New Sales (<= 90 days)', data:pArr.map(x=>x.nsShifted), 
+                      backgroundColor:'rgba(168,85,247,.8)', borderColor: '#a855f7', borderWidth: 1, stack: 'churn',
+                      datalabels: { display: false }
+                  },
+                  {
+                      label:'New Sales Shift Rate %', data:pArr.map(x=>x.nsRate.toFixed(1)), 
+                      type: 'line', borderColor:'#ffd200', backgroundColor:'rgba(255,210,0,.1)',
+                      borderWidth:2, pointBackgroundColor:'#ffd200', pointRadius:3, yAxisID:'y1', tension:0.3,
+                      datalabels: { display: true, color: '#fff', align: 'top', anchor: 'end', formatter: v => v + '%' }
+                  }
+              ]
+          },
+          options:{
+              responsive:true, maintainAspectRatio:false,
+              onClick: (e, elements) => { 
+                  if(elements.length) {
+                      const idx = elements[0].index;
+                      const datasetIdx = elements[0].datasetIndex;
+                      const partnerName = pArr[idx].p;
+                      if(datasetIdx === 0) drillByPartnerChart(partnerName, 'PURE_CHURN_NS'); 
+                      else drillByPartnerChart(partnerName, 'NS_SHIFT'); 
+                  }
+              },
+              plugins:{ legend:{display:true, labels:{color:'#aaa', font:{size:10}}} },
+              scales:{
+                  x:{stacked:true, ticks:{color:'#888'}},
+                  y:{stacked:true, ticks:{color:'#888'}, grid:{color:'rgba(255,255,255,.05)'}, title:{display:true, text:'Churned Subs', color:'#888'}},
+                  y1:{position:'right', ticks:{color:'#ffd200'}, grid:{display:false}, max:100}
+              }
+          }
+      }); 
+  }
+
+  // OTHER CHARTS
   const tcEl = document.getElementById('tenureChart');
   if(tcEl){
-      dc('tc'); charts.tc = new Chart(tcEl,{type:'bar',data:{labels:Object.keys(r.tenStats),datasets:[{label:'Expired Subs (Churned)',data:Object.values(r.tenStats),backgroundColor:'rgba(168,85,247,.6)',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{ticks:{color:'#888'}},y:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,.05)'}}}}}); 
-  }
-
-  const tlEl = document.getElementById('timelineChart');
-  if(tlEl){
-      const months = [...new Set([...Object.keys(r.monthlyExpired), ...Object.keys(r.monthlyActive)])].sort();
-      dc('tl'); charts.tl = new Chart(tlEl,{type:'line',data:{labels:months,datasets:[{label:'Expired',data:months.map(m=>r.monthlyExpired[m]||0),borderColor:'#f45c43',backgroundColor:'rgba(244,92,67,.1)',fill:true,tension:.3},{label:'Active',data:months.map(m=>r.monthlyActive[m]||0),borderColor:'#667eea',backgroundColor:'rgba(56,239,125,.1)',fill:true,tension:.3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{ticks:{color:'#888',maxRotation:45}},y:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#888'}}}}}); 
-  }
-
-  const stEl = document.getElementById('stateChart');
-  if(stEl){
-      const states = Object.keys(r.stateChurn).sort();
-      dc('st'); charts.st = new Chart(stEl,{type:'bar',data:{labels:states,datasets:[{label:'Expired',data:states.map(s=>r.stateChurn[s].expired),backgroundColor:'rgba(244,92,67,.6)'},{label:'Active',data:states.map(s=>r.stateChurn[s].active),backgroundColor:'rgba(102,126,234,.6)'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa',maxRotation:45}},y:{stacked:true,grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#888'}}}}}); 
+      dc('tc'); charts.tc = new Chart(tcEl,{type:'bar',data:{labels:Object.keys(r.tenStats),datasets:[{label:'Expired Subs (Churned)',data:Object.values(r.tenStats),backgroundColor:'rgba(168,85,247,.6)',borderRadius:4, datalabels:{display:true, color:'#fff'}}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aaa'}}},scales:{x:{ticks:{color:'#888'}},y:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,.05)'}}}}}); 
   }
 }
 
 function dlFile(c,n,t){const b=new Blob([c],{type:t});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=n;a.click();URL.revokeObjectURL(u);}
 function rowCsv(d){
-  const cn=window.compNet[d.compGUID]||{a:[],e:[]}, gn=d.gstin?(window.gstNet[d.gstin]||{a:[],e:[]}):{a:[],e:[]};
-  const combo=window.comboNet[d.comboKey]||{a:[],e:[]};
   const ten=d.installDate?((d.currentBlsExpiry-d.installDate)/31557600000).toFixed(2):'';
   const inst=d.installDate?d.installDate.toISOString().slice(0,10):'';
   const lud=d.lastUseDate?d.lastUseDate.toISOString().slice(0,10):'';
-  const ca=[...new Set(cn.a.filter(x=>x.sub!==d.subscriptionId).map(x=>`${x.sub}(Exp:${x.expStr})`))].join('; ');
-  const ce=[...new Set(cn.e.filter(x=>x.sub!==d.subscriptionId).map(x=>`${x.sub}(Exp:${x.expStr})`))].join('; ');
-  const ga=[...new Set(gn.a.filter(x=>x.sub!==d.subscriptionId).map(x=>`${x.sub}(Exp:${x.expStr})`))].join('; ');
-  const ge=[...new Set(gn.e.filter(x=>x.sub!==d.subscriptionId).map(x=>`${x.sub}(Exp:${x.expStr})`))].join('; ');
-  const comboActList=[...new Set(combo.a.map(x=>`${x.sub}(Exp:${x.expStr})`))].join('; ');
-  return `"${d.ownerPartner}","${d.categoryName}","${inst}","${ten}","${d.compGUID}","${d.gstin||''}","${d.comboKey}","${d.subscriptionId}","${d.rdpLicense||''}","${lud}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}","${d.isGhost?'Ghost':(d.isNewSales?'Yes':'No')}","${(d.newSalesDetail||'').replace(/"/g,"'")}","${ca}","${ce}","${ga}","${ge}","${comboActList}"\n`;
+  return `"${d.ownerPartner}","${d.categoryName}","${inst}","${ten}","${d.compGUID}","${d.subscriptionId}","${d.gstin||''}","${d.comboKey}","${d.rdpLicense||''}","${lud}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}","${d.shiftedToRDP?'Yes':'No'}","${d.shiftedToNewSales?'Yes':'No'}","${d.isNewSales?'Yes':'No'}"\n`;
 }
 
 function downloadCSV(){
-  let csv='Partner,Category,Install,TenureYrs,CompGUID,GSTIN,GSTIN_CompGUID,SubNo,RDP_License,LastUsedDate,BLSExpiry,Source,NewSalesOrGhost,NewSalesDetail,LinkedActCompWithExpiries,LinkedExpCompWithExpiries,LinkedActGSTWithExpiries,LinkedExpGSTWithExpiries,ActiveSerialsSameGSTINCompGUIDWithExpiries\n';
+  let csv='Partner,Category,Install,TenureYrs,CompGUID,SubNo,GSTIN,GSTIN_CompGUID,RDP_License,LastUsedDate,BLSExpiry,Source,ShiftedToRDP(ExpiredOnly),ShiftedToNewSales(ExpiredOnly),IsNewSales(ActiveOnly)\n';
   expiredData.forEach(d=>csv+=rowCsv(d)); activeData.forEach(d=>csv+=rowCsv(d));
   dlFile(csv,'churn_full_export.csv','text/csv');
 }
 function downloadOverlap(){
-  const r=analysisResults; let csv='Partner,Category,Install,TenureYrs,CompGUID,GSTIN,GSTIN_CompGUID,SubNo,RDP_License,LastUsedDate,BLSExpiry,Source,NewSalesOrGhost,NewSalesDetail,LinkedActCompWithExpiries,LinkedExpCompWithExpiries,ActiveSerialsSameGSTINCompGUIDWithExpiries\n';
+  const r=analysisResults; let csv='Partner,Category,Install,TenureYrs,CompGUID,SubNo,GSTIN,GSTIN_CompGUID,RDP_License,LastUsedDate,BLSExpiry,Source,ShiftedToRDP,ShiftedToNewSales,IsNewSales\n';
   expiredData.concat(activeData).filter(d=>r.overlappingCompGUIDSet.has(d.compGUID)).forEach(d=>csv+=rowCsv(d));
   dlFile(csv,'partial_churn_export.csv','text/csv');
 }
 function downloadNewSales(){
-  let csv='Partner,Category,Install,TenureYrs,CompGUID,GSTIN,GSTIN_CompGUID,SubNo,RDP_License,LastUsedDate,BLSExpiry,Source,NewSalesOrGhost,NewSalesDetail,LinkedActCompWithExpiries,LinkedExpCompWithExpiries,LinkedActGSTWithExpiries,LinkedExpGSTWithExpiries,ActiveSerialsSameGSTINCompGUIDWithExpiries\n';
-  expiredData.concat(activeData).filter(d=>d.isNewSales).forEach(d=>csv+=rowCsv(d));
+  let csv='Partner,Category,Install,TenureYrs,CompGUID,SubNo,GSTIN,GSTIN_CompGUID,RDP_License,LastUsedDate,BLSExpiry,Source,ShiftedToRDP,ShiftedToNewSales,IsNewSales\n';
+  expiredData.filter(d=>d.shiftedToNewSales).concat(activeData.filter(d=>d.isNewSales)).forEach(d=>csv+=rowCsv(d));
   dlFile(csv,'new_sales_export.csv','text/csv');
 }
 function downloadModalData(){
-  let csv='Partner,Category,Install,TenureYrs,CompGUID,GSTIN,GSTIN_CompGUID,SubNo,RDP_License,LastUsedDate,BLSExpiry,Source,NewSalesOrGhost,NewSalesDetail,LinkedActCompWithExpiries,LinkedExpCompWithExpiries,LinkedActGSTWithExpiries,LinkedExpGSTWithExpiries,ActiveSerialsSameGSTINCompGUIDWithExpiries\n';
+  let csv='Partner,Category,Install,TenureYrs,CompGUID,SubNo,GSTIN,GSTIN_CompGUID,RDP_License,LastUsedDate,BLSExpiry,Source,ShiftedToRDP,ShiftedToNewSales,IsNewSales\n';
   modalFilteredData.forEach(d=>csv+=rowCsv(d));
   dlFile(csv,'drill_down_export.csv','text/csv');
 }
@@ -1133,16 +1179,17 @@ function downloadModalData(){
 function runAnalysis(){
   const ov = document.getElementById('loadingOverlay');
   if(ov) ov.classList.add('show');
+  
   setTimeout(()=>{
     try{
-      analyzeData(); renderKPIs(); renderInsights(); renderVenn(); renderFlowDiagram(); renderCharts(); setMainTab('all');
+      analyzeData(); renderCharts(); setMainTab('all');
     }catch(err){
       console.error(err);
       setStatus('⚠️ Computation error: ' + err.message, 'error');
     }finally{
       if(ov) ov.classList.remove('show');
     }
-  },50);
+  }, 50);
 }
 
 if (document.readyState === 'loading') {
