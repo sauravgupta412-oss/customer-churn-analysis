@@ -177,7 +177,7 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:var(--bg
 [data-theme="dark"] .status-newsales { color: #a855f7; }
 .status-ghost{background:rgba(244,63,94,.15);color:#e11d48;border:1px solid rgba(244,63,94,.4);margin-left:4px}
 [data-theme="dark"] .status-ghost { color: #f43f5e; }
-.status-retained{background:rgba(16,185,129,.15);color:#059669;border:1px solid rgba(16,185,129,.4);margin-left:0;cursor:help} /* Adjusted margin since it replaces expired */
+.status-retained{background:rgba(16,185,129,.15);color:#059669;border:1px solid rgba(16,185,129,.4);margin-left:0;cursor:help} 
 [data-theme="dark"] .status-retained { color: #34d399; }
 
 .chip-wrap{display:flex;gap:4px;flex-wrap:wrap;max-width:250px}
@@ -325,13 +325,13 @@ footer{text-align:center;padding:20px;color:var(--text-muted);font-size:.72rem}
 </div>
 
 <!-- SECTION 1: STATE-WISE ANALYSIS -->
-<div class="section-header"><h2>📍 State-wise Expired Base & Pure Churn Analysis</h2></div>
+<div class="section-header"><h2>📍 State-wise Expired Base & Migration Analytics</h2></div>
 <div class="section-divider"></div>
 <div class="dashboard">
   <div class="chart-card full-width">
-    <div class="chart-title">🗺️ Top States by Expired Subscriptions & Pure Churn %</div>
+    <div class="chart-title">🗺️ Top States by Expired Subscriptions & Shift Breakdown</div>
     <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:10px">
-      <strong>Bar:</strong> Total Expired from State (via GSTIN) &nbsp;|&nbsp; <strong>Line:</strong> Pure Churn % of that state's expired base<br>
+      <strong>Bar:</strong> Total Expired Base &nbsp;|&nbsp; <strong>Yellow Line:</strong> Full Churn % &nbsp;|&nbsp; <strong>Cyan Line:</strong> RDP Shift %<br>
       <strong>Click a bar</strong> to open that state's portfolio.
     </div>
     <div class="chart-container" style="height:340px"><canvas id="stateChurnChart"></canvas></div>
@@ -346,7 +346,7 @@ footer{text-align:center;padding:20px;color:var(--text-muted);font-size:.72rem}
   <div class="chart-card full-width">
     <div class="chart-title" style="cursor:pointer" title="Click to interact">🏆 Top Partners: Comprehensive Churn & Recovery (%)</div>
     <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px;">
-        <strong>Red:</strong> Total Expired Base &nbsp;|&nbsp; <strong>Yellow:</strong> Pure Churn % &nbsp;|&nbsp; <strong>Cyan:</strong> RDP Shift % &nbsp;|&nbsp; <strong>Purple:</strong> New Sales Shift %<br>
+        <strong>Red:</strong> Total Expired Base &nbsp;|&nbsp; <strong>Yellow:</strong> Pure Churn % &nbsp;|&nbsp; <strong>Cyan:</strong> RDP Shift % &nbsp;|&nbsp; <strong>Purple:</strong> New Sales Shift % &nbsp;|&nbsp; <strong>Green:</strong> Retained %<br>
         <strong>Click anywhere on the chart</strong> to open the complete portfolio overview for that Partner.
     </div>
     <div class="chart-container" style="height:320px;"><canvas id="partnerChurnChart"></canvas></div>
@@ -357,7 +357,7 @@ footer{text-align:center;padding:20px;color:var(--text-muted);font-size:.72rem}
   <div class="chart-card full-width">
     <div class="chart-title" style="cursor:pointer" title="Click to interact">🔄 Expired Base Analysis by Renewal Count</div>
     <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px;">
-        <strong>Red:</strong> Total Expired Base &nbsp;|&nbsp; <strong>Yellow:</strong> Pure Churn % &nbsp;|&nbsp; <strong>Cyan:</strong> RDP Shift % &nbsp;|&nbsp; <strong>Purple:</strong> New Sales Shift %<br>
+        <strong>Red:</strong> Total Expired Base &nbsp;|&nbsp; <strong>Yellow:</strong> Pure Churn % &nbsp;|&nbsp; <strong>Cyan:</strong> RDP Shift % &nbsp;|&nbsp; <strong>Purple:</strong> New Sales Shift % &nbsp;|&nbsp; <strong>Green:</strong> Retained %<br>
         <strong>Click a bar or line</strong> to view portfolio for that specific Renewal Count cohort.
     </div>
     <div class="chart-container" style="height:320px;"><canvas id="renewalChurnChart"></canvas></div>
@@ -384,7 +384,7 @@ footer{text-align:center;padding:20px;color:var(--text-muted);font-size:.72rem}
   <div class="chart-card">
     <div class="chart-title" style="cursor:pointer" title="Click to interact">🔄 Expired Base by License Type</div>
     <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:8px">
-      <strong>Red:</strong> Pure Churn &nbsp;|&nbsp; <strong>Gray:</strong> Retained &nbsp;|&nbsp; <strong>Lines:</strong> RDP & NS Shift %<br>
+      <strong>Red:</strong> Pure Churn &nbsp;|&nbsp; <strong>Yellow:</strong> Partial Churn &nbsp;|&nbsp; <strong>Green:</strong> Retained<br>
       <strong>Click a bar</strong> to view portfolio for that License Type.
     </div>
     <div class="chart-container"><canvas id="licenseTypeChart"></canvas></div>
@@ -393,7 +393,7 @@ footer{text-align:center;padding:20px;color:var(--text-muted);font-size:.72rem}
   <div class="chart-card">
     <div class="chart-title" style="cursor:pointer" title="Click to interact">⏳ Expired Base by Tenure</div>
     <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:8px">
-      <strong>Red:</strong> Pure Churn &nbsp;|&nbsp; <strong>Gray:</strong> Retained &nbsp;|&nbsp; <strong>Lines:</strong> RDP & NS Shift %<br>
+      <strong>Red:</strong> Pure Churn &nbsp;|&nbsp; <strong>Yellow:</strong> Partial Churn &nbsp;|&nbsp; <strong>Green:</strong> Retained<br>
       <strong>Click a bar</strong> to view portfolio for that Tenure cohort.
     </div>
     <div class="chart-container"><canvas id="tenureChart"></canvas></div>
@@ -414,10 +414,10 @@ footer{text-align:center;padding:20px;color:var(--text-muted);font-size:.72rem}
   <div class="table-header">
     <div class="table-tabs" id="mainTabs">
       <button class="table-tab active" onclick="setMainTab('all',this)">All (Expired Base)</button>
-      <button class="table-tab" onclick="setMainTab('overlap',this)">🟡 Partial</button>
-      <button class="table-tab" onclick="setMainTab('churned',this)">🔴 Full Churn</button>
-      <button class="table-tab" onclick="setMainTab('newsales',this)">🔵 New Sales</button>
       <button class="table-tab" onclick="setMainTab('retained',this)">🛡️ Retained</button>
+      <button class="table-tab" onclick="setMainTab('churned',this)">🔴 Full Churn</button>
+      <button class="table-tab" onclick="setMainTab('overlap',this)">🟡 Partial Churn</button>
+      <button class="table-tab" onclick="setMainTab('newsales',this)">🔵 New Sales</button>
       <button class="table-tab" onclick="setMainTab('ghost',this)">👻 Ghost Churn</button>
       <button class="table-tab" onclick="setMainTab('atrisk',this)">⚠️ At Risk</button>
     </div>
@@ -474,7 +474,7 @@ footer{text-align:center;padding:20px;color:var(--text-muted);font-size:.72rem}
   </div>
 </div>
 
-<footer>Expired base Churn Analysis · v57.3 — Search Autocomplete, Unified Math, & Retained Logic</footer>
+<footer>Expired base Churn Analysis · v57.7 — Clean Sub-Table Layout & Map Graph Adjustments</footer>
 
 <script>
 Chart.register(ChartDataLabels);
@@ -513,7 +513,8 @@ function getThemeColors() {
     yellow: isLight ? '#d97706' : '#ffd200',
     cyan: isLight ? '#0284c7' : '#38bdf8',
     purple: isLight ? '#7e22ce' : '#a855f7',
-    red: isLight ? '#e11d48' : '#f45c43'
+    red: isLight ? '#e11d48' : '#f45c43',
+    green: isLight ? '#059669' : '#34d399'
   };
 }
 function toggleTheme() {
@@ -798,11 +799,14 @@ function getMetrics(data, r) {
         types.forEach(t => {
             if (d.source === 'expired') {
                 res[t].exp++;
-                if (r.fullChurnSet && r.fullChurnSet.has(d.compGUID)) res[t].fc++;
-                if (r.overlappingCompGUIDSet && r.overlappingCompGUIDSet.has(d.compGUID)) res[t].pc++;
-                if (d.shiftedToRDP) res[t].rdp++;
-                if (d.shiftedToNewSales) res[t].ns++;
-                if (d.isRetained) res[t].ret++;
+                if (d.isRetained) {
+                    res[t].ret++;
+                } else {
+                    if (r.fullChurnSet && r.fullChurnSet.has(d.compGUID)) res[t].fc++;
+                    if (r.overlappingCompGUIDSet && r.overlappingCompGUIDSet.has(d.compGUID)) res[t].pc++;
+                    if (d.shiftedToRDP) res[t].rdp++;
+                    if (d.shiftedToNewSales) res[t].ns++;
+                }
             } else {
                 res[t].act++;
                 if (d.isGhost) res[t].ghost++;
@@ -829,11 +833,11 @@ function analyzeData() {
   const RETAINED_CUTOFF = new Date('2026-09-01T00:00:00').getTime();
   
   const sC={}, partStats={}, renStats={}, catStats={}, tenStats={
-      '< 1 Year': {totalExpired:0, pureChurn:0, rdpShifted:0, nsShifted:0},
-      '1-3 Years': {totalExpired:0, pureChurn:0, rdpShifted:0, nsShifted:0},
-      '3-5 Years': {totalExpired:0, pureChurn:0, rdpShifted:0, nsShifted:0},
-      '5+ Years': {totalExpired:0, pureChurn:0, rdpShifted:0, nsShifted:0},
-      'Unknown': {totalExpired:0, pureChurn:0, rdpShifted:0, nsShifted:0}
+      '< 1 Year': {totalExpired:0, pureChurn:0, partialChurn:0, rdpShifted:0, nsShifted:0, retained:0},
+      '1-3 Years': {totalExpired:0, pureChurn:0, partialChurn:0, rdpShifted:0, nsShifted:0, retained:0},
+      '3-5 Years': {totalExpired:0, pureChurn:0, partialChurn:0, rdpShifted:0, nsShifted:0, retained:0},
+      '5+ Years': {totalExpired:0, pureChurn:0, partialChurn:0, rdpShifted:0, nsShifted:0, retained:0},
+      'Unknown': {totalExpired:0, pureChurn:0, partialChurn:0, rdpShifted:0, nsShifted:0, retained:0}
   };
   const licStats = {}; 
 
@@ -865,8 +869,6 @@ function analyzeData() {
 
     const meta = compActiveMeta[d.compGUID];
     if (meta) {
-      // ONLY apply shift logic if the license is NOT retained. 
-      // If it is retained, it is just an active continued license, not a 'shifted' churn.
       if (meta.hasRDP && !d.isRetained) d.shiftedToRDP = true;
       if (meta.installs.length > 0 && d.currentBlsExpiry && !d.isRetained) {
         const expTime = d.currentBlsExpiry.getTime();
@@ -882,8 +884,9 @@ function analyzeData() {
     if (d.gstin) { if (!window.gstNet[d.gstin]) window.gstNet[d.gstin]={a:[],e:[]}; window.gstNet[d.gstin].e.push(m); }
     if (!window.comboNet[d.comboKey]) window.comboNet[d.comboKey]={a:[],e:[]}; window.comboNet[d.comboKey].e.push(m);
     eG.add(d.compGUID);
+    
     const st = getStateName(d.gstin);
-    if (!sC[st]) sC[st] = {totalExpired:0, pureChurn:0, partialChurn:0, rdpShifted:0, nsShifted:0};
+    if (!sC[st]) sC[st] = {totalExpired:0, pureChurn:0, partialChurn:0, rdpShifted:0, nsShifted:0, retained:0};
     sC[st].totalExpired++;
   });
 
@@ -909,12 +912,12 @@ function analyzeData() {
     if (d.shiftedToNewSales) nsComps.add(d.compGUID); 
 
     const pk = d.ownerPartner || 'Direct / Unassigned';
-    if (!partStats[pk]) partStats[pk] = {totalExpired:0, rdpShifted:0, nsShifted:0, pureChurnCount:0, partialChurnCount:0, totalActive:0};
+    if (!partStats[pk]) partStats[pk] = {totalExpired:0, rdpShifted:0, nsShifted:0, pureChurnCount:0, partialChurnCount:0, totalActive:0, retained:0};
     const rc = d.renewalCount || '0';
-    if (!renStats[rc]) renStats[rc] = {totalExpired:0, rdpShifted:0, nsShifted:0, pureChurn:0};
+    if (!renStats[rc]) renStats[rc] = {totalExpired:0, rdpShifted:0, nsShifted:0, pureChurn:0, partialChurn:0, retained:0};
 
     const lt = d.licenseType || 'Unknown';
-    if (!licStats[lt]) licStats[lt] = {totalExpired:0, rdpShifted:0, nsShifted:0, pureChurn:0};
+    if (!licStats[lt]) licStats[lt] = {totalExpired:0, rdpShifted:0, nsShifted:0, pureChurn:0, partialChurn:0, retained:0};
 
     partStats[pk].totalExpired++;
     renStats[rc].totalExpired++;
@@ -923,38 +926,49 @@ function analyzeData() {
     const tl = getTenureLabel(d);
     if (tl && tenStats[tl]) {
         tenStats[tl].totalExpired++;
-        if (d.shiftedToRDP) tenStats[tl].rdpShifted++;
-        if (d.shiftedToNewSales) tenStats[tl].nsShifted++;
     }
 
-    if (fC.has(d.compGUID)) {
-      partStats[pk].pureChurnCount++;
-      renStats[rc].pureChurn++;
-      licStats[lt].pureChurn++;
-      const st = getStateName(d.gstin); if (sC[st]) sC[st].pureChurn++;
-      if (tl && tenStats[tl]) tenStats[tl].pureChurn++;
+    if (d.isRetained) {
+        partStats[pk].retained++;
+        renStats[rc].retained++;
+        licStats[lt].retained++;
+        if (tl && tenStats[tl]) tenStats[tl].retained++;
+        const st=getStateName(d.gstin); if (sC[st]) sC[st].retained++;
     } else {
-      partStats[pk].partialChurnCount++;
-      const st = getStateName(d.gstin); if (sC[st]) sC[st].partialChurn++;
-    }
-    
-    if (d.shiftedToRDP) { 
-        partStats[pk].rdpShifted++; 
-        renStats[rc].rdpShifted++;
-        licStats[lt].rdpShifted++;
-        const st=getStateName(d.gstin); if (sC[st]) sC[st].rdpShifted++; 
-    }
-    if (d.shiftedToNewSales) { 
-        partStats[pk].nsShifted++; 
-        renStats[rc].nsShifted++;
-        licStats[lt].nsShifted++;
-        const st=getStateName(d.gstin); if (sC[st]) sC[st].nsShifted++; 
+        if (fC.has(d.compGUID)) {
+            partStats[pk].pureChurnCount++;
+            renStats[rc].pureChurn++;
+            licStats[lt].pureChurn++;
+            const st = getStateName(d.gstin); if (sC[st]) sC[st].pureChurn++;
+            if (tl && tenStats[tl]) tenStats[tl].pureChurn++;
+        } else {
+            partStats[pk].partialChurnCount++;
+            renStats[rc].partialChurn++;
+            licStats[lt].partialChurn++;
+            const st = getStateName(d.gstin); if (sC[st]) sC[st].partialChurn++;
+            if (tl && tenStats[tl]) tenStats[tl].partialChurn++;
+        }
+        
+        if (d.shiftedToRDP) { 
+            partStats[pk].rdpShifted++; 
+            renStats[rc].rdpShifted++;
+            licStats[lt].rdpShifted++;
+            if (tl && tenStats[tl]) tenStats[tl].rdpShifted++;
+            const st=getStateName(d.gstin); if (sC[st]) sC[st].rdpShifted++; 
+        }
+        if (d.shiftedToNewSales) { 
+            partStats[pk].nsShifted++; 
+            renStats[rc].nsShifted++;
+            licStats[lt].nsShifted++;
+            if (tl && tenStats[tl]) tenStats[tl].nsShifted++;
+            const st=getStateName(d.gstin); if (sC[st]) sC[st].nsShifted++; 
+        }
     }
   });
   
   activeData.forEach(d => {
     const pk = d.ownerPartner || 'Direct / Unassigned';
-    if (!partStats[pk]) partStats[pk] = {totalExpired:0, rdpShifted:0, nsShifted:0, pureChurnCount:0, partialChurnCount:0, totalActive:0};
+    if (!partStats[pk]) partStats[pk] = {totalExpired:0, rdpShifted:0, nsShifted:0, pureChurnCount:0, partialChurnCount:0, totalActive:0, retained:0};
     partStats[pk].totalActive++;
   });
 
@@ -1130,8 +1144,8 @@ function applyModalCategoryFilter(data, cat, lic) {
     
     const isExp = d.source==='expired', isAct = d.source==='active';
     if (cat==='TOTAL_EXPIRED') return isExp;
-    if (cat==='FULL_CHURN') return isExp && r.fullChurnSet.has(d.compGUID);
-    if (cat==='PARTIAL_CHURN') return isExp && r.overlappingCompGUIDSet.has(d.compGUID);
+    if (cat==='FULL_CHURN') return isExp && !d.isRetained && r.fullChurnSet.has(d.compGUID);
+    if (cat==='PARTIAL_CHURN') return isExp && !d.isRetained && r.overlappingCompGUIDSet.has(d.compGUID);
     if (cat==='RDP') return isExp && d.shiftedToRDP;
     if (cat==='NEW_SALES') return isExp && d.shiftedToNewSales;
     if (cat==='RETAINED') return isExp && d.isRetained;
@@ -1176,10 +1190,10 @@ function setMainTab(f, btn) {
   else {
     for (let i=0;i<expiredData.length;i++) {
       const d = expiredData[i], o = r.overlappingCompGUIDSet.has(d.compGUID);
-      if (f==='overlap' && !o) continue;
-      if (f==='churned' && o) continue;
-      if (f==='newsales' && !d.shiftedToNewSales) continue;
       if (f==='retained' && !d.isRetained) continue;
+      if (f==='overlap' && (d.isRetained || !o)) continue;
+      if (f==='churned' && (d.isRetained || o)) continue;
+      if (f==='newsales' && !d.shiftedToNewSales) continue;
       mainBaseData.push(d);
     }
   }
@@ -1249,11 +1263,11 @@ function buildDynamicSummaryTable(data, isMain = false) {
         return `<tr class="${rowClass}">
           <td style="cursor:pointer" onclick="${clickFn}('ALL', '${type}')">${label}</td>
           <td class="data-cell mod-col-total_expired" style="font-size:1.05rem;font-weight:bold;cursor:pointer" onclick="${clickFn}('TOTAL_EXPIRED', '${type}')">${d.exp.toLocaleString()}</td>
+          <td class="data-cell mod-col-retained" style="font-size:1.05rem;font-weight:bold;cursor:pointer" onclick="${clickFn}('RETAINED', '${type}')">${d.ret.toLocaleString()}</td>
           <td class="data-cell mod-col-full_churn" style="font-size:1.05rem;font-weight:bold;cursor:pointer" onclick="${clickFn}('FULL_CHURN', '${type}')">${d.fc.toLocaleString()}</td>
           <td class="data-cell mod-col-partial_churn" style="font-size:1.05rem;font-weight:bold;cursor:pointer" onclick="${clickFn}('PARTIAL_CHURN', '${type}')">${d.pc.toLocaleString()}</td>
           <td class="data-cell mod-col-rdp" style="font-size:1.05rem;font-weight:bold;cursor:pointer" onclick="${clickFn}('RDP', '${type}')">${d.rdp.toLocaleString()}</td>
           <td class="data-cell mod-col-new_sales" style="font-size:1.05rem;font-weight:bold;cursor:pointer" onclick="${clickFn}('NEW_SALES', '${type}')">${d.ns.toLocaleString()}</td>
-          <td class="data-cell mod-col-retained" style="font-size:1.05rem;font-weight:bold;cursor:pointer" onclick="${clickFn}('RETAINED', '${type}')">${d.ret.toLocaleString()}</td>
           <td class="data-cell active-base-cell mod-col-total_active" style="font-size:1.05rem;font-weight:bold;cursor:pointer" onclick="${clickFn}('TOTAL_ACTIVE', '${type}')">${d.act.toLocaleString()}</td>
           <td class="data-cell mod-col-ghost" style="font-size:1.05rem;font-weight:bold;cursor:pointer" onclick="${clickFn}('GHOST', '${type}')">${d.ghost.toLocaleString()}</td>
           <td class="data-cell mod-col-at_risk" style="font-size:1.05rem;font-weight:bold;cursor:pointer" onclick="${clickFn}('AT_RISK', '${type}')">${d.risk.toLocaleString()}</td>
@@ -1265,13 +1279,13 @@ function buildDynamicSummaryTable(data, isMain = false) {
         const d = m[type];
         return `<tr class="${rowClass}">
           <td style="color:var(--text-muted);cursor:pointer" onclick="${clickFn}('ALL', '${type}')">${label}</td>
-          <td class="mod-col-total_expired" style="color:var(--text-muted);cursor:pointer" onclick="${clickFn}('TOTAL_EXPIRED', '${type}')">100%</td>
+          <td class="mod-col-total_expired" style="color:var(--text-muted);cursor:pointer" onclick="${clickFn}('TOTAL_EXPIRED', '${type}')">-</td>
+          <td class="mod-col-retained" style="color:var(--text-muted);cursor:pointer" onclick="${clickFn}('RETAINED', '${type}')">${pct(d.ret, d.exp)}%</td>
           <td class="mod-col-full_churn" style="color:var(--text-muted);cursor:pointer" onclick="${clickFn}('FULL_CHURN', '${type}')">${pct(d.fc, d.exp)}%</td>
           <td class="mod-col-partial_churn" style="color:var(--text-muted);cursor:pointer" onclick="${clickFn}('PARTIAL_CHURN', '${type}')">${pct(d.pc, d.exp)}%</td>
           <td class="mod-col-rdp" style="color:var(--text-muted);cursor:pointer" onclick="${clickFn}('RDP', '${type}')">${pct(d.rdp, d.exp)}%</td>
           <td class="mod-col-new_sales" style="color:var(--text-muted);cursor:pointer" onclick="${clickFn}('NEW_SALES', '${type}')">${pct(d.ns, d.exp)}%</td>
-          <td class="mod-col-retained" style="color:var(--text-muted);cursor:pointer" onclick="${clickFn}('RETAINED', '${type}')">${pct(d.ret, d.exp)}%</td>
-          <td class="active-base-cell mod-col-total_active" style="color:var(--text-muted);cursor:pointer" onclick="${clickFn}('TOTAL_ACTIVE', '${type}')">100%</td>
+          <td class="active-base-cell mod-col-total_active" style="color:var(--text-muted);cursor:pointer" onclick="${clickFn}('TOTAL_ACTIVE', '${type}')">-</td>
           <td class="mod-col-ghost" style="color:var(--text-muted);cursor:pointer" onclick="${clickFn}('GHOST', '${type}')">${pct(d.ghost, d.act)}%</td>
           <td class="mod-col-at_risk" style="color:var(--text-muted);cursor:pointer" onclick="${clickFn}('AT_RISK', '${type}')">${pct(d.risk, d.act)}%</td>
         </tr>`;
@@ -1304,11 +1318,11 @@ function buildDynamicSummaryTable(data, isMain = false) {
         <thead><tr>
           <th onclick="${clickFn}('ALL', 'ALL')" style="cursor:pointer;min-width:180px">Metrics Base<br><span style="font-size:.65rem;font-weight:normal">(Click to reset)</span></th>
           <th class="txt-purple mod-col-total_expired" onclick="${clickFn}('TOTAL_EXPIRED', 'ALL')" style="cursor:pointer">Total Expired</th>
+          <th class="txt-green mod-col-retained" onclick="${clickFn}('RETAINED', 'ALL')" style="cursor:pointer">Retained</th>
           <th class="txt-red mod-col-full_churn" onclick="${clickFn}('FULL_CHURN', 'ALL')" style="cursor:pointer">Full Churn</th>
-          <th class="txt-purple mod-col-partial_churn" onclick="${clickFn}('PARTIAL_CHURN', 'ALL')" style="cursor:pointer">Partial Churn</th>
+          <th class="txt-yellow mod-col-partial_churn" onclick="${clickFn}('PARTIAL_CHURN', 'ALL')" style="cursor:pointer">Partial Churn</th>
           <th class="txt-cyan mod-col-rdp" onclick="${clickFn}('RDP', 'ALL')" style="cursor:pointer">RDP Shift</th>
           <th class="txt-cyan mod-col-new_sales" onclick="${clickFn}('NEW_SALES', 'ALL')" style="cursor:pointer">New Sales</th>
-          <th class="txt-green mod-col-retained" onclick="${clickFn}('RETAINED', 'ALL')" style="cursor:pointer">Retained</th>
           <th class="txt-green active-base-header mod-col-total_active" onclick="${clickFn}('TOTAL_ACTIVE', 'ALL')" style="cursor:pointer">Total Active</th>
           <th class="txt-red mod-col-ghost" onclick="${clickFn}('GHOST', 'ALL')" style="cursor:pointer">Ghost</th>
           <th class="txt-yellow mod-col-at_risk" onclick="${clickFn}('AT_RISK', 'ALL')" style="cursor:pointer">At Risk</th>
@@ -1384,11 +1398,18 @@ function renderCharts() {
   // STATE CHART
   const stEl = document.getElementById('stateChurnChart');
   if (stEl) {
-    const sArr = Object.entries(r.stateChurn||{}).map(([k,v]) => ({
-      s:k, totExpired:v.totalExpired||0, pureChurn:v.pureChurn||0,
-      rate: v.totalExpired>0 ? ((v.pureChurn||0)/v.totalExpired)*100 : 0
-    })).filter(x => x.totExpired>=5 && x.s!=='Unknown / No GSTIN')
+    const sArr = Object.entries(r.stateChurn||{}).map(([k,v]) => {
+      const tot = v.totalExpired||0;
+      return {
+        s:k, totExpired:tot, pureChurn:v.pureChurn||0,
+        rate: tot>0 ? ((v.pureChurn||0)/tot)*100 : 0,
+        rdpRate: tot>0 ? ((v.rdpShifted||0)/tot)*100 : 0,
+        nsRate: tot>0 ? ((v.nsShifted||0)/tot)*100 : 0,
+        retRate: tot>0 ? ((v.retained||0)/tot)*100 : 0
+      };
+    }).filter(x => x.totExpired>=5 && x.s!=='Unknown / No GSTIN')
       .sort((a,b)=>b.totExpired-a.totExpired).slice(0,15);
+      
     dc('st');
     charts.st = new Chart(stEl, {
       type:'bar',
@@ -1396,8 +1417,10 @@ function renderCharts() {
         labels: sArr.map(x=>x.s),
         datasets:[
           { label:'Total Expired Subs', data:sArr.map(x=>x.totExpired), backgroundColor:'rgba(124,58,237,.7)', borderColor:'#7c3aed', borderWidth:1, datalabels:{display:false} },
-          { label:'Pure Churn %', data:sArr.map(x=>x.rate.toFixed(1)), type:'line', borderColor:tc.yellow, backgroundColor:'transparent', borderWidth:2.5, pointBackgroundColor:tc.yellow, pointRadius:5, yAxisID:'y1', tension:0.3,
-            datalabels:{ display:true, color:tc.text, align:'top', anchor:'bottom', offset:4, formatter:v=>v+'%', font:{weight:'bold', size:10} } }
+          { label:'Full Churn %', data:sArr.map(x=>x.rate.toFixed(1)), type:'line', borderColor:tc.yellow, borderWidth:2.5, pointBackgroundColor:tc.yellow, pointRadius:4, yAxisID:'y1', tension:0.3,
+            datalabels:{ display:true, color:tc.yellow, align:'top', anchor:'end', offset:2, formatter:v=>v+'%', font:{weight:'bold', size:10} } },
+          { label:'RDP Shift %', data:sArr.map(x=>x.rdpRate.toFixed(1)), type:'line', borderColor:tc.cyan, borderWidth:2.5, pointBackgroundColor:tc.cyan, pointRadius:4, yAxisID:'y1', tension:0.3,
+            datalabels:{ display:true, color:tc.cyan, align:'bottom', anchor:'start', offset:2, formatter:v=>v+'%', font:{weight:'bold', size:10} } }
         ]
       },
       options:{
@@ -1407,7 +1430,7 @@ function renderCharts() {
         scales:{
           x:{ ticks:{color:tc.text, maxRotation:45, minRotation:45} },
           y:{ ticks:{color:tc.text}, grid:{color:tc.grid}, title:{display:true, text:'Total Expired Subscriptions', color:tc.text} },
-          y1:{ position:'right', ticks:{color:tc.yellow}, grid:{display:false}, max:100, title:{display:true, text:'Pure Churn %', color:tc.yellow} }
+          y1:{ position:'right', ticks:{color:tc.text}, grid:{display:false}, max:100, title:{display:true, text:'%', color:tc.text} }
         }
       }
     });
@@ -1417,9 +1440,10 @@ function renderCharts() {
   const pcEl1 = document.getElementById('partnerChurnChart');
   if (pcEl1) {
     const pArr = Object.entries(r.partStats).map(([k,v]) => {
-      const pureChurn=v.pureChurnCount||0, totExpired=v.totalExpired||0, rdp=v.rdpShifted||0, ns=v.nsShifted||0;
-      return { p:k, pureChurn, totExpired, rate:totExpired?(pureChurn/totExpired)*100:0, rdpRate:totExpired?(rdp/totExpired)*100:0, nsRate:totExpired?(ns/totExpired)*100:0 };
+      const pureChurn=v.pureChurnCount||0, totExpired=v.totalExpired||0, rdp=v.rdpShifted||0, ns=v.nsShifted||0, ret=v.retained||0;
+      return { p:k, pureChurn, totExpired, rate:totExpired?(pureChurn/totExpired)*100:0, rdpRate:totExpired?(rdp/totExpired)*100:0, nsRate:totExpired?(ns/totExpired)*100:0, retRate:totExpired?(ret/totExpired)*100:0 };
     }).filter(x=>x.totExpired>=5 && x.p!=='Direct / Unassigned' && x.p!=='Direct').sort((a,b)=>b.pureChurn-a.pureChurn).slice(0,10);
+    
     dc('pc1');
     charts.pc1 = new Chart(pcEl1, {
       type:'bar',
@@ -1441,6 +1465,10 @@ function renderCharts() {
           {
             label:'New Sales Shift %', data:pArr.map(x=>x.nsRate.toFixed(1)), type:'line', borderColor:tc.purple, borderWidth:2, pointBackgroundColor:tc.purple, pointRadius:3, yAxisID:'y1', tension:0.3,
             datalabels:{ display:true, color:tc.purple, align:'right', anchor:'center', offset:4, font:{size:9,weight:'bold'}, formatter:v=>v+'%' }
+          },
+          {
+            label:'Retained %', data:pArr.map(x=>x.retRate.toFixed(1)), type:'line', borderColor:tc.green, borderWidth:2, pointBackgroundColor:tc.green, pointRadius:3, yAxisID:'y1', tension:0.3,
+            datalabels:{ display:true, color:tc.green, align:'left', anchor:'center', offset:4, font:{size:9,weight:'bold'}, formatter:v=>v+'%' }
           }
         ]
       },
@@ -1448,7 +1476,7 @@ function renderCharts() {
         responsive:true, maintainAspectRatio:false,
         onClick:(e,els)=>{ if(els.length) drillByPartnerChart(pArr[els[0].index].p); },
         plugins:{ legend:{display:true, labels:{color:tc.text, font:{size:10}}} },
-        scales:{ x:{ticks:{color:tc.text}}, y:{ticks:{color:tc.text}, grid:{color:tc.grid}, title:{display:true, text:'Total Expired Subs', color:tc.text}}, y1:{position:'right', ticks:{color:tc.yellow}, grid:{display:false}, max:100} }
+        scales:{ x:{ticks:{color:tc.text}}, y:{ticks:{color:tc.text}, grid:{color:tc.grid}, title:{display:true, text:'Total Expired Subs', color:tc.text}}, y1:{position:'right', ticks:{color:tc.text}, grid:{display:false}, max:100, title:{display:true, text:'%', color:tc.text}} }
       }
     });
   }
@@ -1461,11 +1489,13 @@ function renderCharts() {
       const totExpired = v.totalExpired || 0;
       const rdpShifted = v.rdpShifted || 0;
       const nsShifted = v.nsShifted || 0;
+      const retained = v.retained || 0;
       return {
         rc: k, label: ordinalRenewalLabel(k), totExpired,
         rate: totExpired ? (pureChurn/totExpired)*100 : 0,
         rdpRate: totExpired ? (rdpShifted/totExpired)*100 : 0,
-        nsRate: totExpired ? (nsShifted/totExpired)*100 : 0
+        nsRate: totExpired ? (nsShifted/totExpired)*100 : 0,
+        retRate: totExpired ? (retained/totExpired)*100 : 0
       };
     }).sort((a,b) => parseInt(a.rc,10) - parseInt(b.rc,10));
 
@@ -1490,6 +1520,10 @@ function renderCharts() {
           {
             label:'New Sales Shift %', data:renArr.map(x=>x.nsRate.toFixed(1)), type:'line', borderColor:tc.purple, borderWidth:2, pointBackgroundColor:tc.purple, pointRadius:4, yAxisID:'y1', tension:0.3,
             datalabels:{ display:true, color:tc.purple, align:'right', anchor:'center', offset:6, font:{size:9,weight:'bold'}, formatter:v=>v+'%' }
+          },
+          {
+            label:'Retained %', data:renArr.map(x=>x.retRate.toFixed(1)), type:'line', borderColor:tc.green, borderWidth:2, pointBackgroundColor:tc.green, pointRadius:4, yAxisID:'y1', tension:0.3,
+            datalabels:{ display:true, color:tc.green, align:'left', anchor:'center', offset:6, font:{size:9,weight:'bold'}, formatter:v=>v+'%' }
           }
         ]
       },
@@ -1500,7 +1534,7 @@ function renderCharts() {
         scales:{
           x:{ ticks:{color:tc.text}, title:{display:true, text:'Renewal attempt', color:tc.text, font:{size:12,weight:'bold'}} },
           y:{ ticks:{color:tc.text}, grid:{color:tc.grid}, title:{display:true, text:'Total Expired Subs', color:tc.text} },
-          y1:{ position:'right', ticks:{color:tc.yellow}, grid:{display:false}, max:100, title:{display:true, text:'%', color:tc.yellow} }
+          y1:{ position:'right', ticks:{color:tc.text}, grid:{display:false}, max:100, title:{display:true, text:'%', color:tc.text} }
         }
       }
     });
@@ -1568,11 +1602,10 @@ function renderCharts() {
     const lArr = Object.entries(r.licStats).map(([k,v]) => {
       const totExpired = v.totalExpired || 0;
       const pureChurn = v.pureChurn || 0;
-      const retained = totExpired - pureChurn;
-      const rdpRate = totExpired ? (v.rdpShifted / totExpired) * 100 : 0;
-      const nsRate = totExpired ? (v.nsShifted / totExpired) * 100 : 0;
-      return { lt: k, totExpired, pureChurn, retained, rdpRate, nsRate };
-    }).filter(x => x.totExpired > 0 && x.lt !== 'Magic').sort((a,b) => b.totExpired - a.totExpired); // Filtered Magic here
+      const partialChurn = v.partialChurn || 0;
+      const retained = v.retained || 0;
+      return { lt: k, totExpired, pureChurn, partialChurn, retained };
+    }).filter(x => x.totExpired > 0 && x.lt !== 'Magic').sort((a,b) => b.totExpired - a.totExpired); 
 
     dc('lic1');
     charts.lic1 = new Chart(licEl, {
@@ -1581,9 +1614,8 @@ function renderCharts() {
         labels: lArr.map(x => x.lt),
         datasets: [
           { label: 'Pure Churn', data: lArr.map(x => x.pureChurn), backgroundColor: 'rgba(244,92,67,.75)', borderColor: '#e11d48', borderWidth: 1, stack: 's', datalabels:{display:false} },
-          { label: 'Retained', data: lArr.map(x => x.retained), backgroundColor: 'rgba(156,163,175,.5)', borderColor: '#9ca3af', borderWidth: 1, stack: 's', datalabels:{display:false} },
-          { label: 'RDP Shift %', data: lArr.map(x => x.rdpRate.toFixed(1)), type: 'line', borderColor: tc.cyan, borderWidth: 2, pointBackgroundColor: tc.cyan, pointRadius: 4, yAxisID: 'y1', tension: 0.3, datalabels: { display: true, color: tc.text, align: 'top', anchor: 'bottom', offset: 8, formatter: v => v + '%' } },
-          { label: 'New Sales Shift %', data: lArr.map(x => x.nsRate.toFixed(1)), type: 'line', borderColor: tc.purple, borderWidth: 2, pointBackgroundColor: tc.purple, pointRadius: 4, yAxisID: 'y1', tension: 0.3, datalabels: { display: true, color: tc.text, align: 'bottom', anchor: 'start', offset: 8, formatter: v => v + '%' } }
+          { label: 'Partial Churn', data: lArr.map(x => x.partialChurn), backgroundColor: 'rgba(234,179,8,.6)', borderColor: '#eab308', borderWidth: 1, stack: 's', datalabels:{display:false} },
+          { label: 'Retained', data: lArr.map(x => x.retained), backgroundColor: 'rgba(16,185,129,.6)', borderColor: '#10b981', borderWidth: 1, stack: 's', datalabels:{display:false} }
         ]
       },
       options: {
@@ -1592,8 +1624,7 @@ function renderCharts() {
         plugins: { legend: { display: true, labels: { color: tc.text, font: { size: 10 } } } },
         scales: {
           x: { stacked: true, ticks: { color: tc.text } },
-          y: { stacked: true, ticks: { color: tc.text }, grid: { color: tc.grid }, title: { display: true, text: 'Expired Subs', color: tc.text } },
-          y1: { position: 'right', ticks: { color: tc.yellow }, grid: { display: false }, max: 100 }
+          y: { stacked: true, ticks: { color: tc.text }, grid: { color: tc.grid }, title: { display: true, text: 'Expired Subs', color: tc.text } }
         }
       }
     });
@@ -1605,10 +1636,9 @@ function renderCharts() {
     const tArr = Object.entries(r.tenStats).map(([k,v]) => {
         const totExpired = v.totalExpired || 0;
         const pureChurn = v.pureChurn || 0;
-        const retained = totExpired - pureChurn;
-        const rdpRate = totExpired ? (v.rdpShifted / totExpired) * 100 : 0;
-        const nsRate = totExpired ? (v.nsShifted / totExpired) * 100 : 0;
-        return { tl: k, totExpired, pureChurn, retained, rdpRate, nsRate };
+        const partialChurn = v.partialChurn || 0;
+        const retained = v.retained || 0;
+        return { tl: k, totExpired, pureChurn, partialChurn, retained };
     });
 
     dc('tc');
@@ -1618,9 +1648,8 @@ function renderCharts() {
         labels: tArr.map(x => x.tl),
         datasets: [
           { label: 'Pure Churn', data: tArr.map(x => x.pureChurn), backgroundColor: 'rgba(244,92,67,.75)', borderColor: '#e11d48', borderWidth: 1, stack: 's', datalabels:{display:false} },
-          { label: 'Retained', data: tArr.map(x => x.retained), backgroundColor: 'rgba(156,163,175,.5)', borderColor: '#9ca3af', borderWidth: 1, stack: 's', datalabels:{display:false} },
-          { label: 'RDP Shift %', data: tArr.map(x => x.rdpRate.toFixed(1)), type: 'line', borderColor: tc.cyan, borderWidth: 2, pointBackgroundColor: tc.cyan, pointRadius: 4, yAxisID: 'y1', tension: 0.3, datalabels: { display: true, color: tc.text, align: 'top', anchor: 'bottom', offset: 8, formatter: v => v + '%' } },
-          { label: 'New Sales Shift %', data: tArr.map(x => x.nsRate.toFixed(1)), type: 'line', borderColor: tc.purple, borderWidth: 2, pointBackgroundColor: tc.purple, pointRadius: 4, yAxisID: 'y1', tension: 0.3, datalabels: { display: true, color: tc.text, align: 'bottom', anchor: 'start', offset: 8, formatter: v => v + '%' } }
+          { label: 'Partial Churn', data: tArr.map(x => x.partialChurn), backgroundColor: 'rgba(234,179,8,.6)', borderColor: '#eab308', borderWidth: 1, stack: 's', datalabels:{display:false} },
+          { label: 'Retained', data: tArr.map(x => x.retained), backgroundColor: 'rgba(16,185,129,.6)', borderColor: '#10b981', borderWidth: 1, stack: 's', datalabels:{display:false} }
         ]
       },
       options: {
@@ -1629,8 +1658,7 @@ function renderCharts() {
         plugins: { legend: { display: true, labels: { color: tc.text, font: { size: 10 } } } },
         scales: {
           x: { stacked: true, ticks: { color: tc.text } },
-          y: { stacked: true, ticks: { color: tc.text }, grid: { color: tc.grid }, title: { display: true, text: 'Expired Subs', color: tc.text } },
-          y1: { position: 'right', ticks: { color: tc.yellow }, grid: { display: false }, max: 100 }
+          y: { stacked: true, ticks: { color: tc.text }, grid: { color: tc.grid }, title: { display: true, text: 'Expired Subs', color: tc.text } }
         }
       }
     });
