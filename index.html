@@ -368,7 +368,7 @@ footer{text-align:center;padding:20px;color:var(--text-muted);font-size:.72rem}
   <div class="chart-card full-width">
     <div class="chart-title" style="cursor:pointer" title="Click to interact">🏆 Top Partners: Comprehensive Churn & Recovery (%)</div>
     <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px;">
-        <span id="partnerChartLogicText"><strong>Logic:</strong> Top 10 Partners (excluding Direct & Inside Sales) with ≥ 5 expired subs, ranked by highest Pure Churn volume.</span><br>
+        <span id="partnerChartLogicText"><strong>Logic:</strong> Top 10 Partners (excluding Direct & Inside Sales) with ≥ 500 expired subs, ranked by highest Pure Churn volume.</span><br>
         <strong>Red:</strong> Total Expired Base &nbsp;|&nbsp; <strong>Yellow:</strong> Pure Churn % &nbsp;|&nbsp; <strong>Cyan:</strong> RDP Shift % &nbsp;|&nbsp; <strong>Purple:</strong> New Sales Shift % &nbsp;|&nbsp; <strong>Green:</strong> Retained %<br>
         <strong>Click anywhere on the chart</strong> to open the complete portfolio overview for that Partner.
     </div>
@@ -500,7 +500,7 @@ footer{text-align:center;padding:20px;color:var(--text-muted);font-size:.72rem}
   </div>
 </div>
 
-<footer>Expired base Churn Analysis · v58.0 — Expiry Year Filter & Dynamic Partner Inside Sales Toggle</footer>
+<footer>Expired base Churn Analysis · v58.1 — Expiry Year Filter & Updated ≥500 Partner Logic</footer>
 
 <script>
 Chart.register(ChartDataLabels);
@@ -880,7 +880,6 @@ function getMetrics(data, r) {
 function analyzeData() {
   const eG=new Set(), aG=new Set();
   
-  // DYNAMIC GHOST LOGIC
   let maxActivityDate = Date.now(); 
   const allData = expiredData.concat(activeData);
   allData.forEach(d => {
@@ -1511,14 +1510,14 @@ function renderCharts() {
       const pureChurn=v.pureChurnCount||0, totExpired=v.totalExpired||0, rdp=v.rdpShifted||0, ns=v.nsShifted||0, ret=v.retained||0;
       return { p:k, pureChurn, totExpired, rate:totExpired?(pureChurn/totExpired)*100:0, rdpRate:totExpired?(rdp/totExpired)*100:0, nsRate:totExpired?(ns/totExpired)*100:0, retRate:totExpired?(ret/totExpired)*100:0 };
     }).filter(x => {
-        if (x.totExpired < 5 || x.p === 'Direct / Unassigned' || x.p === 'Direct') return false;
+        if (x.totExpired < 500 || x.p === 'Direct / Unassigned' || x.p === 'Direct') return false;
         if (excludeInsideSales && x.p.toLowerCase().includes('inside')) return false;
         return true;
     }).sort((a,b)=>b.pureChurn-a.pureChurn).slice(0,10);
     
     const logicEl = document.getElementById('partnerChartLogicText');
     if (logicEl) {
-       logicEl.innerHTML = `<strong>Logic:</strong> Top 10 Partners (excluding Direct ${excludeInsideSales ? '& Inside Sales' : ''}) with ≥ 5 expired subs, ranked by highest Pure Churn volume.`;
+       logicEl.innerHTML = `<strong>Logic:</strong> Top 10 Partners (excluding Direct ${excludeInsideSales ? '& Inside Sales' : ''}) with ≥ 500 expired subs, ranked by highest Pure Churn volume.`;
     }
 
     dc('pc1');
@@ -1624,11 +1623,10 @@ function renderCharts() {
       const pureChurn=v.pureChurnCount||0, totExpired=v.totalExpired||0, rdp=v.rdpShifted||0;
       return { p:k, pureChurn, totExpired, rdpShifted:rdp, rdpRate:totExpired?(rdp/totExpired)*100:0 };
     }).filter(x => {
-        if (x.totExpired < 5 || x.p === 'Direct / Unassigned' || x.p === 'Direct' || x.rdpShifted <= 0) return false;
+        if (x.totExpired < 500 || x.p === 'Direct / Unassigned' || x.p === 'Direct' || x.rdpShifted <= 0) return false;
         if (excludeInsideSales && x.p.toLowerCase().includes('inside')) return false;
         return true;
     }).sort((a,b)=>b.rdpRate-a.rdpRate).slice(0,10);
-    
     dc('pc2');
     charts.pc2 = new Chart(pcEl2, {
       type:'bar',
@@ -1657,11 +1655,10 @@ function renderCharts() {
       const pureChurn=v.pureChurnCount||0, totExpired=v.totalExpired||0, ns=v.nsShifted||0;
       return { p:k, pureChurn, totExpired, nsShifted:ns, nsRate:totExpired?(ns/totExpired)*100:0 };
     }).filter(x => {
-        if (x.totExpired < 5 || x.p === 'Direct / Unassigned' || x.p === 'Direct' || x.nsShifted <= 0) return false;
+        if (x.totExpired < 500 || x.p === 'Direct / Unassigned' || x.p === 'Direct' || x.nsShifted <= 0) return false;
         if (excludeInsideSales && x.p.toLowerCase().includes('inside')) return false;
         return true;
     }).sort((a,b)=>b.nsRate-a.nsRate).slice(0,10);
-    
     dc('pc3');
     charts.pc3 = new Chart(pcEl3, {
       type:'bar',
