@@ -177,6 +177,8 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:var(--bg
 [data-theme="dark"] .status-newsales { color: #a855f7; }
 .status-ghost{background:rgba(244,63,94,.15);color:#e11d48;border:1px solid rgba(244,63,94,.4);margin-left:4px}
 [data-theme="dark"] .status-ghost { color: #f43f5e; }
+.status-retained{background:rgba(16,185,129,.15);color:#059669;border:1px solid rgba(16,185,129,.4);margin-left:0;cursor:help} /* Adjusted margin since it replaces expired */
+[data-theme="dark"] .status-retained { color: #34d399; }
 
 .chip-wrap{display:flex;gap:4px;flex-wrap:wrap;max-width:250px}
 .chip-act{background:rgba(56,239,125,.15);color:#059669;border:1px solid rgba(56,239,125,.3);padding:2px 6px;border-radius:4px;font-size:.65rem;white-space:nowrap}
@@ -415,6 +417,7 @@ footer{text-align:center;padding:20px;color:var(--text-muted);font-size:.72rem}
       <button class="table-tab" onclick="setMainTab('overlap',this)">🟡 Partial</button>
       <button class="table-tab" onclick="setMainTab('churned',this)">🔴 Full Churn</button>
       <button class="table-tab" onclick="setMainTab('newsales',this)">🔵 New Sales</button>
+      <button class="table-tab" onclick="setMainTab('retained',this)">🛡️ Retained</button>
       <button class="table-tab" onclick="setMainTab('ghost',this)">👻 Ghost Churn</button>
       <button class="table-tab" onclick="setMainTab('atrisk',this)">⚠️ At Risk</button>
     </div>
@@ -471,7 +474,7 @@ footer{text-align:center;padding:20px;color:var(--text-muted);font-size:.72rem}
   </div>
 </div>
 
-<footer>Expired base Churn Analysis · v57.0 — Search Autocomplete & Unified Dash Math</footer>
+<footer>Expired base Churn Analysis · v57.3 — Search Autocomplete, Unified Math, & Retained Logic</footer>
 
 <script>
 Chart.register(ChartDataLabels);
@@ -554,8 +557,16 @@ function hasRDP(d) {
   const v = String(d.rdpLicense).trim().toLowerCase();
   return v !== '' && v !== 'n/a' && v !== 'no' && v !== '0' && v !== 'false' && v !== 'null';
 }
+
 function statusCell(d) {
-  const stBadge = `<span class="status-badge ${d.source==='expired'?'status-expired':'status-active'}">${d.source}</span>`;
+  let mainBadge = '';
+  // If it's flagged as retained, replace the regular expired status with Retained
+  if (d.isRetained) {
+    mainBadge = `<span class="status-badge status-retained" title="Expiry >= Sept 1, 2026">🛡️ Retained</span>`;
+  } else {
+    mainBadge = `<span class="status-badge ${d.source==='expired'?'status-expired':'status-active'}">${d.source}</span>`;
+  }
+  
   let rdpBadge = '';
   if (d.source === 'active' && hasRDP(d)) rdpBadge = `<span class="status-badge status-rdp" title="RDP: ${d.rdpLicense}">🖥️ RDP</span>`;
   else if (d.source === 'expired' && d.shiftedToRDP) rdpBadge = `<span class="status-badge status-rdp" style="border-style:dashed" title="Shifted to Active RDP">🔄 RDP Shift</span>`;
@@ -563,7 +574,7 @@ function statusCell(d) {
   const nsBadge = d.shiftedToNewSales ? `<span class="status-badge status-newsales" title="Renewed within 90 days">🔄 NS Shift</span>` : (d.isNewSales ? `<span class="status-badge status-newsales">🔵 New Sale</span>` : '');
   const ghostBadge = d.isGhost ? `<span class="status-badge status-ghost">👻 Ghost</span>` : '';
   
-  return `${stBadge} ${rdpBadge} ${nsBadge} ${ghostBadge}`;
+  return `${mainBadge} ${rdpBadge} ${nsBadge} ${ghostBadge}`.trim();
 }
 
 document.addEventListener('keydown', function(e) {
@@ -680,7 +691,7 @@ function parseArrayOfRows(rows, headers, source) {
       rdpLicense: rdpi!==-1&&cols[rdpi]?String(cols[rdpi]).trim():'N/A',
       renewalCount: rc,
       licenseType: lType,
-      source, shiftedToRDP:false, shiftedToNewSales:false, isNewSales:false, isGhost:false
+      source, shiftedToRDP:false, shiftedToNewSales:false, isNewSales:false, isGhost:false, isRetained:false
     });
   }
   return out;
@@ -772,10 +783,10 @@ async function loadManualFiles() {
 // HELPER FOR METRICS CALCULATION
 function getMetrics(data, r) {
     const res = {
-        ALL: { exp:0, act:0, fc:0, pc:0, rdp:0, ns:0, ghost:0, risk:0 },
-        Perpetual: { exp:0, act:0, fc:0, pc:0, rdp:0, ns:0, ghost:0, risk:0 },
-        Subscription: { exp:0, act:0, fc:0, pc:0, rdp:0, ns:0, ghost:0, risk:0 },
-        Magic: { exp:0, act:0, fc:0, pc:0, rdp:0, ns:0, ghost:0, risk:0 }
+        ALL: { exp:0, act:0, fc:0, pc:0, rdp:0, ns:0, ret:0, ghost:0, risk:0 },
+        Perpetual: { exp:0, act:0, fc:0, pc:0, rdp:0, ns:0, ret:0, ghost:0, risk:0 },
+        Subscription: { exp:0, act:0, fc:0, pc:0, rdp:0, ns:0, ret:0, ghost:0, risk:0 },
+        Magic: { exp:0, act:0, fc:0, pc:0, rdp:0, ns:0, ret:0, ghost:0, risk:0 }
     };
     const today = window.dynamicTodayTime || Date.now();
     const thirty = today + 30*86400000;
@@ -791,6 +802,7 @@ function getMetrics(data, r) {
                 if (r.overlappingCompGUIDSet && r.overlappingCompGUIDSet.has(d.compGUID)) res[t].pc++;
                 if (d.shiftedToRDP) res[t].rdp++;
                 if (d.shiftedToNewSales) res[t].ns++;
+                if (d.isRetained) res[t].ret++;
             } else {
                 res[t].act++;
                 if (d.isGhost) res[t].ghost++;
@@ -814,6 +826,7 @@ function analyzeData() {
   const today = maxActivityDate;
   const nDA = maxActivityDate - 90*86400000;
   const thirtyDaysFromNow = today + 30*86400000;
+  const RETAINED_CUTOFF = new Date('2026-09-01T00:00:00').getTime();
   
   const sC={}, partStats={}, renStats={}, catStats={}, tenStats={
       '< 1 Year': {totalExpired:0, pureChurn:0, rdpShifted:0, nsShifted:0},
@@ -844,10 +857,18 @@ function analyzeData() {
 
   expiredData.forEach(d => {
     d.shiftedToRDP = false; d.shiftedToNewSales = false;
+    
+    // Retained Logic: Expiry >= Sept 1 2026
+    if (d.currentBlsExpiry && d.currentBlsExpiry.getTime() >= RETAINED_CUTOFF) {
+        d.isRetained = true;
+    }
+
     const meta = compActiveMeta[d.compGUID];
     if (meta) {
-      if (meta.hasRDP) d.shiftedToRDP = true;
-      if (meta.installs.length > 0 && d.currentBlsExpiry) {
+      // ONLY apply shift logic if the license is NOT retained. 
+      // If it is retained, it is just an active continued license, not a 'shifted' churn.
+      if (meta.hasRDP && !d.isRetained) d.shiftedToRDP = true;
+      if (meta.installs.length > 0 && d.currentBlsExpiry && !d.isRetained) {
         const expTime = d.currentBlsExpiry.getTime();
         for (const instTime of meta.installs) {
           if (Math.abs(instTime - expTime) <= (90 * 86400000)) { d.shiftedToNewSales = true; break; }
@@ -1058,7 +1079,7 @@ function openAccount360(type, val) {
 }
 function downloadAcc360Data() {
   if (!currentAcc360Data.length) { alert('No data'); return; }
-  let csv='Partner,Category,LicenseType,Install,TenureYrs,CompGUID,SubNo,GSTIN,Combo,RDP,LastUsed,Expiry,Source,ShiftedToRDP,ShiftedToNS,IsNewSales,RenewalCount\n';
+  let csv='Partner,Category,LicenseType,Install,TenureYrs,CompGUID,SubNo,GSTIN,Combo,RDP,LastUsed,Expiry,Source,ShiftedToRDP,ShiftedToNS,IsNewSales,RenewalCount,IsRetained\n';
   currentAcc360Data.forEach(d => csv += rowCsv(d));
   dlFile(csv, `Account_${currentAcc360Data[0].compGUID||'360'}.csv`, 'text/csv');
 }
@@ -1100,6 +1121,7 @@ function applyFiltersAndSort(sourceData, searchId, tenureId, sortId, rdpId, base
   else if (sortF==='tenure_asc') res.sort((a,b)=>getTenureYrs(a)-getTenureYrs(b));
   return res;
 }
+
 function applyModalCategoryFilter(data, cat, lic) {
   const r = analysisResults, today = window.dynamicTodayTime, riskDate = today + 30*86400000;
   return data.filter(d => {
@@ -1112,6 +1134,7 @@ function applyModalCategoryFilter(data, cat, lic) {
     if (cat==='PARTIAL_CHURN') return isExp && r.overlappingCompGUIDSet.has(d.compGUID);
     if (cat==='RDP') return isExp && d.shiftedToRDP;
     if (cat==='NEW_SALES') return isExp && d.shiftedToNewSales;
+    if (cat==='RETAINED') return isExp && d.isRetained;
     if (cat==='TOTAL_ACTIVE') return isAct;
     if (cat==='GHOST') return isAct && d.isGhost;
     if (cat==='AT_RISK') return isAct && d.currentBlsExpiry && d.currentBlsExpiry.getTime()>=today && d.currentBlsExpiry.getTime()<=riskDate;
@@ -1156,6 +1179,7 @@ function setMainTab(f, btn) {
       if (f==='overlap' && !o) continue;
       if (f==='churned' && o) continue;
       if (f==='newsales' && !d.shiftedToNewSales) continue;
+      if (f==='retained' && !d.isRetained) continue;
       mainBaseData.push(d);
     }
   }
@@ -1229,6 +1253,7 @@ function buildDynamicSummaryTable(data, isMain = false) {
           <td class="data-cell mod-col-partial_churn" style="font-size:1.05rem;font-weight:bold;cursor:pointer" onclick="${clickFn}('PARTIAL_CHURN', '${type}')">${d.pc.toLocaleString()}</td>
           <td class="data-cell mod-col-rdp" style="font-size:1.05rem;font-weight:bold;cursor:pointer" onclick="${clickFn}('RDP', '${type}')">${d.rdp.toLocaleString()}</td>
           <td class="data-cell mod-col-new_sales" style="font-size:1.05rem;font-weight:bold;cursor:pointer" onclick="${clickFn}('NEW_SALES', '${type}')">${d.ns.toLocaleString()}</td>
+          <td class="data-cell mod-col-retained" style="font-size:1.05rem;font-weight:bold;cursor:pointer" onclick="${clickFn}('RETAINED', '${type}')">${d.ret.toLocaleString()}</td>
           <td class="data-cell active-base-cell mod-col-total_active" style="font-size:1.05rem;font-weight:bold;cursor:pointer" onclick="${clickFn}('TOTAL_ACTIVE', '${type}')">${d.act.toLocaleString()}</td>
           <td class="data-cell mod-col-ghost" style="font-size:1.05rem;font-weight:bold;cursor:pointer" onclick="${clickFn}('GHOST', '${type}')">${d.ghost.toLocaleString()}</td>
           <td class="data-cell mod-col-at_risk" style="font-size:1.05rem;font-weight:bold;cursor:pointer" onclick="${clickFn}('AT_RISK', '${type}')">${d.risk.toLocaleString()}</td>
@@ -1245,6 +1270,7 @@ function buildDynamicSummaryTable(data, isMain = false) {
           <td class="mod-col-partial_churn" style="color:var(--text-muted);cursor:pointer" onclick="${clickFn}('PARTIAL_CHURN', '${type}')">${pct(d.pc, d.exp)}%</td>
           <td class="mod-col-rdp" style="color:var(--text-muted);cursor:pointer" onclick="${clickFn}('RDP', '${type}')">${pct(d.rdp, d.exp)}%</td>
           <td class="mod-col-new_sales" style="color:var(--text-muted);cursor:pointer" onclick="${clickFn}('NEW_SALES', '${type}')">${pct(d.ns, d.exp)}%</td>
+          <td class="mod-col-retained" style="color:var(--text-muted);cursor:pointer" onclick="${clickFn}('RETAINED', '${type}')">${pct(d.ret, d.exp)}%</td>
           <td class="active-base-cell mod-col-total_active" style="color:var(--text-muted);cursor:pointer" onclick="${clickFn}('TOTAL_ACTIVE', '${type}')">100%</td>
           <td class="mod-col-ghost" style="color:var(--text-muted);cursor:pointer" onclick="${clickFn}('GHOST', '${type}')">${pct(d.ghost, d.act)}%</td>
           <td class="mod-col-at_risk" style="color:var(--text-muted);cursor:pointer" onclick="${clickFn}('AT_RISK', '${type}')">${pct(d.risk, d.act)}%</td>
@@ -1282,6 +1308,7 @@ function buildDynamicSummaryTable(data, isMain = false) {
           <th class="txt-purple mod-col-partial_churn" onclick="${clickFn}('PARTIAL_CHURN', 'ALL')" style="cursor:pointer">Partial Churn</th>
           <th class="txt-cyan mod-col-rdp" onclick="${clickFn}('RDP', 'ALL')" style="cursor:pointer">RDP Shift</th>
           <th class="txt-cyan mod-col-new_sales" onclick="${clickFn}('NEW_SALES', 'ALL')" style="cursor:pointer">New Sales</th>
+          <th class="txt-green mod-col-retained" onclick="${clickFn}('RETAINED', 'ALL')" style="cursor:pointer">Retained</th>
           <th class="txt-green active-base-header mod-col-total_active" onclick="${clickFn}('TOTAL_ACTIVE', 'ALL')" style="cursor:pointer">Total Active</th>
           <th class="txt-red mod-col-ghost" onclick="${clickFn}('GHOST', 'ALL')" style="cursor:pointer">Ghost</th>
           <th class="txt-yellow mod-col-at_risk" onclick="${clickFn}('AT_RISK', 'ALL')" style="cursor:pointer">At Risk</th>
@@ -1659,12 +1686,12 @@ function rowCsv(d) {
   const ten=d.installDate?((d.currentBlsExpiry-d.installDate)/31557600000).toFixed(2):'';
   const inst=d.installDate?d.installDate.toISOString().slice(0,10):'';
   const lud=d.lastUseDate?d.lastUseDate.toISOString().slice(0,10):'';
-  return `"${d.ownerPartner}","${d.categoryName}","${inst}","${ten}","${d.compGUID}","${d.subscriptionId}","${d.gstin||''}","${d.comboKey}","${d.rdpLicense||''}","${lud}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}","${d.shiftedToRDP?'Yes':'No'}","${d.shiftedToNewSales?'Yes':'No'}","${d.isNewSales?'Yes':'No'}","${d.renewalCount||0}","${d.licenseType||'Unknown'}"\n`;
+  return `"${d.ownerPartner}","${d.categoryName}","${inst}","${ten}","${d.compGUID}","${d.subscriptionId}","${d.gstin||''}","${d.comboKey}","${d.rdpLicense||''}","${lud}","${d.currentBlsExpiry.toISOString().slice(0,10)}","${d.source}","${d.shiftedToRDP?'Yes':'No'}","${d.shiftedToNewSales?'Yes':'No'}","${d.isNewSales?'Yes':'No'}","${d.renewalCount||0}","${d.licenseType||'Unknown'}","${d.isRetained?'Yes':'No'}"\n`;
 }
-function downloadCSV(){ let csv='Partner,Category,Install,TenureYrs,CompGUID,SubNo,GSTIN,Combo,RDP,LastUsed,Expiry,Source,ShiftedToRDP,ShiftedToNS,IsNewSales,RenewalCount,LicenseType\n'; expiredData.forEach(d=>csv+=rowCsv(d)); activeData.forEach(d=>csv+=rowCsv(d)); dlFile(csv,'churn_full_export.csv','text/csv'); }
-function downloadOverlap(){ const r=analysisResults; let csv='Partner,Category,Install,TenureYrs,CompGUID,SubNo,GSTIN,Combo,RDP,LastUsed,Expiry,Source,ShiftedToRDP,ShiftedToNS,IsNewSales,RenewalCount,LicenseType\n'; expiredData.concat(activeData).filter(d=>r.overlappingCompGUIDSet.has(d.compGUID)).forEach(d=>rowCsv(d)); dlFile(csv,'partial_churn_export.csv','text/csv'); }
-function downloadNewSales(){ let csv='Partner,Category,Install,TenureYrs,CompGUID,SubNo,GSTIN,Combo,RDP,LastUsed,Expiry,Source,ShiftedToRDP,ShiftedToNS,IsNewSales,RenewalCount,LicenseType\n'; expiredData.filter(d=>d.shiftedToNewSales).concat(activeData.filter(d=>d.isNewSales)).forEach(d=>csv+=rowCsv(d)); dlFile(csv,'new_sales_export.csv','text/csv'); }
-function downloadModalData(){ let csv='Partner,Category,Install,TenureYrs,CompGUID,SubNo,GSTIN,Combo,RDP,LastUsed,Expiry,Source,ShiftedToRDP,ShiftedToNS,IsNewSales,RenewalCount,LicenseType\n'; modalFilteredData.forEach(d=>csv+=rowCsv(d)); dlFile(csv,'drill_down_export.csv','text/csv'); }
+function downloadCSV(){ let csv='Partner,Category,Install,TenureYrs,CompGUID,SubNo,GSTIN,Combo,RDP,LastUsed,Expiry,Source,ShiftedToRDP,ShiftedToNS,IsNewSales,RenewalCount,LicenseType,IsRetained\n'; expiredData.forEach(d=>csv+=rowCsv(d)); activeData.forEach(d=>csv+=rowCsv(d)); dlFile(csv,'churn_full_export.csv','text/csv'); }
+function downloadOverlap(){ const r=analysisResults; let csv='Partner,Category,Install,TenureYrs,CompGUID,SubNo,GSTIN,Combo,RDP,LastUsed,Expiry,Source,ShiftedToRDP,ShiftedToNS,IsNewSales,RenewalCount,LicenseType,IsRetained\n'; expiredData.concat(activeData).filter(d=>r.overlappingCompGUIDSet.has(d.compGUID)).forEach(d=>rowCsv(d)); dlFile(csv,'partial_churn_export.csv','text/csv'); }
+function downloadNewSales(){ let csv='Partner,Category,Install,TenureYrs,CompGUID,SubNo,GSTIN,Combo,RDP,LastUsed,Expiry,Source,ShiftedToRDP,ShiftedToNS,IsNewSales,RenewalCount,LicenseType,IsRetained\n'; expiredData.filter(d=>d.shiftedToNewSales).concat(activeData.filter(d=>d.isNewSales)).forEach(d=>csv+=rowCsv(d)); dlFile(csv,'new_sales_export.csv','text/csv'); }
+function downloadModalData(){ let csv='Partner,Category,Install,TenureYrs,CompGUID,SubNo,GSTIN,Combo,RDP,LastUsed,Expiry,Source,ShiftedToRDP,ShiftedToNS,IsNewSales,RenewalCount,LicenseType,IsRetained\n'; modalFilteredData.forEach(d=>csv+=rowCsv(d)); dlFile(csv,'drill_down_export.csv','text/csv'); }
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', autoLoadFromRepo);
 else autoLoadFromRepo();
